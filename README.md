@@ -2,6 +2,8 @@
 
 ## Project Title
 
+**Moment**
+
 ## Team Members
 
 | First Name | Last Name |Student Number |
@@ -41,8 +43,8 @@ This application focus on highlighting user's friendship and provides user a cha
 ## Tech Stack
 
 * ReactJS - Frontend
-* NodeJS - Backend
-* Mongo/SQL
+* NodeJS - Backend Server
+* Mongo/SQL - Data Persistance
 
 ## Top Five Technical Challenges
 
