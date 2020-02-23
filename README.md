@@ -8,6 +8,7 @@
 |------------|-----------|---------------|
 | Jiasong    | Liang     | 1004203337    |
 | Cheng      | Gao       | 1004231057    |
+| Tianhao    | Yao       | 1003404728    |
 
 ## App Description
 
@@ -28,7 +29,7 @@ This application focus on highlighting user's friendship and provides user a cha
 
 ### Beta Version
 
-* Basic Image Editing: Croping, Fliping, Image Filter.....
+* Basic Image Editing: Cropping, Flipping, Image Filter.....
 * Images Sharing with Friends Like Instagram
 * Display Images in Maps with locations
 
@@ -41,11 +42,12 @@ This application focus on highlighting user's friendship and provides user a cha
 
 * ReactJS - Frontend
 * NodeJS - Backend
-* Monogo/SQL
+* Mongo/SQL
 
 ## Top Five Technical Challenges
 
 * precise face detection with A.I.
-* image editing features
+* image editing features (experimenting with filters, distortion, etc.)
 * map with uploaded images' information
-* trying to make a unique annual summary for each user
+* trying to make a unique annual summary for each user (data interpretation)
+* learning and experimenting with new frameworks
