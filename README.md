@@ -13,7 +13,7 @@
 
 A web application that allows user to share images with friend and forge meaning connection with each other through our unique features.
 
-Once each user has registered their account, they will be assign a very own timeline, whenever they upload an image, it will apear on the timeline. Users can visit others' timeline to share the delight moment they spent with their friends. Each user can comment, like, and share image on other people's timeline.
+Once each user has registered their account, they will be assign with a very own timeline, whenever they upload an image, it will apear on the timeline. Users can visit others' timeline to share the delight moment they spent with their friends. Each user can comment, like, and share image on other people's timeline.
 
 Each user will also have a map interface where they can see their own and friends' pictures based on the geographical information.
 
