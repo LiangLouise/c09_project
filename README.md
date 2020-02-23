@@ -44,7 +44,7 @@ This application focus on highlighting user's friendship and provides user a cha
 
 * ReactJS - Frontend
 * NodeJS - Backend Server
-* Mongo/SQL - Data Persistance
+* Mongo/SQL - Data Persistence
 
 ## Top Five Technical Challenges
 
