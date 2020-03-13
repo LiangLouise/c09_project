@@ -1,0 +1,12 @@
+{
+  "port": 5000,
+  "mongodb": {
+    "url": "mongodb://localhost:27017",
+    "dbname": "moment",
+    "connectionString": "localhost:27017/moment",
+    "collections": ["users"]
+  },
+  "cors": {
+    "domain": "http://moment.ninja:*"
+  }
+}

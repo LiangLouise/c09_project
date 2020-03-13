@@ -26,6 +26,10 @@ echo 'scp installed' >&2
 
 # Deploy frontend files
 rsync -a -P --delete ${TRAVIS_BUILD_DIR}/frontend/build/* root@${SERVER_HOST}:/var/www/moment.ninja
+# Deploy backend files
+rsync -a -P --delete --exclude '.git*' ${TRAVIS_BUILD_DIR}/backend/* root@${SERVER_HOST}:/var/www/moment.ninja.backend
+# Run Express in production mode
+ssh root@${SERVER_HOST} "NODE_ENV=production node /var/www/moment.ninja.backend/app.js &"
 
 send_msg "${TRAVIS_REPO_SLUG} Build Log No.${TRAVIS_BUILD_NUMBER}" \
 "
