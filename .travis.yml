@@ -15,23 +15,16 @@ branches:
   only:
   - master
 
-jobs:
-    include:
-      - stage: test
-      - name: Build Frontend
-        script:
-          - unset CI
-          - cd frontend
-          - npm install
-          - npm run build
-          - cd ..
-      - name: Build Backend
-        script:
-          - unset CI
-          - cd backend
-          - npm install
-          - npm run build
-          - cd ..
+script:
+  - unset CI
+  - cd frontend
+  - npm install
+  - npm run build
+  - cd ../backend
+  - cd backend
+  - npm install
+  - npm run build
+  - cd ..
 
 after_success:
   - wget https://raw.githubusercontent.com/DiscordHooks/travis-ci-discord-webhook/master/send.sh
