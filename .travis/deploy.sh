@@ -24,12 +24,12 @@ send_msg () {
 
 echo 'scp installed' >&2
 
-ssh -t root@${SERVER_HOST} "sudo stop moment-backend.service"
+ssh -t root@${SERVER_HOST} "sudo systemctl stop moment-backend.service"
 
 # Deploy Express Server
 rsync -a -P --delete --exclude '.git*' ${TRAVIS_BUILD_DIR}/backend/* root@${SERVER_HOST}:/var/www/moment.ninja
 # Run Express in production mode
-ssh -t root@${SERVER_HOST} "sudo restart moment-backend.service"
+ssh -t root@${SERVER_HOST} "sudo systemctl start moment-backend.service"
 
 send_msg "${TRAVIS_REPO_SLUG} Build Log No.${TRAVIS_BUILD_NUMBER}" \
 "
