@@ -17,6 +17,8 @@ app.use(session({
     }
 }));
 
+app.use(express.static('static'));
+
 
 // Set Header
 app.use(function(req, res, next){
