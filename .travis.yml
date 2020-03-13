@@ -16,6 +16,7 @@ branches:
   - master
 
 script:
+  - unset CI
   - cd frontend
   - npm install
   - npm run build
