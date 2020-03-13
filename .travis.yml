@@ -21,7 +21,7 @@ script:
   - npm install
   - npm run build
   - cd ../backend
-  - rm -r ${TRAVIS_BUILD_DIR}/backend/static/*
+  - mkdir ${TRAVIS_BUILD_DIR}/backend/static
   - cp -r ${TRAVIS_BUILD_DIR}/frontend/build/* ${TRAVIS_BUILD_DIR}/backend/static/
   - npm install
   - cd ..
