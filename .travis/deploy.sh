@@ -29,8 +29,9 @@ ssh -t root@${SERVER_HOST} "sudo systemctl stop moment-back.service"
 rsync -a -P --delete --exclude '.git*' ${TRAVIS_BUILD_DIR}/backend/* root@${SERVER_HOST}:/var/www/moment.ninja
 
 # Run Express in production mode
+sleep 10
 echo "Restart Express Server..."
-ssh -t root@${SERVER_HOST} "sudo systemctl start moment-back.service"
+ssh -t root@${SERVER_HOST} "sudo systemctl restart moment-back.service"
 
 send_msg "${TRAVIS_REPO_SLUG} Build Log No.${TRAVIS_BUILD_NUMBER}" \
 "

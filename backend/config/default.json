@@ -9,5 +9,6 @@
   "cors": {
     "domain": "http://localhost:*"
   },
-  "uploads": "uploads/"
+  "uploads": "uploads/",
+  "sessionSecret": "E3DY6ncIjG5FJs79z1TD"
 }

@@ -9,5 +9,6 @@
   "cors": {
     "domain": "http://moment.ninja:*"
   },
-  "uploads": "/var/www/moment.ninja.uploads/"
+  "uploads": "/var/www/moment.ninja.uploads/",
+  "sessionSecret": "E3DY6ncIjG5FJs79z1TD"
 }

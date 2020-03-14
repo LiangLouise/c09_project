@@ -8,7 +8,7 @@ const config = require('config');
 
 app.use(bodyParser.json());
 app.use(session({
-    secret: 'please change this secret',
+    secret: config.get("sessionSecret"),
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -17,8 +17,10 @@ app.use(session({
     }
 }));
 
-app.use(express.static('static'));
-
+// Only Serve static file in production environment
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static('static'));
+}
 
 // Set Header
 app.use(function(req, res, next){
