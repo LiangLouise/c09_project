@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import 'antd/dist/antd.css';
 import './home.css';
 import MyTimeline from './../timeline/timeline';
+import Upload from '../utilities/uploadImage';
+import Login from '../utilities/login';
+import Signup from '../utilities/signup';
 import { Layout, Menu, Breadcrumb } from 'antd';
 import { UserOutlined} from '@ant-design/icons';
 
@@ -26,6 +29,7 @@ class Home extends Component{
               <Menu.Item key="1">Home</Menu.Item>
               <Menu.Item key="2">My Timeline</Menu.Item>
               <Menu.Item key="3">Map</Menu.Item>
+              <Menu.Item key="4">Upload</Menu.Item>
             </Menu>
           </Header>
           <Layout>
@@ -45,10 +49,10 @@ class Home extends Component{
                   </span>
                   }
                 >
-                  <Menu.Item key="1">Friend1</Menu.Item>
-                  <Menu.Item key="2">Friend2</Menu.Item>
-                  <Menu.Item key="3">Friend3</Menu.Item>
-                  <Menu.Item key="4">Friend4</Menu.Item>
+                  <Menu.Item key="friend1">Friend1</Menu.Item>
+                  <Menu.Item key="friend12">Friend2</Menu.Item>
+                  <Menu.Item key="friend13">Friend3</Menu.Item>
+                  <Menu.Item key="friend14">Friend4</Menu.Item>
                 </SubMenu>
 
               </Menu>
@@ -67,6 +71,9 @@ class Home extends Component{
                 }}
               >
                 <MyTimeline/>
+                <Upload/>
+                <Login/>
+                <Signup/>
               </Content>
             </Layout>
           </Layout>
