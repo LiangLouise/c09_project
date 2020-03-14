@@ -7,6 +7,8 @@ import Login from '../utilities/login';
 import Signup from '../utilities/signup';
 import { Layout, Menu, Breadcrumb, Button, Row, Col  } from 'antd';
 import { UserOutlined} from '@ant-design/icons';
+import Logo from './../../Logo.png';
+import Icon from './../../Icon.png';
 
 
 const { SubMenu } = Menu;
@@ -18,10 +20,9 @@ class Home extends Component{
   render(){
    return(
           <Layout >
-          <Header className="header"
-          style={{ }}
-          >
-            <div className="logo" />
+          <Header className="header">
+            <img className="icon" src={Icon}/>
+            <img className="logo" src={Logo}/>
             <Menu
               theme="dark"
               mode="horizontal"
