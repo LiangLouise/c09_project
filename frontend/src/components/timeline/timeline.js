@@ -1,11 +1,23 @@
 import React, { Component } from 'react';
 
-import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout } from 'antd';
+import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button} from 'antd';
 import moment from 'moment';
+import { MessageOutlined} from '@ant-design/icons';
 
 
 const { Meta } = Card;
 const {Content} = Layout;
+
+const onFinish = values => {
+    console.log('Success:', values);
+  };
+
+  const formItemLayout = {
+    wrapperCol: {
+        span: 24,
+        }
+    
+};
 
 class MyTimeline extends Component{
     constructor(){
@@ -83,6 +95,22 @@ class MyTimeline extends Component{
                                 />
                                     )
                                 })}
+                                <Form
+                                    name="login"
+                                    {...formItemLayout}
+                                    onFinish={onFinish}
+                                >
+                                    <Form.Item name="comment">
+                                        <Input.TextArea placeholder="Write a comment..."/>
+                                    </Form.Item>
+
+                                    <Form.Item>
+                                        <Button type="primary" htmlType="submit" className="comment-form-button">
+                                            Submit
+                                        </Button>
+                                    </Form.Item>
+                                    
+                                </Form>
                             </Content>
                         </Col>
                         <Divider></Divider>
