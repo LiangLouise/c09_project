@@ -5,7 +5,7 @@ import MyTimeline from './../timeline/timeline';
 import Upload from '../utilities/uploadImage';
 import Login from '../utilities/login';
 import Signup from '../utilities/signup';
-import { Layout, Menu, Breadcrumb } from 'antd';
+import { Layout, Menu, Breadcrumb, Button, Row, Col  } from 'antd';
 import { UserOutlined} from '@ant-design/icons';
 
 
@@ -17,8 +17,10 @@ const { Header, Content, Sider } = Layout;
 class Home extends Component{
   render(){
    return(
-          <Layout>
-          <Header className="header">
+          <Layout >
+          <Header className="header"
+          style={{ }}
+          >
             <div className="logo" />
             <Menu
               theme="dark"
@@ -30,8 +32,15 @@ class Home extends Component{
               <Menu.Item key="2">My Timeline</Menu.Item>
               <Menu.Item key="3">Map</Menu.Item>
               <Menu.Item key="4">Upload</Menu.Item>
+              <Menu.Item style ={{float:"right"}}><Signup/></Menu.Item>
+              <Menu.Item style ={{float:"right"}}><Login/></Menu.Item>
+              
+              
+              
+              
             </Menu>
           </Header>
+
           <Layout>
             <Sider width={200} className="site-layout-background">
               <Menu
@@ -72,7 +81,6 @@ class Home extends Component{
               >
                 <MyTimeline/>
                 <Upload/>
-                <Login/>
                 <Signup/>
               </Content>
             </Layout>

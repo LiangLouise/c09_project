@@ -4,7 +4,8 @@ import { Form,
     Button,
     Checkbox,
     Input,
-    Typography, } from 'antd';
+    Typography,
+    Modal } from 'antd';
 
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
@@ -44,17 +45,42 @@ const titleLayout = {
 
 class Login extends Component{
     
+    state = { visible: false };
 
-    constructor(){
-        super();
-
-        
-    }
+    showModal = () => {
+      this.setState({
+        visible: true,
+      });
+    };
+  
+    handleOk = e => {
+      console.log(e);
+      this.setState({
+        visible: false,
+      });
+    };
+  
+    handleCancel = e => {
+      console.log(e);
+      this.setState({
+        visible: false,
+      });
+    };
 
     
     
     render(){
         return(
+            <div>
+          <Button type="default" onClick={this.showModal}>
+            Log in
+          </Button>
+          <Modal
+            title="Basic Modal"
+            visible={this.state.visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+          >
             <Form
                 name="login"
                 {...formItemLayout}
@@ -111,10 +137,9 @@ class Login extends Component{
                 <Form.Item>
                     Or <a href="">Register</a>
                 </Form.Item>
-            
-
-                
             </Form>
+            </Modal>
+            </div>
         );
         
     }
