@@ -45,54 +45,52 @@ class MyTimeline extends Component{
         return(
             <div className="timeline">
                 {this.state.posts.map((post) =>{
-                return(
-                    <Row>
-                    <Col span={2}>{post.date}</Col>
-                    <Col span={10}>
-                    <Card
-                        hoverable
-                        //style={{ width: 300 }}
-                        cover={<img alt="example" src={post.src}/>}
-                    >
-                        <Meta title={post.title} description={post.description} />
-                    </Card>
-                    </Col>
-                    <Col span={12}>
-                        <Content>
-                        {post.comments.map((comment) =>{
-                            return(
-                                <Comment
-                            // actions={actions}
-                            author={<a>user</a>}
-                            avatar={
-                            <Avatar
-                                src={comment.src}
-                                alt="Han Solo"
-                            />
-                            }
-                            content={
-                            <p>
-                                {comment.content}
-                            </p>
-                            }
-                            datetime={
-                            <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
-                                <span>{moment().fromNow()}</span>
-                            </Tooltip>
-                            }
-                        />
-                            )
-                        })}
-                        </Content>
-                    </Col>
-                    <Divider></Divider>
-                    </Row>
+                    return(
+                        <Row>
+                        <Col span={2}>{post.date}</Col>
+                        <Col span={10}>
+                        <Card
+                            hoverable
+                            //style={{ width: 300 }}
+                            cover={<img alt="example" src={post.src}/>}
+                        >
+                            <Meta title={post.title} description={post.description} />
+                        </Card>
+                        </Col>
+                        <Col span={12}>
+                            <Content>
+                                {post.comments.map((comment) =>{
+                                    return(
+                                        <Comment
+                                    // actions={actions}
+                                    author={<a>user</a>}
+                                    avatar={
+                                    <Avatar
+                                        src={comment.src}
+                                        alt="Han Solo"
+                                    />
+                                    }
+                                    content={
+                                    <p>
+                                        {comment.content}
+                                    </p>
+                                    }
+                                    datetime={
+                                    <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
+                                        <span>{moment().fromNow()}</span>
+                                    </Tooltip>
+                                    }
+                                />
+                                    )
+                                })}
+                            </Content>
+                        </Col>
+                        <Divider></Divider>
+                        </Row>
                     ); 
-            })}
-         </div>
-        );
-        
-    }
-    
+                })}
+            </div>
+        );    
+    } 
 }
 export default MyTimeline;
