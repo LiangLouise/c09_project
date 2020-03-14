@@ -4,9 +4,10 @@
     "url": "mongodb://localhost:27017",
     "dbname": "moment",
     "connectionString": "localhost:27017/moment",
-    "collections": ["users"]
+    "collections": ["users", "images", "comments"]
   },
   "cors": {
     "domain": "http://moment.ninja:*"
-  }
+  },
+  "uploads": "/var/www/moment.ninja.uploads/"
 }
