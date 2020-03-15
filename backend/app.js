@@ -6,6 +6,11 @@ const c_configs = require("./config/cookieconfigs.js");
 const router = require('./router.js');
 const config = require('config');
 const logger = require('./config/loggerconfig');
+const cors = require('cors');
+
+// Set CORS rules
+let options = config.get("cors");
+app.use(cors(options));
 
 app.use(bodyParser.json());
 app.use(session({
@@ -26,10 +31,10 @@ if (process.env.NODE_ENV === 'production') {
 // Set Header
 app.use(function(req, res, next){
     // CORS
-    res.setHeader('Access-Control-Allow-Origin', config.get("cors.domain"));
-    res.setHeader('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    // res.setHeader('Access-Control-Allow-Origin', config.get("cors.domain"));
+    // res.setHeader('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+    // res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials');
+    // res.setHeader('Access-Control-Allow-Credentials', 'true');
 
     let username = (req.session.username)? req.session.username : '';
     res.setHeader('Set-Cookie', c_configs.cookie.serialize('username', username, c_configs.cookie_config));
@@ -37,7 +42,7 @@ app.use(function(req, res, next){
 });
 
 app.use(function (req, res, next){
-    logger.info("HTTP request %s %s %s", req.method, req.url, req.body);
+    logger.info("HTTP request %s %s %o %s %s", req.method, req.url, req.body, req.xhr, req.hostname);
     next();
 });
 

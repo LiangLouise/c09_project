@@ -7,7 +7,15 @@
     "collections": ["users", "images", "comments", "facedata"]
   },
   "cors": {
-    "domain": "http://moment.ninja:*"
+    "origin": ["https://moment.ninja"],
+    "methods": [
+      "PUT", "GET", "POST", "DELETE"
+    ],
+    "allowedHeaders": [
+      "X-Requested-With", "Content-Type", "Accept", "Authorization", "Access-Control-Allow-Credentials"
+    ],
+    "credentials": true,
+    "optionsSuccessStatus": 200
   },
   "uploads": "/var/www/moment.ninja.uploads/",
   "sessionSecret": "E3DY6ncIjG5FJs79z1TD",

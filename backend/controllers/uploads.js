@@ -5,7 +5,8 @@ exports.uploadImage = function (req, res, next) {
     db.images.insert({
             title: req.body.title,
             author: req.username,
-            picture: req.file
+            picture: req.file,
+            dis: req.body.description
         },
         function (err, item) {
             if(err) return res.status(500).end(err);
