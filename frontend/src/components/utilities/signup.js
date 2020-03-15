@@ -31,7 +31,7 @@ const validateMessages = {
     },
   };
 
-  const onFinish = values => {
+const onFinish = values => {
 
     console.log('Success:', values);
   };
@@ -76,7 +76,6 @@ class Signup extends Component {
             .post(API_END_POINT+'/signup/', user)
             .then(res => {
                 console.log(res);
-                console.log(res.date)
             });
     }
   

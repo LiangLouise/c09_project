@@ -6,7 +6,7 @@ import Upload from '../utilities/uploadImage';
 import Login from '../utilities/login';
 import Signup from '../utilities/signup';
 import SearchBar from '../utilities/search';
-import { Layout, Menu, Breadcrumb, Button, Row, Col  } from 'antd';
+import { Layout, Menu, Breadcrumb, Button, Row, Col, Divider  } from 'antd';
 import { UserOutlined} from '@ant-design/icons';
 import Logo from './../../Logo.png';
 import Icon from './../../Icon.png';
@@ -84,9 +84,10 @@ class Home extends Component{
                   minHeight: 280,
                 }}
               >
-                <MyTimeline/>
                 <Upload/>
-                <Signup/>
+                <Divider></Divider>
+                <MyTimeline/>
+                
               </Content>
             </Layout>
           </Layout>
