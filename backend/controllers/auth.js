@@ -2,6 +2,7 @@ const c_configs = require("../config/cookieconfigs");
 const db = require("../services/dbservice");
 const { generateSalt, generateHash } = require("../utils/hash");
 const User = require("../model/user");
+const logger = require('../config/loggerconfig');
 
 // curl -H "Content-Type: application/json" -X POST -d '{"username":"alice","password":"alice"}' -c cookie.txt localhost:5000/signup/
 exports.signup = function(req, res, next) {
@@ -31,6 +32,9 @@ exports.signin = function (req, res, next) {
         // start a session
         req.session.username = user.username;
         res.setHeader('Set-Cookie', c_configs.cookie.serialize('username', user._id, c_configs.cookie_config));
+
+        logger.info("Login response header", res.getHeaders());
+
         return res.json("user " + username + " signed in");
     });
 };

@@ -21,6 +21,7 @@
   "sessionSecret": "E3DY6ncIjG5FJs79z1TD",
   "logger": {
     "level": "error",
-    "errorLogFilePath": "/var/www/moment.ninja.log/error.log"
+    "errorLogFilePath": "/var/www/moment.ninja.log/error.log",
+    "infoLogFilePath": "/var/www/moment.ninja.log/info.log"
   }
 }

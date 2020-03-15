@@ -21,6 +21,7 @@
   "sessionSecret": "E3DY6ncIjG5FJs79z1TD",
   "logger": {
     "level": "info",
-    "errorLogFilePath": "uploads/error.log"
+    "errorLogFilePath": "log/error.log",
+    "infoLogFilePath": "log/info.log"
   }
 }

@@ -17,12 +17,14 @@ app.use(bodyParser.json());
 // Only Serve static file in production environment
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static('static'));
+    app.set('trust proxy', true);
     app.use(session({
         secret: config.get("sessionSecret"),
         resave: false,
         saveUninitialized: true,
+        proxy: true,
         cookie: {
-            secure: true,
+            secure: false,
             sameSite: true
         }
     }));
@@ -52,7 +54,7 @@ app.use(function(req, res, next){
 });
 
 app.use(function (req, res, next){
-    logger.info("HTTP request %s %s %o %s %s", req.method, req.url, req.body, req.xhr, req.hostname);
+    logger.info("HTTP request %s %s %o %o", req.method, req.url, req.headers, req.body);
     next();
 });
 
