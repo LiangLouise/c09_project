@@ -13,25 +13,35 @@ let options = config.get("cors");
 app.use(cors(options));
 
 app.use(bodyParser.json());
-app.use(session({
-    secret: config.get("sessionSecret"),
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        secure: true,
-        sameSite: true
-    }
-}));
 
 // Only Serve static file in production environment
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static('static'));
+    app.use(session({
+        secret: config.get("sessionSecret"),
+        resave: false,
+        saveUninitialized: true,
+        cookie: {
+            secure: true,
+            sameSite: true
+        }
+    }));
+} else {
+    app.use(session({
+        secret: config.get("sessionSecret"),
+        resave: false,
+        saveUninitialized: true,
+        cookie: {
+            secure: false,
+            sameSite: 'none'
+        }
+    }));
 }
 
 // Set Header
 app.use(function(req, res, next){
     // CORS
-    // res.setHeader('Access-Control-Allow-Origin', config.get("cors.domain"));
+    // res.setHeader('Access-Control-Allow-Origin', config.get("cors.origin"));
     // res.setHeader('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
     // res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials');
     // res.setHeader('Access-Control-Allow-Credentials', 'true');
