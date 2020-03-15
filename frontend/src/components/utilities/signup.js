@@ -20,7 +20,7 @@ const titleLayout = {
       },
 }
 
-  const validateMessages = {
+const validateMessages = {
     required: 'This field is required!',
     types: {
       email: 'Not a validate email!',
@@ -31,12 +31,12 @@ const titleLayout = {
     },
   };
 
-  const onFinish = values => {
+const onFinish = values => {
       
     console.log('Success:', values);
   };
 
-  const onFinishFailed = errorInfo => {
+const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
   };
 
@@ -71,7 +71,7 @@ class Signup extends Component {
             password: this.state.password
         }
         axios
-            .get('localhost:5000/signup/',{user})
+            .post('localhost:5000/signup/',{user})
             .then(res => {
                 console.log(res);
                 console.log(res.date)
