@@ -69,15 +69,11 @@ class Signup extends Component {
     handleSubmit = (e) => {
         e.preventDefault();
         let user = {
-            name: this.state.name,
+            username: this.state.username,
             password: this.state.password
         }
         axios
-            .post(API_END_POINT+'/signup/',
-                {
-                    name: this.state.name,
-                    password: this.state.password
-                })
+            .post(API_END_POINT+'/signup/', user)
             .then(res => {
                 console.log(res);
                 console.log(res.date)
@@ -115,7 +111,7 @@ class Signup extends Component {
                 </Form.Item>
 
                 <Form.Item
-                    name="username"
+                    name="username_item"
                     rules={[
                     {
                         required: true,
@@ -123,7 +119,8 @@ class Signup extends Component {
                     },
                     ]}
                 >
-                    <Input 
+                    <Input
+                    name="username"
                     prefix={<UserOutlined className="site-form-item-icon" />} 
                     placeholder="Username" 
                     value={this.state.username}
@@ -131,7 +128,7 @@ class Signup extends Component {
                 </Form.Item>
 
                 <Form.Item
-                    name="password"
+                    name="password_item"
                     rules={[
                     {
                         required: true,
@@ -140,10 +137,12 @@ class Signup extends Component {
                     ]}
                 >
                     <Input
+                    name="password"
                     prefix={<LockOutlined className="site-form-item-icon" />}
                     type="password"
                     placeholder="Password"
-                    // onChange={this.handleChange}
+                    onChange={this.handleChange}
+                    value={this.state.password}
                     />
                 </Form.Item>
 
