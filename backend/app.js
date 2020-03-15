@@ -50,11 +50,7 @@ app.use(function(req, res, next){
 
     let username = (req.session.username)? req.session.username : '';
     res.setHeader('Set-Cookie', c_configs.cookie.serialize('username', username, c_configs.cookie_config));
-    next();
-});
-
-app.use(function (req, res, next){
-    logger.info("HTTP request %s %s %o %o", req.method, req.url, req.headers, req.body);
+    logger.info("HTTP request %s %s %s %o", req.method, req.url, req.header("cookie"), req.body);
     next();
 });
 

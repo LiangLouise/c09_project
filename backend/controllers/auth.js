@@ -1,6 +1,6 @@
 const c_configs = require("../config/cookieconfigs");
 const db = require("../services/dbservice");
-const { generateSalt, generateHash } = require("../utils/hash");
+const { generateHash } = require("../utils/hash");
 const User = require("../model/user");
 const logger = require('../config/loggerconfig');
 
@@ -12,8 +12,6 @@ exports.signup = function(req, res, next) {
     db.users.findOne({_id: username}, function (err, user) {
         if (err) return res.status(500).end(err);
         if (user) return res.status(409).end("username " + username + " already exists");
-        let salt = generateSalt();
-        let hash = generateHash(password, salt);
         db.users.insert(new User(username, password), function () {
             return res.json("user " + username + " signed up");
         });
@@ -30,7 +28,7 @@ exports.signin = function (req, res, next) {
         if (!user) return res.status(401).end("access denied");
         if (user.hash !== generateHash(password, user.salt)) return res.status(401).end("access denied");
         // start a session
-        req.session.username = user.username;
+        req.session.username = user._id;
         res.setHeader('Set-Cookie', c_configs.cookie.serialize('username', user._id, c_configs.cookie_config));
 
         logger.info("Login response header", res.getHeaders());
