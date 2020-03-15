@@ -193,7 +193,7 @@ class UploadImage extends Component{
                     <Button 
                     type="primary" 
                     htmlType="submit"
-                    onClick={this.handleSubmit}>>
+                    onClick={this.handleSubmit}>
                     Submit
                     </Button>
                 </Form.Item>

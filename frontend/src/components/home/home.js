@@ -7,7 +7,7 @@ import Login from '../utilities/login';
 import Signup from '../utilities/signup';
 import SearchBar from '../utilities/search';
 import SearchResults from '../utilities/searchResults';
-import { Layout, Menu, Breadcrumb, Button, Row, Col, AutoComplete, Input  } from 'antd';
+import { Layout, Menu, Breadcrumb, Button, Row, Col, AutoComplete, Input, Divider } from 'antd';
 
 import { UserOutlined} from '@ant-design/icons';
 import Logo from './../../Logo.png';
