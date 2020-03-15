@@ -45,7 +45,7 @@ const normFile = e => {
     return e && e.fileList;
   };
 
-const API_END_POINT = "http://localhost:5000"
+const API_END_POINT = process.env.REACT_APP_BASE_URL;
 
 const onFinish = values => {
     console.log('Received values of form: ', values);

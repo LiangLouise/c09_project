@@ -43,8 +43,6 @@ const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
   };
 
-const API_END_POINT = "http://localhost:5000"
-
 class Login extends Component{
     
   constructor(){
@@ -82,7 +80,7 @@ class Login extends Component{
             password: this.state.password
         }
         axios
-            .post(API_END_POINT+'/signin/', user, {withCredentials: true})
+            .post(process.env.REACT_APP_BASE_URL+'/signin/', user, {withCredentials: true})
             .then(res => {
                 console.log(res);
             });
