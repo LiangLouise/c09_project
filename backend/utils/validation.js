@@ -32,5 +32,10 @@ exports.checkImage = function(req, res, next) {
         !req.file.mimetype.includes("png") &&
         !req.file.mimetype.includes("gif")
     ) return res.status(400).end("Not a Image File");
-    next()
+    next();
+};
+
+exports.checkCommentLegth = function (req, res, next) {
+    if (req.body.content.length > 150) return res.status(400).end("No More than 150 Characters");
+    next();
 };
