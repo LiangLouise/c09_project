@@ -1,26 +1,17 @@
 const validator = require('validator');
+const db = require("../services/dbservice");
 
 exports.isAuthenticated = function(req, res, next) {
     if (!req.session.username) return res.status(401).end("access denied");
     next();
 };
 
-exports.checkUsername = function(req, res, next) {
-    if (!req.body.username) return res.status(400).end("Body missing data");
-    if (!validator.isAlphanumeric(req.body.username)) return res.status(400).end("bad input on username");
-    next();
-};
-
-exports.checkParamsUsername = function(req, res, next) {
-    if (!req.params.username) return res.status(400).end("params missing username");
-    if (!validator.isAlphanumeric(req.params.username)) return res.status(400).end("bad input on username");
-    next();
-};
-
-exports.checkQueryUsername = function(req, res, next) {
-    if (!req.query.username) return res.status(400).end("params missing username");
-    if (!validator.isAlphanumeric(req.query.username)) return res.status(400).end("bad input on username");
-    next();
+exports.checkUsername = function(path) {
+    return function (req, res, next) {
+        if (!req[path].username) return res.status(400).end("Body missing data");
+        if (!validator.isAlphanumeric(req[path].username)) return res.status(400).end("bad input on username");
+        next();
+    }
 };
 
 exports.checkPageNumber = function(req, res, next) {
@@ -31,11 +22,6 @@ exports.checkPageNumber = function(req, res, next) {
 
 exports.sanitizeContent = function(req, res, next) {
     req.body.content = validator.escape(req.body.content);
-    next();
-};
-
-exports.checkId = function(req, res, next) {
-    if (!validator.isAlphanumeric(req.params.id)) return res.status(400).end("bad input on req params ID");
     next();
 };
 
@@ -54,7 +40,21 @@ exports.checkImage = function(req, res, next) {
     next();
 };
 
-exports.checkCommentLegth = function (req, res, next) {
+exports.checkCommentLength = function (req, res, next) {
     if (req.body.content.length > 150) return res.status(400).end("No More than 150 Characters");
     next();
+};
+
+
+exports.checkIfUserExisting = function (path){
+    return function (req, res, next) {
+        let username;
+        if (req[path].username) username = req[path].username;
+        else return res.status(400).end("request missing username");
+        db.users.find({_id: username}).count(function (err, count) {
+            if(err) return res.status(500).end(err);
+            if (count !== 1) return res.status(404).end("User not Find");
+        });
+        next();
+    }
 };

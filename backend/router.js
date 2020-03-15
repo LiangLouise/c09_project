@@ -1,7 +1,7 @@
 const express = require('express');
 const {signin, signout, signup} = require('./controllers/auth');
 const {uploadImage} = require('./controllers/uploads');
-const {addFriend, removeFriend, getFriend} = require('./controllers/friend');
+const {addFriend, removeFriend, getFriend, isFriend} = require('./controllers/users');
 const validation = require('./utils/validation.js');
 const multer = require('multer');
 const config = require('config');
@@ -14,17 +14,20 @@ module.exports = function (app) {
     const authRoutes = express.Router();
 
     app.use("/", authRoutes);
-    authRoutes.post('/signup', validation.checkUsername, signup);
-    authRoutes.post('/signin', validation.checkUsername, signin);
+    authRoutes.post('/signup', validation.checkUsername('body'), signup);
+    authRoutes.post('/signin', validation.checkUsername('body'), signin);
     authRoutes.get('/signout', signout);
 
     app.use("/api", apiRoutes);
-    apiRoutes.post('/images', validation.isAuthenticated, upload.single('picture'), validation.notEmptyFile, validation.checkImage, uploadImage);
+    apiRoutes.post('/images', validation.isAuthenticated, upload.single('picture'),
+        validation.notEmptyFile, validation.checkImage, uploadImage);
 
     // POST /api/friend {"username": "Friend username to add"}
-    apiRoutes.post('/friend', validation.isAuthenticated, validation.checkUsername, addFriend);
+    apiRoutes.post('/friend', validation.isAuthenticated, validation.checkUsername('body'), addFriend);
     // DELETE /api/friend/{friend username to remove}
-    apiRoutes.delete('/friend/:username/', validation.isAuthenticated, validation.checkParamsUsername, removeFriend);
+    apiRoutes.delete('/friend/:username/', validation.isAuthenticated, validation.checkUsername('params'), removeFriend);
     // GET /api/friend?page=number
-    apiRoutes.get('/friend', validation.isAuthenticated, validation.checkQueryUsername, validation.checkPageNumber, removeFriend);
+    apiRoutes.get('/friend', validation.isAuthenticated, validation.checkPageNumber, getFriend);
+    // GET /api/isfriend?username={the name to test}
+    apiRoutes.get('/isfriend', validation.isAuthenticated, validation.checkUsername('query'), isFriend);
 };
