@@ -9,6 +9,7 @@ const { Meta } = Card;
 const {Content} = Layout;
 
 const onFinish = values => {
+    
     console.log('Success:', values);
   };
 
@@ -50,6 +51,8 @@ class MyTimeline extends Component{
                     ]
                 },
             ]
+
+            
         };
     }
     

@@ -6,7 +6,8 @@ import Upload from '../utilities/uploadImage';
 import Login from '../utilities/login';
 import Signup from '../utilities/signup';
 import SearchBar from '../utilities/search';
-import { Layout, Menu, Breadcrumb, Button, Row, Col  } from 'antd';
+import SearchResults from '../utilities/searchResults';
+import { Layout, Menu, Breadcrumb, Button, Row, Col, AutoComplete, Input  } from 'antd';
 import { UserOutlined} from '@ant-design/icons';
 import Logo from './../../Logo.png';
 import Icon from './../../Icon.png';
@@ -18,6 +19,47 @@ const { Header, Content, Sider } = Layout;
 
 
 class Home extends Component{
+  constructor(){
+    super();
+
+    this.state={
+        friends: [
+            {
+              id: "1",
+               name: "friend1",
+            },
+            {
+              id: "2",
+              name: "friend2",
+            }
+             
+        ],
+
+        availableFriends: [
+          {
+            id: "1",
+             name: "friend1",
+          },
+          {
+            id: "2",
+            name: "friend2",
+          },
+          {
+            id: "3",
+             name: "friend3",
+          },
+          {
+            id: "4",
+            name: "friend4",
+          }
+
+        ]
+ 
+    };
+
+
+}
+
   render(){
    return(
           <Layout >
@@ -38,8 +80,20 @@ class Home extends Component{
               <div className="signup" style={{float:"right"}}><Signup/></div>
               <div className="login" style={{float:"right"}}><Login/></div>
               <div className="searchbar" style={{float:"right"}}><SearchBar/></div>
-
               
+              
+
+              {/* <AutoComplete
+                  dropdownClassName="certain-category-search-dropdown"
+                  dropdownMatchSelectWidth={500}
+                  options={{availableFriends}}
+                  style={{
+                    width: 250,
+                  }}
+                >
+                  <Input.Search size="large" placeholder="input here" />
+                </AutoComplete> */}
+                
               
               
               
@@ -63,10 +117,11 @@ class Home extends Component{
                   </span>
                   }
                 >
-                  <Menu.Item key="friend1">Friend1</Menu.Item>
-                  <Menu.Item key="friend12">Friend2</Menu.Item>
-                  <Menu.Item key="friend13">Friend3</Menu.Item>
-                  <Menu.Item key="friend14">Friend4</Menu.Item>
+                  {this.state.friends.map((friend) =>{
+                    return(
+                      <Menu.Item key={friend.id}>{friend.name}</Menu.Item>
+                    );
+                    })};
                 </SubMenu>
 
               </Menu>
@@ -87,6 +142,7 @@ class Home extends Component{
                 <MyTimeline/>
                 <Upload/>
                 <Signup/>
+                <SearchResults/>
               </Content>
             </Layout>
           </Layout>
