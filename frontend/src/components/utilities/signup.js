@@ -20,7 +20,7 @@ const titleLayout = {
       },
 }
 
-  const validateMessages = {
+const validateMessages = {
     required: 'This field is required!',
     types: {
       email: 'Not a validate email!',
@@ -36,7 +36,7 @@ const titleLayout = {
     console.log('Success:', values);
   };
 
-  const onFinishFailed = errorInfo => {
+const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
   };
 
