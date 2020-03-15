@@ -82,7 +82,7 @@ class Login extends Component{
             password: this.state.password
         }
         axios
-            .post(API_END_POINT+'/signin/', user)
+            .post(API_END_POINT+'/signin/', user, {withCredentials: true})
             .then(res => {
                 console.log(res);
             });

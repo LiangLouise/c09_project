@@ -73,7 +73,7 @@ class Signup extends Component {
             password: this.state.password
         }
         axios
-            .post(API_END_POINT+'/signup/', user)
+            .post(API_END_POINT+'/signup/', user, {withCredentials: true})
             .then(res => {
                 console.log(res);
             });
