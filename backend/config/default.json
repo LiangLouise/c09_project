@@ -4,11 +4,15 @@
     "url": "mongodb://localhost:27017",
     "dbname": "moment",
     "connectionString": "localhost:27017/moment",
-    "collections": ["users", "images", "comments"]
+    "collections": ["users", "images", "comments", "facedata"]
   },
   "cors": {
     "domain": "http://localhost:3000"
   },
   "uploads": "uploads/",
-  "sessionSecret": "E3DY6ncIjG5FJs79z1TD"
+  "sessionSecret": "E3DY6ncIjG5FJs79z1TD",
+  "logger": {
+    "level": "info",
+    "errorLogFilePath": "uploads/error.log"
+  }
 }

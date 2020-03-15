@@ -1,8 +1,8 @@
 const c_configs = require("../config/cookieconfigs");
-const { db } = require("../services/dbservice");
+const db = require("../services/dbservice");
 const { generateSalt, generateHash } = require("../utils/hash");
 
-// curl -H "Content-Type: application/json" -X POST -d '{"username":"alice","password":"alice"}' -c cookie.txt localhost:3000/signup/
+// curl -H "Content-Type: application/json" -X POST -d '{"username":"alice","password":"alice"}' -c cookie.txt localhost:5000/signup/
 exports.signup = function(req, res, next) {
     let username = req.body.username;
     let password = req.body.password;

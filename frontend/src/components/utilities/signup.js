@@ -31,14 +31,16 @@ const validateMessages = {
     },
   };
 
-const onFinish = values => {
-      
+  const onFinish = values => {
+
     console.log('Success:', values);
   };
 
 const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
   };
+
+const API_END_POINT = "http://localhost:5000"
 
 
 class Signup extends Component {
@@ -71,7 +73,11 @@ class Signup extends Component {
             password: this.state.password
         }
         axios
-            .post('localhost:5000/signup/',{user})
+            .post(API_END_POINT+'/signup/',
+                {
+                    name: this.state.name,
+                    password: this.state.password
+                })
             .then(res => {
                 console.log(res);
                 console.log(res.date)

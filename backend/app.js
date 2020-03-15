@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const c_configs = require("./config/cookieconfigs.js");
 const router = require('./router.js');
 const config = require('config');
+const logger = require('./config/loggerconfig');
 
 app.use(bodyParser.json());
 app.use(session({
@@ -36,7 +37,7 @@ app.use(function(req, res, next){
 });
 
 app.use(function (req, res, next){
-    console.log("HTTP request", req.method, req.url, req.body);
+    logger.info("HTTP request %s %s %s", req.method, req.url, req.body);
     next();
 });
 
@@ -46,6 +47,6 @@ const http = require('http');
 const PORT = config.get("port");
 
 http.createServer(app).listen(PORT, function (err) {
-    if (err) console.log(err);
-    else console.log("HTTP server on http://localhost:%s", PORT);
+    if (err) logger.error(err);
+    else logger.info("HTTP server on http://localhost:%s", PORT);
 });

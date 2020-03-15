@@ -1,16 +1,16 @@
 const mongojs = require('mongojs');
 const config = require('config');
 const db = mongojs(config.get("mongodb.connectionString"), config.get("mongodb.collections"));
+const logger = require('../config/loggerconfig');
 
 db.on('error', function (err) {
-    console.log('database error', err);
+    logger.error(err);
 });
 
 db.on('connect', function () {
-    console.log("mongodb.connectionString", config.get("mongodb.connectionString"));
-    console.log("mongodb.collections", config.get("mongodb.collections"));
-    console.log('database connected');
+    logger.info("mongodb.connectionString %s",config.get("mongodb.connectionString"));
+    logger.info("mongodb.collections %s", config.get("mongodb.collections"));
+    logger.info('database connected');
 });
 
-exports.db = db;
-
+module.exports = db;
