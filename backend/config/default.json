@@ -7,7 +7,7 @@
     "collections": ["users", "images", "comments"]
   },
   "cors": {
-    "domain": "http://localhost:*"
+    "domain": "http://localhost:3000"
   },
   "uploads": "uploads/",
   "sessionSecret": "E3DY6ncIjG5FJs79z1TD"
