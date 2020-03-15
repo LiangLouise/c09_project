@@ -53,12 +53,12 @@ class Login extends Component{
       });
     };
   
-    handleOk = e => {
-      console.log(e);
-      this.setState({
-        visible: false,
-      });
-    };
+    // handleOk = e => {
+    //   console.log(e);
+    //   this.setState({
+    //     visible: false,
+    //   });
+    // };
   
     handleCancel = e => {
       console.log(e);
@@ -76,10 +76,10 @@ class Login extends Component{
             Log in
           </Button>
           <Modal
-            title="Basic Modal"
             visible={this.state.visible}
-            onOk={this.handleOk}
+            // onOk={this.handleOk}
             onCancel={this.handleCancel}
+            footer={null}
           >
             <Form
                 name="login"

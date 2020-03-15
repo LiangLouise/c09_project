@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
 import { Modal, Button,Form, Checkbox,Input,Typography } from 'antd';
@@ -31,6 +32,7 @@ const titleLayout = {
   };
 
   const onFinish = values => {
+      
     console.log('Success:', values);
   };
 
@@ -40,20 +42,41 @@ const titleLayout = {
 
 
 class Signup extends Component {
-    state = { visible: false };
+    constructor(){
+        super();
+        this.state = { 
+            visible: false,
+            username: '',
+            password: '',
+        };
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    
   
     showModal = () => {
       this.setState({
         visible: true,
+        // username: '',
+        // password: '',
       });
     };
   
-    handleOk = e => {
-      console.log(e);
-      this.setState({
-        visible: false,
-      });
-    };
+    handleChange = (e) =>
+        this.setState({ [e.target.name]: e.target.value });
+
+    handleSubmit = (e) => {
+        e.preventDefault();
+        let user = {
+            name: this.state.name,
+            password: this.state.password
+        }
+        axios
+            .get('localhost:5000/signup/',{user})
+            .then(res => {
+                console.log(res);
+                console.log(res.date)
+            });
+    }
   
     handleCancel = e => {
       console.log(e);
@@ -69,15 +92,15 @@ class Signup extends Component {
             Sign up
           </Button>
           <Modal
-            title="Basic Modal"
             visible={this.state.visible}
-            onOk={this.handleOk}
+            // onOk={this.handleOk}
             onCancel={this.handleCancel}
+            footer = {null}
           >
             <Form
                 name="register"
                 {...formItemLayout}
-                onFinish={onFinish}
+                onFinish={this.handleSubmit}
             >
                 <Form.Item {...titleLayout}>
                     <Typography>
@@ -94,7 +117,11 @@ class Signup extends Component {
                     },
                     ]}
                 >
-                    <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+                    <Input 
+                    prefix={<UserOutlined className="site-form-item-icon" />} 
+                    placeholder="Username" 
+                    value={this.state.username}
+                    onChange={this.handleChange}/>
                 </Form.Item>
 
                 <Form.Item
@@ -110,10 +137,11 @@ class Signup extends Component {
                     prefix={<LockOutlined className="site-form-item-icon" />}
                     type="password"
                     placeholder="Password"
+                    // onChange={this.handleChange}
                     />
                 </Form.Item>
 
-                <Form.Item
+                {/* <Form.Item
                     name="email"
                     rules={[
                     {
@@ -127,10 +155,14 @@ class Signup extends Component {
                     ]}
                 >
                     <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" />
-                </Form.Item>
+                </Form.Item> */}
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" className="register-form-button">
+                    <Button 
+                    type="primary"
+                    htmlType="submit" 
+                    className="register-form-button"
+                    onClick={this.handleSubmit}>
                     Register
                     </Button>
                     
