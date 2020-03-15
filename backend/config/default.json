@@ -7,7 +7,15 @@
     "collections": ["users", "images", "comments", "facedata"]
   },
   "cors": {
-    "domain": "http://localhost:3000"
+    "origin": ["http://localhost:3000"],
+    "methods": [
+      "PUT", "GET", "POST", "DELETE"
+    ],
+    "allowedHeaders": [
+      "X-Requested-With", "Content-Type", "Accept", "Authorization", "Access-Control-Allow-Credentials"
+    ],
+    "credentials": true,
+    "optionsSuccessStatus": 200
   },
   "uploads": "uploads/",
   "sessionSecret": "E3DY6ncIjG5FJs79z1TD",
