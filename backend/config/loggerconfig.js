@@ -14,7 +14,7 @@ const logger = winston.createLogger({
     transports: [
         // - Write all logs with level `error` and below to `error.log`
         new winston.transports.File({ filename: config.get('logger.errorLogFilePath'), level: 'error' }),
-        new winston.transports.File({ filename: config.get('logger.infoLogFilePath'), level: 'info' })
+        new winston.transports.File({ filename: config.get('logger.infoLogFilePath'), level: 'info', flags: 'w'})
     ]
 });
 
