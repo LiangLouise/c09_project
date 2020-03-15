@@ -5,6 +5,7 @@ import MyTimeline from './../timeline/timeline';
 import Upload from '../utilities/uploadImage';
 import Login from '../utilities/login';
 import Signup from '../utilities/signup';
+import SearchBar from '../utilities/search';
 import { Layout, Menu, Breadcrumb, Button, Row, Col  } from 'antd';
 import { UserOutlined} from '@ant-design/icons';
 import Logo from './../../Logo.png';
@@ -33,8 +34,11 @@ class Home extends Component{
               <Menu.Item key="2">My Timeline</Menu.Item>
               <Menu.Item key="3">Map</Menu.Item>
               <Menu.Item key="4">Upload</Menu.Item>
-              <Menu.Item style ={{float:"right"}}><Signup/></Menu.Item>
-              <Menu.Item style ={{float:"right"}}><Login/></Menu.Item>
+              
+              <div className="signup" style={{float:"right"}}><Signup/></div>
+              <div className="login" style={{float:"right"}}><Login/></div>
+              <div className="searchbar" style={{float:"right"}}><SearchBar/></div>
+
               
               
               
