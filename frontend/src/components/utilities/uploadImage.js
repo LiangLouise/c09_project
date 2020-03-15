@@ -134,7 +134,7 @@ class UploadImage extends Component{
                         <Upload.Dragger 
                         name="files"
                         onChange={this.handleUpload}
-                        action='https://www.mocky.io/v2/5cc8019d300000980a055e76'>
+                        action='http://localhost:5000/api/images'>
                         <p className="ant-upload-drag-icon">
                         <InboxOutlined />
                         </p>

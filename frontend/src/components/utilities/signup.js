@@ -77,6 +77,9 @@ class Signup extends Component {
             .then(res => {
                 console.log(res);
             });
+        this.setState({
+            visible: false,
+        });
     }
   
     handleCancel = e => {

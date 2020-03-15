@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import axios from 'axios';
 import { Form,
     Button,
     Checkbox,
@@ -24,7 +24,7 @@ const titleLayout = {
       },
 }
 
-  const validateMessages = {
+const validateMessages = {
     required: 'This field is required!',
     types: {
       email: 'Not a validate email!',
@@ -35,22 +35,34 @@ const titleLayout = {
     },
   };
 
-  const onFinish = values => {
+const onFinish = values => {
     console.log('Success:', values);
   };
 
-  const onFinishFailed = errorInfo => {
+const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
   };
 
+const API_END_POINT = "http://localhost:5000"
+
 class Login extends Component{
     
-    state = { visible: false };
+  constructor(){
+    super()
+    this.state = { 
+      visible: false,
+      username: '',
+      password: '',
+    };
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  
 
-    showModal = () => {
-      this.setState({
+  showModal = () => {
+    this.setState({
         visible: true,
       });
+      
     };
   
     // handleOk = e => {
@@ -59,6 +71,25 @@ class Login extends Component{
     //     visible: false,
     //   });
     // };
+
+    handleChange = (e) =>
+        this.setState({ [e.target.name]: e.target.value });
+
+    handleSubmit = (e) => {
+        e.preventDefault();
+        let user = {
+            username: this.state.username,
+            password: this.state.password
+        }
+        axios
+            .post(API_END_POINT+'/signin/', user)
+            .then(res => {
+                console.log(res);
+            });
+        this.setState({
+            visible: false,
+        });
+    }
   
     handleCancel = e => {
       console.log(e);
@@ -93,7 +124,7 @@ class Login extends Component{
                 </Form.Item>
 
                 <Form.Item
-                    name="username"
+                    name="username_item"
                     rules={[
                     {
                         required: true,
@@ -101,11 +132,16 @@ class Login extends Component{
                     },
                     ]}
                 >
-                    <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Username" />
+                    <Input prefix={<UserOutlined 
+                    className="site-form-item-icon" />} 
+                    placeholder="Username" 
+                    name="username"
+                    value={this.state.username}
+                    onChange={this.handleChange}/>
                 </Form.Item>
 
                 <Form.Item
-                    name="password"
+                    name="password_item"
                     rules={[
                     {
                         required: true,
@@ -117,6 +153,9 @@ class Login extends Component{
                     prefix={<LockOutlined className="site-form-item-icon" />}
                     type="password"
                     placeholder="Password"
+                    name="password"
+                    value={this.state.password}
+                    onChange={this.handleChange}
                     />
                 </Form.Item>
                 <Form.Item>
@@ -128,7 +167,10 @@ class Login extends Component{
                 </Form.Item>
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" className="login-form-button">
+                    <Button type="primary" 
+                    htmlType="submit" 
+                    className="login-form-button"
+                    onClick={this.handleSubmit}>
                     Log in
                     </Button>
                     
