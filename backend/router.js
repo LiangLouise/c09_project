@@ -1,7 +1,8 @@
 const express = require('express');
 const {signin, signout, signup} = require('./controllers/auth');
 const {uploadImage} = require('./controllers/uploads');
-const {isAuthenticated, checkId, checkUsername, sanitizeContent, checkImage, notEmptyFile} = require('./utils/validation.js');
+const {addFriend, removeFriend, getFriend} = require('./controllers/friend');
+const validation = require('./utils/validation.js');
 const multer = require('multer');
 const config = require('config');
 
@@ -13,11 +14,17 @@ module.exports = function (app) {
     const authRoutes = express.Router();
 
     app.use("/", authRoutes);
-    authRoutes.post('/signup', checkUsername, signup);
-    authRoutes.post('/signin', checkUsername, signin);
+    authRoutes.post('/signup', validation.checkUsername, signup);
+    authRoutes.post('/signin', validation.checkUsername, signin);
     authRoutes.get('/signout', signout);
 
     app.use("/api", apiRoutes);
-    apiRoutes.post('/images', isAuthenticated, upload.single('picture'), notEmptyFile, checkImage, uploadImage);
+    apiRoutes.post('/images', validation.isAuthenticated, upload.single('picture'), validation.notEmptyFile, validation.checkImage, uploadImage);
 
+    // POST /api/friend {"username": "Friend username to add"}
+    apiRoutes.post('/friend', validation.isAuthenticated, validation.checkUsername, addFriend);
+    // DELETE /api/friend/{friend username to remove}
+    apiRoutes.delete('/friend/:username/', validation.isAuthenticated, validation.checkParamsUsername, removeFriend);
+    // GET /api/friend?page=number
+    apiRoutes.get('/friend', validation.isAuthenticated, validation.checkQueryUsername, validation.checkPageNumber, removeFriend);
 };
