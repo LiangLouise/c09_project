@@ -82,6 +82,12 @@ const formItemLayout = {
   },
 };
 
+const buttonLayout = {
+    wrapperCol: {
+        span: 14,
+        offset: 4,
+        }
+}
 const titleLayout = {
     wrapperCol: {
         span: 14,
@@ -96,7 +102,7 @@ const normFile = e => {
       return e;
     }
   
-    return e && e.fileList;
+    return e && e.fileList.slice(-9);
   };
 
 const API_END_POINT = process.env.REACT_APP_BASE_URL;
@@ -112,8 +118,8 @@ class UploadImage extends Component{
         this.state = { 
             loading: false,
             title: '',
-            author: '',
             description: '',
+            fileList: [],
             file: null,
             // location: {
             //     latitude: null,
@@ -127,26 +133,37 @@ class UploadImage extends Component{
     }
 
 
-
     handleChange = (e) =>
         this.setState({ [e.target.name]: e.target.value });
 
 
     handleUpload = info =>{
+        // Get this url from response in real world.
+        // let fileList = [...info.fileList];
+        // fileList = fileList.slice(-9);
+
+        // fileList = fileList.map(file => {
+        //     if (file.response) {
+        //       // Component will show file.url as link
+        //       file.url = file.response.url;
+        //     }
+        //     return file;
+        //   });
+
         if (info.file.status === 'uploading'){
             this.setState({loading: true});
             return;
         }
         if (info.file.status === 'done'){
-            // Get this url from response in real world.
+    
+            this.state.fileList.push(info.file)
             message.success(`${info.file.name} file uploaded successfully.`);
             this.setState({
-                loading:false,
-                file: info.file});
-
-            console.log("file "+this.state.file)
-            
-            
+                loading: false,
+                fileList: this.state.fileList,
+   
+            });
+            console.log("fileList "+this.state.fileList)
         }
         else if (info.file.status === 'error') {
             message.error(`${info.file.name} file upload failed.`);
@@ -173,12 +190,15 @@ class UploadImage extends Component{
     
     customSubmit = (e) => {
         e.preventDefault();
-        let data= new FormData()
-        data.append('file', this.state.file)
-        data.append('title', this.state.title)
-        data.append('description', this.state.description)
+
+        let data= new FormData();
+        for (let i=0; i<this.state.fileList.length; i++){
+            data.append('picture', this.state.fileList[i].originFileObj);
+        }
+        data.append('title', this.state.title);
+        data.append('description', this.state.description);
         console.log("data "+data)
-        let formDataToBufferObject = formDataToBuffer(data)
+
 
         const config= {
             headers: {
@@ -188,7 +208,7 @@ class UploadImage extends Component{
         }
         
         axios
-            .post(API_END_POINT+'/api/images', formDataToBufferObject, config)
+            .post(API_END_POINT+'/api/images', data, config)
             .then((res) => {
                 console.log("1 "+res.data)
                 console.log("2 "+this.state.file)
@@ -213,13 +233,15 @@ class UploadImage extends Component{
                 
 
                 <Form.Item label="Select to Upload">
-                    <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile} > 
+                    <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile}> 
                     {/* <Upload.Dragger name="files" action="/upload.do"> */}
                         <Upload.Dragger 
                         name="picture"
                         onChange={this.handleUpload}
                         customRequest={dummyRequest}
-                        withCredentials={true}>
+                        fileList={this.state.fileList}
+                        withCredentials={true}
+                        multiple={true}>
                         <p className="ant-upload-drag-icon">
                         <InboxOutlined />
                         </p>
@@ -270,10 +292,7 @@ class UploadImage extends Component{
                 </Form.Item>
 
                 <Form.Item
-                    wrapperCol={{
-                    span: 14,
-                    offset: 4,
-                    }}
+                    {...buttonLayout}
                 >
                     <Button 
                     type="primary" 
