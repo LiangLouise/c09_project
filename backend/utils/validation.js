@@ -26,17 +26,19 @@ exports.sanitizeContent = function(req, res, next) {
 };
 
 exports.notEmptyFile = function(req, res, next) {
-    if(!req.file) return res.status(400).end("Not find the file");
+    if(!req.files) return res.status(400).end("Not find the files");
     next();
 };
 
 exports.checkImage = function(req, res, next) {
-    if (
-        !req.file.mimetype.includes("jpeg") &&
-        !req.file.mimetype.includes("jpg") &&
-        !req.file.mimetype.includes("png") &&
-        !req.file.mimetype.includes("gif")
-    ) return res.status(400).end("Not a Image File");
+    for (let file of req.files) {
+        if (
+            !req.files[i].mimetype.includes("jpeg") &&
+            !file.mimetype.includes("jpg") &&
+            !file.mimetype.includes("png") &&
+            !file.mimetype.includes("gif")
+        ) return res.status(400).end("Having a File is not image");
+    }
     next();
 };
 

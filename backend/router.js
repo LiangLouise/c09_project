@@ -1,13 +1,11 @@
 const express = require('express');
 const {signin, signout, signup} = require('./controllers/auth');
-const {uploadImage} = require('./controllers/uploads');
+const {createPost} = require('./controllers/posts');
 const {addFriend, removeFriend, getFriend, isFriend} = require('./controllers/users');
 const validation = require('./utils/validation.js');
-const multer = require('multer');
-const config = require('config');
+const {postUploads} = require('./config/multerconfig');
+// const config = require('config');
 
-
-let upload = multer({dest: config.get("uploads")});
 
 module.exports = function (app) {
     const apiRoutes = express.Router();
@@ -19,8 +17,8 @@ module.exports = function (app) {
     authRoutes.get('/signout', signout);
 
     app.use("/api", apiRoutes);
-    apiRoutes.post('/images', validation.isAuthenticated, upload.single('picture'),
-        validation.notEmptyFile, validation.checkImage, uploadImage);
+    apiRoutes.post('/images', validation.isAuthenticated, postUploads,
+        validation.notEmptyFile, validation.checkImage, createPost);
 
     // POST /api/friend {"username": "Friend username to add"}
     apiRoutes.post('/friend', validation.isAuthenticated, validation.checkUsername('body'), addFriend);

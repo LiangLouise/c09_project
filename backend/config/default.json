@@ -4,7 +4,7 @@
     "url": "mongodb://localhost:27017",
     "dbname": "moment",
     "connectionString": "localhost:27017/moment",
-    "collections": ["users", "images", "comments", "facedata"]
+    "collections": ["users", "posts", "comments", "facedata"]
   },
   "cors": {
     "origin": ["http://localhost:3000"],
@@ -17,7 +17,10 @@
     "credentials": true,
     "optionsSuccessStatus": 200
   },
-  "uploads": "uploads/",
+  "uploads": {
+    "post_pic_dest": "uploads/",
+    "max_post_pic_number": 9
+  },
   "sessionSecret": "E3DY6ncIjG5FJs79z1TD",
   "logger": {
     "level": "info",
