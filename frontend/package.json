@@ -8,8 +8,10 @@
     "@testing-library/user-event": "^7.2.1",
     "antd": "^4.0.2",
     "axios": "^0.19.2",
+    "form-data": "^3.0.0",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
+    "react-geolocated": "^3.0.1",
     "react-scripts": "3.4.0"
   },
   "scripts": {
