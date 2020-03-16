@@ -11,11 +11,65 @@ import { Form,
 import { InboxOutlined } from '@ant-design/icons';
 import TextArea from 'antd/lib/input/TextArea';
 
-function getBase64(img, callback) {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result));
-    reader.readAsDataURL(img);
-  }
+
+// function getBase64(img, callback) {
+//     const reader = new FileReader();
+//     reader.addEventListener('load', () => callback(reader.result));
+//     reader.readAsDataURL(img);
+//   }
+
+function formDataToBuffer( formData ) {
+    let dataBuffer = new Buffer( 0 );
+    let boundary   = formData.getBoundary();
+    for( let i = 0, len = formData._streams.length; i < len; i++ ) {
+
+        if( typeof formData._streams[i] !== 'function' ) {
+
+            dataBuffer = this.bufferWrite( dataBuffer, formData._streams[i] );
+
+            // The item have 2 more "-" in the boundary. No clue why
+            // rfc7578 specifies (4.1): "The boundary is supplied as a "boundary"
+            //    parameter to the multipart/form-data type.  As noted in Section 5.1
+            //    of [RFC2046], the boundary delimiter MUST NOT appear inside any of
+            //    the encapsulated parts, and it is often necessary to enclose the
+            //    "boundary" parameter values in quotes in the Content-Type header
+            //    field."
+            // This means, that we can use the boundary as unique value, indicating that
+            // we do NOT need to add a break (\r\n). These are added by data-form package.
+            //
+            // As seen in this example (https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST#Example)
+            // the boundary is preceded by 2x "-". If thus --Boundary exists, do not add the break.
+            if( typeof formData._streams[i] !== 'string' || formData._streams[i].substring( 2, boundary.length + 2 ) !== boundary ) {
+                dataBuffer = bufferWrite( dataBuffer, "\r\n" );
+            }
+        }
+    }
+
+    // Close the request
+    dataBuffer = bufferWrite( dataBuffer, '--' + boundary + '--' );
+
+    return dataBuffer;
+}
+
+function bufferWrite( buffer, data ) {
+
+    let addBuffer;
+    if( typeof data === 'string' ) {
+        addBuffer = Buffer.from( data );
+    }
+    else if( typeof data === 'object' && Buffer.isBuffer( data ) ) {
+        addBuffer = data;
+    }
+
+    return Buffer.concat( [buffer, addBuffer] );
+}
+
+
+const dummyRequest = ({ file, onSuccess }) => {
+    setTimeout(() => {
+      onSuccess("ok");
+    }, 0);
+  };
 
 const { Title, Paragraph, Text } = Typography;
 const { Option } = Select;
@@ -47,9 +101,9 @@ const normFile = e => {
 
 const API_END_POINT = process.env.REACT_APP_BASE_URL;
 
-const onFinish = values => {
-    console.log('Received values of form: ', values);
-  };
+// const onFinish = values => {
+//     console.log('Received values of form: ', values);
+//   };
 
 
 class UploadImage extends Component{
@@ -60,16 +114,23 @@ class UploadImage extends Component{
             title: '',
             author: '',
             description: '',
-            imageUrl: '',
+            file: null,
             // location: {
             //     latitude: null,
             //     longtitude: null,
             // },
         };
-        this.handleSubmit = this.handleSubmit.bind(this);
+        // this.handleSubmit = this.handleSubmit.bind(this);
+        this.customSubmit = this.customSubmit.bind(this);
 
         
     }
+
+
+
+    handleChange = (e) =>
+        this.setState({ [e.target.name]: e.target.value });
+
 
     handleUpload = info =>{
         if (info.file.status === 'uploading'){
@@ -79,12 +140,12 @@ class UploadImage extends Component{
         if (info.file.status === 'done'){
             // Get this url from response in real world.
             message.success(`${info.file.name} file uploaded successfully.`);
-            getBase64(info.file.originFileObj, imageUrl =>
-                this.setState({
-                imageUrl,
+            this.setState({
                 loading:false,
-                }),
-            );
+                file: info.file});
+
+            console.log("file "+this.state.file)
+            
             
         }
         else if (info.file.status === 'error') {
@@ -92,34 +153,57 @@ class UploadImage extends Component{
         }
     }
 
-    handleChange = (e) =>
-        this.setState({ [e.target.name]: e.target.value });
+    // handleSubmit = (e) => {
+    //     e.preventDefault();
+    //     let image = {
+    //         title: this.state.title,
+    //         author: this.state.author,
+    //         description: this.state.description,
+    //         imageUrl: this.state.imageUrl,
+    //         // location: this.state.location,
+    //     }
 
-    handleSubmit = (e) => {
-        e.preventDefault();
-        let image = {
-            title: this.state.title,
-            author: this.state.author,
-            description: this.state.description,
-            imageUrl: this.state.imageUrl,
-            // location: this.state.location,
-        }
-        console.log("image "+ image.imageUrl)
-        axios
-             .post(API_END_POINT+'/api/images', image)
-             .then(res => {
-                 console.log(res);
-             })
+    //     axios
+    //          .post(API_END_POINT+'/api/images', image, {withCredentials: true})
+    //          .then(res => {
+    //              console.log(res);
+    //          })
 
-    }
+    // }
     
+    customSubmit = (e) => {
+        e.preventDefault();
+        let data= new FormData()
+        data.append('file', this.state.file)
+        data.append('title', this.state.title)
+        data.append('description', this.state.description)
+        console.log("data "+data)
+        let formDataToBufferObject = formDataToBuffer(data)
+
+        const config= {
+            headers: {
+                "content-type": "multipart/form-data",
+            },
+            withCredentials: true
+        }
+        
+        axios
+            .post(API_END_POINT+'/api/images', formDataToBufferObject, config)
+            .then((res) => {
+                console.log("1 "+res.data)
+                console.log("2 "+this.state.file)
+        }).catch((err) => {
+            console.log(err)
+        })
+        
+    }
     
     render(){
         return(
             <Form
                 name="uploadImage"
                 {...formItemLayout}
-                onFinish={this.handleSubmit}
+                // onFinish={this.customSubmit}
             >
                 <Form.Item {...titleLayout}>
                     <Typography>
@@ -132,9 +216,10 @@ class UploadImage extends Component{
                     <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile} > 
                     {/* <Upload.Dragger name="files" action="/upload.do"> */}
                         <Upload.Dragger 
-                        name="files"
+                        name="picture"
                         onChange={this.handleUpload}
-                        action='http://localhost:5000/api/images'>
+                        customRequest={dummyRequest}
+                        withCredentials={true}>
                         <p className="ant-upload-drag-icon">
                         <InboxOutlined />
                         </p>
@@ -173,7 +258,7 @@ class UploadImage extends Component{
                     ]}
                 >
                     <TextArea 
-                    name="Description"
+                    name="description"
                     placeholder="Description" 
                     value={this.state.description}
                     onChange={this.handleChange}/>
@@ -193,7 +278,7 @@ class UploadImage extends Component{
                     <Button 
                     type="primary" 
                     htmlType="submit"
-                    onClick={this.handleSubmit}>
+                    onClick={this.customSubmit}>
                     Submit
                     </Button>
                 </Form.Item>
