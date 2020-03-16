@@ -4,7 +4,7 @@ const db = require("../services/dbservice");
 exports.createPost = function (req, res, next) {
     db.posts.insert({
             title: req.body.title,
-            username: req.username,
+            username: req.session.username,
             picture: req.files,
             dis: req.body.description,
             time: Date.now()

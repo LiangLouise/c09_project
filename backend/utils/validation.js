@@ -33,7 +33,7 @@ exports.notEmptyFile = function(req, res, next) {
 exports.checkImage = function(req, res, next) {
     for (let file of req.files) {
         if (
-            !req.files[i].mimetype.includes("jpeg") &&
+            !file.mimetype.includes("jpeg") &&
             !file.mimetype.includes("jpg") &&
             !file.mimetype.includes("png") &&
             !file.mimetype.includes("gif")

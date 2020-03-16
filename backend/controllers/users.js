@@ -2,7 +2,7 @@ const db = require("../services/dbservice");
 
 exports.addFriend = function(req, res, next) {
     // Get user name from session
-    let username = req.username;
+    let username = req.session.username;
     // Get friend name from req body
     let friendToAdd = req.body.username;
     // Find Two users
@@ -22,7 +22,7 @@ exports.addFriend = function(req, res, next) {
 
 exports.removeFriend = function(req, res, next) {
     // Get user name from session
-    let username = req.username;
+    let username = req.session.username;
     // Get friend name from req body
     let friendToRemove = req.params.username;
     // Find Two users
@@ -42,7 +42,7 @@ exports.removeFriend = function(req, res, next) {
 
 exports.getFriend = function(req, res, next) {
     // Get user name from session
-    let username = req.username;
+    let username = req.session.username;
     let page = req.query.page;
     db.users.findOne(
             {_id: username},
