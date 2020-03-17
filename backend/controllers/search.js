@@ -8,7 +8,8 @@ exports.searchUser = function (req, res, next) {
         .skip(page * MAX_USER_PER_PAGE)
         .limit(MAX_USER_PER_PAGE).toArray(function(err, users) {
             if (err) return res.status(500).end(err);
-            return res.json({users: users.map((user) => user._id)});
-
+            // Only Return the usernames other than the current user
+            let usernames = users.map(user => user._id).filter(id => id !== req.session.username);
+            return res.json({users: usernames});
     });
 };
