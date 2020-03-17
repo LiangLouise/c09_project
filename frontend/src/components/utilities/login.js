@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { geolocated } from "react-geolocated";
 import { Form,
     Button,
     Checkbox,
@@ -43,10 +44,10 @@ const onFinishFailed = errorInfo => {
     console.log('Failed:', errorInfo);
   };
 
-class Login extends Component{
+class Login extends React.Component{
     
-  constructor(){
-    super()
+  constructor(props){
+    super(props)
     this.state = { 
       visible: false,
       username: '',
@@ -73,8 +74,7 @@ class Login extends Component{
     handleChange = (e) =>
         this.setState({ [e.target.name]: e.target.value });
 
-    handleSubmit = (e) => {
-        e.preventDefault();
+    handleSubmit = () => {
         let user = {
             username: this.state.username,
             password: this.state.password
@@ -87,6 +87,7 @@ class Login extends Component{
         this.setState({
             visible: false,
         });
+        this.props.form.resetFields()
     }
   
     handleCancel = e => {
@@ -94,6 +95,7 @@ class Login extends Component{
       this.setState({
         visible: false,
       });
+      this.props.form.resetFields()
     };
 
     
@@ -113,7 +115,7 @@ class Login extends Component{
             <Form
                 name="login"
                 {...formItemLayout}
-                onFinish={onFinish}
+                onFinish={this.handleSubmit}
             >
                 <Form.Item {...titleLayout}>
                     <Typography>
@@ -168,7 +170,7 @@ class Login extends Component{
                     <Button type="primary" 
                     htmlType="submit" 
                     className="login-form-button"
-                    onClick={this.handleSubmit}>
+                    >
                     Log in
                     </Button>
                     
