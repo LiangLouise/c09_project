@@ -66,7 +66,7 @@ exports.checkIfFriend = function (path) {
     return function (req, res, next) {
         db.users.find({_id: req.session.username, friend_ids: req[path].username}).count(function(err, count) {
             if (err) return res.status(500).end(err);
-            if (count !== 1) return res.status(403).end("Not Friend");
+            if (count !== 1) return res.status(409).end("Not Friend");
         });
         next();
     }

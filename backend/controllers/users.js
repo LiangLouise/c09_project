@@ -48,7 +48,7 @@ exports.removeFriend = function(req, res, next) {
     });
 };
 
-exports.getFriend = function(req, res, next) {
+exports.getFriendList = function(req, res, next) {
     // Get user name from session
     let username = req.session.username;
     let page = req.query.page;
@@ -57,7 +57,7 @@ exports.getFriend = function(req, res, next) {
             {friend_ids: 1 , friend_ids: {$slice: [10*page, 10]}},
             function(err, user) {
         if (err) return res.status(500).end(err);
-        return res.status(200).end(user.friend_ids);
+        return res.status(200).json({users: user.friend_ids});
     })
 };
 

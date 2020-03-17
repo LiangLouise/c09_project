@@ -1,7 +1,7 @@
 const express = require('express');
 const {signin, signout, signup} = require('./controllers/auth');
 const {createPost, getPostByUser, getPostById, getPostPicture} = require('./controllers/posts');
-const {addFriend, removeFriend, getFriend, isFriend} = require('./controllers/users');
+const {addFriend, removeFriend, getFriendList, isFriend} = require('./controllers/users');
 const {searchUser} = require("./controllers/search");
 const validation = require('./utils/validation.js');
 const {postUploads} = require('./config/multerconfig');
@@ -33,16 +33,27 @@ module.exports = function (app) {
         validation.checkUsername('query'), validation.checkIfFriend('query'), getPostByUser);
 
     // POST /api/friend {"username": "Friend username to add"}
+    // Res: Status code: 409 -> Is friend already
+    //                   200 -> Success
     apiRoutes.post('/friend', validation.isAuthenticated, validation.checkUsername('body'), addFriend);
+
     // DELETE /api/friend/{friend username to remove}
-    apiRoutes.delete('/friend/:username/', validation.isAuthenticated, validation.checkUsername('params'), removeFriend);
+    // Res: Status code: 409 -> Not friend yet
+    //                   200 -> Success
+    apiRoutes.delete('/friend/:username/', validation.isAuthenticated, validation.checkUsername('params'),
+        validation.checkIfUserExisting('params'), validation.checkIfFriend('params'), removeFriend);
+
+    // GET friend list
     // GET /api/friend?page=number
-    apiRoutes.get('/friend', validation.isAuthenticated, validation.checkPageNumber, getFriend);
+    // Res: {"users": [Array of user ids]}
+    apiRoutes.get('/friend', validation.isAuthenticated, validation.checkPageNumber, getFriendList);
     // GET /api/isfriend?username={the name to test}
+    // Res: {"isFriend": true || false}
     apiRoutes.get('/isfriend', validation.isAuthenticated, validation.checkUsername('query'), isFriend);
 
 
     // Search User
     // GET /api/search?username={user name}&page={number of page}
+    // Res: {"users": [Array of user ids]}
     apiRoutes.get('/search', validation.isAuthenticated, validation.checkUsername('query'), validation.checkPageNumber, searchUser);
 };
