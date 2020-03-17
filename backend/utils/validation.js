@@ -93,3 +93,10 @@ exports.isObjectId = function (path) {
       else return res.status(400).end('Not a valid Mongo Object Id');
   }
 };
+
+exports.notSameUser = function(path) {
+    return function (req, res, next) {
+        if (req[path].username === req.session.username) return res.status(400).end("Same user, not Allowed");
+        next();
+    }
+};

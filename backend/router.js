@@ -1,6 +1,6 @@
 const express = require('express');
 const {signin, signout, signup} = require('./controllers/auth');
-const {createPost, getPostByUser, getPostById, getPostPicture} = require('./controllers/posts');
+const {createPost, getPostsByUser, getPostById, getPostPicture} = require('./controllers/posts');
 const {addFriend, removeFriend, getFriendList, isFriend} = require('./controllers/friendship');
 const {searchUser} = require("./controllers/search");
 const {getAvatar, updateAvatar} = require("./controllers/profile");
@@ -30,19 +30,20 @@ module.exports = function (app) {
 
     // GET /api/posts?username={friend username}&page={page number}
     // ONLY CAN VIEW FRIEND'S POSTS
-    apiRoutes.get('/posts', validation.isAuthenticated,
-        validation.checkUsername('query'), validation.checkIfFriend('query'), getPostByUser);
+    apiRoutes.get('/posts', validation.isAuthenticated, validation.checkUsername('query'), getPostsByUser);
 
     // POST /api/friend {"username": "Friend username to add"}
     // Res: Status code: 409 -> Is friend already
     //                   200 -> Success
-    apiRoutes.post('/friend', validation.isAuthenticated, validation.checkUsername('body'), addFriend);
+    apiRoutes.post('/friend', validation.isAuthenticated, validation.checkUsername('body'),
+        validation.notSameUser('body'), validation.checkIfUserExisting('body'), addFriend);
 
     // DELETE /api/friend/{friend username to remove}
     // Res: Status code: 409 -> Not friend yet
     //                   200 -> Success
     apiRoutes.delete('/friend/:username/', validation.isAuthenticated, validation.checkUsername('params'),
-        validation.checkIfUserExisting('params'), validation.checkIfFriend('params'), removeFriend);
+        validation.notSameUser('params'), validation.checkIfUserExisting('params'),
+        validation.checkIfFriend('params'), removeFriend);
 
     // GET friend list
     // GET /api/friend?page=number
