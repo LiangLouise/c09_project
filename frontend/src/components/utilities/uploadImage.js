@@ -61,9 +61,9 @@ const API_END_POINT = process.env.REACT_APP_BASE_URL;
 //   };
 
 
-class UploadImage extends Component{
-    constructor(){
-        super();
+class UploadImage extends React.Component{
+    constructor(props){
+        super(props);
         this.state = { 
             loading: false,
             title: '',
@@ -157,8 +157,7 @@ class UploadImage extends Component{
 
     // }
     
-    customSubmit = (e) => {
-        e.preventDefault();
+    customSubmit = () => {
 
         let data= new FormData();
         for (let i=0; i<this.state.fileList.length; i++){
@@ -191,7 +190,7 @@ class UploadImage extends Component{
             <Form
                 name="uploadImage"
                 {...formItemLayout}
-                // onFinish={this.customSubmit}
+                onFinish={this.customSubmit}
             >
                 <Form.Item {...titleLayout}>
                     <Typography>
@@ -201,7 +200,14 @@ class UploadImage extends Component{
                 
 
                 <Form.Item label="Select to Upload">
-                    <Form.Item name="dragger" valuePropName="fileList" getValueFromEvent={normFile}> 
+                    <Form.Item name="Images" 
+                    valuePropName="fileList" 
+                    getValueFromEvent={normFile}
+                    rules={[
+                        {
+                            required: true,
+                        },
+                        ]}> 
                     {/* <Upload.Dragger name="files" action="/upload.do"> */}
                         <Upload.Dragger 
                         name="picture"
@@ -269,7 +275,7 @@ class UploadImage extends Component{
                     <Button 
                     type="primary" 
                     htmlType="submit"
-                    onClick={this.customSubmit}>
+                    >
                     Submit
                     </Button>
                 </Form.Item>

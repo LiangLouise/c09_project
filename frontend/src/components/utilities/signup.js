@@ -41,9 +41,9 @@ const onFinishFailed = errorInfo => {
   };
 
 
-class Signup extends Component {
-    constructor(){
-        super();
+class Signup extends React.Component {
+    constructor(props){
+        super(props);
         this.state = { 
             visible: false,
             username: '',
@@ -64,8 +64,7 @@ class Signup extends Component {
     handleChange = (e) =>
         this.setState({ [e.target.name]: e.target.value });
 
-    handleSubmit = (e) => {
-        e.preventDefault();
+    handleSubmit = () => {
         let user = {
             username: this.state.username,
             password: this.state.password
@@ -167,7 +166,7 @@ class Signup extends Component {
                     type="primary"
                     htmlType="submit" 
                     className="register-form-button"
-                    onClick={this.handleSubmit}>
+                    >
                     Register
                     </Button>
                     
