@@ -1,6 +1,6 @@
 const express = require('express');
 const {signin, signout, signup} = require('./controllers/auth');
-const {createPost, getPostsByUser, getPostById, getPostPicture} = require('./controllers/posts');
+const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById} = require('./controllers/posts');
 const {addFriend, removeFriend, getFriendList, isFriend} = require('./controllers/friendship');
 const {searchUser} = require("./controllers/search");
 const {getAvatar, updateAvatar} = require("./controllers/profile");
@@ -19,14 +19,27 @@ module.exports = function (app) {
     authRoutes.get('/signout', signout);
 
     app.use("/api", apiRoutes);
+    // POST /api/posts
+    // Body formData
     apiRoutes.post('/posts', validation.isAuthenticated, postUploads,
         validation.notEmptyFiles, validation.checkImageFiles, createPost);
 
     // GET /api/posts/{PostID}/
+    // Res: Status code: 403 -> Not Owner
+    //                   404 -> Post doesn't exists
+    //                   200 -> Success
     apiRoutes.get('/posts/:id/', validation.isAuthenticated, validation.isObjectId('params'), getPostById);
 
     // GET /api/posts/images/{image id}/
+    // You can get the id from the previous one request
     apiRoutes.get('/posts/images/:id/', validation.isAuthenticated, validation.isObjectId('params'), getPostPicture);
+
+    // DELETE /api/posts/{PostID}/
+    // ONLY OWNER CAN DELETE THEIR OWN POSTS
+    // Res: Status code: 403 -> Not Owner
+    //                   404 -> Post doesn't exists
+    //                   200 -> Success
+    apiRoutes.delete('/posts/:id/', validation.isAuthenticated, validation.isObjectId('params'), deletePostById);
 
     // GET /api/posts?username={friend username}&page={page number}
     // ONLY CAN VIEW FRIEND'S POSTS

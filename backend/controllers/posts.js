@@ -3,6 +3,8 @@ const db = require("../services/dbservice");
 const Post = require("../model/post");
 const {sendFileOption} = require("../config/multerconfig");
 const MAX_POST_PER_PAGE = 10;
+const fs = require('fs');
+
 
 exports.createPost = function (req, res, next) {
     db.images.insertMany(req.files, {ordered: true},
@@ -23,11 +25,40 @@ exports.createPost = function (req, res, next) {
     });
 };
 
+exports.deletePostById = function (req, res, next) {
+    let id = {_id: ObjectId(req.params.id)};
+    db.posts.findOne(id, function(err, post) {
+        if (err) return res.status(500).end(err);
+        if (!post) return res.status(404).end("Post doesn't exits");
+        // Check if the current user is user himself
+        if (req.session.username !== post.username) return res.status(403).end("You are not the owner of the post");
+        db.posts.findOne(id, function (err) {
+            if (err) return res.status(500).end(err);
+            let pic_ids = post.pictures.map(pic => pic._id);
+            db.images.find({_id : {$in: pic_ids}}, function(err, pics) {
+                if (err) return res.status(500).end(err);
+                for (let pic of pics){
+                    fs.unlink(pic.path, err => {
+                        if (err) return res.status(500).end("Unable to delete the file");
+                    })
+                }
+                db.images.remove({_id : {$in: pic_ids}}, function (err) {
+                    if (err) return res.status(500).end(err);
+                    db.posts.remove(id, function (err) {
+                        if (err) return res.status(500).end(err);
+                        return res.status(200).end();
+                    });
+                });
+            });
+        })
+    });
+};
+
 exports.getPostById = function (req, res, next) {
     let id = req.params.id;
     db.posts.findOne({_id: ObjectId(id)}, function(err, post) {
-        if(err) return res.status(500).end(err);
-
+        if (err) return res.status(500).end(err);
+        if (!post) return res.status(404).end("Post doesn't exits");
         // Check if the current user is user himself or the friends
         if (req.session.username === post.username) return res.json(post);
         else {
