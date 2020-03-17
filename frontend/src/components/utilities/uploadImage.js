@@ -177,7 +177,7 @@ class UploadImage extends Component{
         }
         
         axios
-            .post(API_END_POINT+'/api/images', data, config)
+            .post(API_END_POINT+'/api/posts', data, config)
             .then((res) => {
                 console.log(res)
         }).catch((err) => {
