@@ -57,10 +57,9 @@ class Login extends React.Component{
     }
   
     showModal = () => {
-      this.setState({
-          visible: true,
-        });
-        
+        this.setState({
+              visible: true,
+          }); 
     };
   
     // handleOk = e => {
@@ -71,7 +70,7 @@ class Login extends React.Component{
     // };
 
     onReset = () => {
-      this.formRef.current.resetFields();
+        this.formRef.current.resetFields();
     }
 
     handleChange = (e) =>
@@ -110,87 +109,87 @@ class Login extends React.Component{
     render(){
         return(
             <div>
-          <Button type="default" onClick={this.showModal}>
-            Log in
-          </Button>
-          <Modal
-            visible={this.state.visible}
-            // onOk={this.handleOk}
-            onCancel={this.handleCancel}
-            footer={null}
-          >
-            <Form
-                name="login"
-                ref={this.formRef}
-                {...formItemLayout}
-                onFinish={this.handleSubmit}
-                ref={this.formRef}
+            <Button type="default" onClick={this.showModal}>
+                Log in
+            </Button>
+            <Modal
+                visible={this.state.visible}
+                // onOk={this.handleOk}
+                onCancel={this.handleCancel}
+                footer={null}
             >
-                <Form.Item {...titleLayout}>
-                    <Typography>
-                        <Title>Login</Title>
-                    </Typography>
-                </Form.Item>
+              <Form
+                  name="login"
+                  ref={this.formRef}
+                  {...formItemLayout}
+                  onFinish={this.handleSubmit}
+                  ref={this.formRef}
+              >
+                  <Form.Item {...titleLayout}>
+                      <Typography>
+                          <Title>Login</Title>
+                      </Typography>
+                  </Form.Item>
 
-                <Form.Item
-                    name="username_item"
-                    rules={[
-                    {
-                        required: true,
-                        message: 'Please input your Username!',
-                    },
-                    ]}
-                >
-                    <Input prefix={<UserOutlined 
-                    className="site-form-item-icon" />} 
-                    placeholder="Username" 
-                    name="username"
-                    value={this.state.username}
-                    onChange={this.handleChange}/>
-                </Form.Item>
+                  <Form.Item
+                      name="username_item"
+                      rules={[
+                      {
+                          required: true,
+                          message: 'Please input your Username!',
+                      },
+                      ]}
+                  >
+                      <Input prefix={<UserOutlined 
+                      className="site-form-item-icon" />} 
+                      placeholder="Username" 
+                      name="username"
+                      value={this.state.username}
+                      onChange={this.handleChange}/>
+                  </Form.Item>
 
-                <Form.Item
-                    name="password_item"
-                    rules={[
-                    {
-                        required: true,
-                        message: 'Please input your Password!',
-                    },
-                    ]}
-                >
-                    <Input
-                    prefix={<LockOutlined className="site-form-item-icon" />}
-                    type="password"
-                    placeholder="Password"
-                    name="password"
-                    value={this.state.password}
-                    onChange={this.handleChange}
-                    />
-                </Form.Item>
-                <Form.Item>
-                    <Form.Item name="remember" valuePropName="checked" noStyle>
-                    <Checkbox>Remember me</Checkbox>
-                    </Form.Item>
+                  <Form.Item
+                      name="password_item"
+                      rules={[
+                      {
+                          required: true,
+                          message: 'Please input your Password!',
+                      },
+                      ]}
+                  >
+                      <Input
+                      prefix={<LockOutlined className="site-form-item-icon" />}
+                      type="password"
+                      placeholder="Password"
+                      name="password"
+                      value={this.state.password}
+                      onChange={this.handleChange}
+                      />
+                  </Form.Item>
+                  <Form.Item>
+                      <Form.Item name="remember" valuePropName="checked" noStyle>
+                      <Checkbox>Remember me</Checkbox>
+                      </Form.Item>
 
 
-                </Form.Item>
+                  </Form.Item>
 
-                <Form.Item>
-                    <Button type="primary" 
-                    htmlType="submit" 
-                    className="login-form-button"
-                    >
-                    Log in
-                    </Button>
-                    
-                </Form.Item>
+                  <Form.Item>
+                      <Button type="primary" 
+                      htmlType="submit" 
+                      className="login-form-button"
+                      >
+                      Log in
+                      </Button>
+                      
+                  </Form.Item>
 
-                <Form.Item>
-                    Or <a href="">Register</a>
-                </Form.Item>
-            </Form>
-            </Modal>
-            </div>
+                  <Form.Item>
+                      Or <a href="">Register</a>
+                  </Form.Item>
+              </Form>
+              </Modal>
+              </div>
         );
         
     }
