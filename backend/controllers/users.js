@@ -7,7 +7,7 @@ exports.addFriend = function(req, res, next) {
     let friendToAdd = req.body.username;
     // Find Two users
     db.users.find({_id: {$in: [username, friendToAdd]}}, function(err, users) {
-        if(err) return res.status(500).end(err);
+        if (err) return res.status(500).end(err);
         if (users.length !== 2) return res.status(404).end("No User " + friendToAdd);
         if ((users[0]._id === username && users[0].friend_ids.indexOf(users[1]._id) === -1)
             ||
@@ -31,7 +31,7 @@ exports.removeFriend = function(req, res, next) {
     let friendToRemove = req.params.username;
     // Find Two users
     db.users.find({_id: {$in: [username, friendToRemove]}}, function(err, users) {
-        if(err) return res.status(500).end(err);
+        if (err) return res.status(500).end(err);
         if (users.length !== 2) return res.status(404).end("No User " + friendToRemove);
         if ((users[0]._id === username && users[0].friend_ids.indexOf(users[1]._id) !== -1)
             ||
@@ -56,7 +56,7 @@ exports.getFriend = function(req, res, next) {
             {_id: username},
             {friend_ids: 1 , friend_ids: {$slice: [10*page, 10]}},
             function(err, user) {
-        if(err) return res.status(500).end(err);
+        if (err) return res.status(500).end(err);
         return res.status(200).end(user.friend_ids);
     })
 };
