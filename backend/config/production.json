@@ -31,5 +31,10 @@
     "default_filePath": "/default/default_avatar.png",
     "default_mimetype": "image/png",
     "uploads_dest": "/var/www/moment.ninja.avatars/"
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "ttl": 260
   }
 }
