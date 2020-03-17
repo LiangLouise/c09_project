@@ -1,5 +1,6 @@
 const validator = require('validator');
 const db = require("../services/dbservice");
+const ObjectId = require('mongoose').Types.ObjectId;
 
 exports.isAuthenticated = function(req, res, next) {
     if (!req.session.username) return res.status(401).end("access denied");
@@ -54,9 +55,26 @@ exports.checkIfUserExisting = function (path){
         if (req[path].username) username = req[path].username;
         else return res.status(400).end("request missing username");
         db.users.find({_id: username}).count(function (err, count) {
-            if(err) return res.status(500).end(err);
+            if (err) return res.status(500).end(err);
             if (count !== 1) return res.status(404).end("User not Find");
         });
         next();
     }
+};
+
+exports.checkIfFriend = function (path) {
+    return function (req, res, next) {
+        db.users.find({_id: req.session.username, friend_ids: req[path].username}).count(function(err, count) {
+            if (err) return res.status(500).end(err);
+            if (count !== 1) return res.status(403).end("Not Friend");
+        });
+        next();
+    }
+};
+
+exports.isObjectId = function (path) {
+  return function (req, res, next) {
+      if (ObjectId.isValid(req[path].id)) next();
+      else return res.status(400).end('Not a valid Mongo Object Id');
+  }
 };

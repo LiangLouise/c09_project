@@ -56,12 +56,11 @@ class Login extends React.Component{
         this.handleSubmit = this.handleSubmit.bind(this);
     }
   
-
-  showModal = () => {
-    this.setState({
-        visible: true,
-      });
-      
+    showModal = () => {
+      this.setState({
+          visible: true,
+        });
+        
     };
   
     // handleOk = e => {
@@ -90,9 +89,12 @@ class Login extends React.Component{
             });
         this.setState({
             visible: false,
+            username: '',
+            password: ''
         });
         this.onReset();
     }
+
   
     handleCancel = e => {
       console.log(e);
@@ -100,6 +102,7 @@ class Login extends React.Component{
         visible: false,
       });
       this.onReset();
+
     };
 
     
@@ -121,6 +124,7 @@ class Login extends React.Component{
                 ref={this.formRef}
                 {...formItemLayout}
                 onFinish={this.handleSubmit}
+                ref={this.formRef}
             >
                 <Form.Item {...titleLayout}>
                     <Typography>

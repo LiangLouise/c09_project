@@ -4,7 +4,7 @@
     "url": "mongodb://localhost:27017",
     "dbname": "moment",
     "connectionString": "localhost:27017/moment",
-    "collections": ["users", "posts", "comments", "facedata"]
+    "collections": ["users", "posts", "comments", "facedata", "images"]
   },
   "cors": {
     "origin": ["http://localhost:3000"],

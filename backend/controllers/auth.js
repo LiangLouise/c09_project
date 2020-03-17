@@ -40,9 +40,6 @@ exports.signin = function (req, res, next) {
 // curl -b cookie.txt -c cookie.txt localhost:3000/signout/
 exports.signout = function (req, res, next) {
     req.session.destroy();
-    res.setHeader('Set-Cookie', c_configs.cookie.serialize('username', '', {
-        path : '/',
-        maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
-    }));
+    res.setHeader('Set-Cookie', c_configs.cookie.serialize('username', '', c_configs.cookie_config));
     res.redirect('/');
 };
