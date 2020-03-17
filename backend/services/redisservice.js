@@ -14,7 +14,7 @@ function SessionStore() {
     return new RedisStore({
         host: config.get('redis.host'),
         port: config.get('redis.port'),
-        client: client,
+        client: redisClient,
         ttl: config.get('redis.ttl')
     });
 }

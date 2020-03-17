@@ -7,7 +7,7 @@ const router = require('./router.js');
 const config = require('config');
 const logger = require('./config/loggerconfig');
 const cors = require('cors');
-const SessionStore = require('./services/redisservice');
+
 // Set CORS rules
 let options = config.get("cors");
 app.use(cors(options));
@@ -16,22 +16,24 @@ app.use(bodyParser.json());
 
 // Only Serve static file in production environment
 if (process.env.NODE_ENV === 'production') {
+    const SessionStore = require('./services/redisservice');
     app.use(express.static('static'));
     app.set('trust proxy', true);
     app.use(session({
         store: SessionStore(),
-        secret: config.get("sessionSecret"),
+        secret: config.get('session.secret'),
         resave: false,
         saveUninitialized: true,
         proxy: true,
         cookie: {
             secure: false,
-            sameSite: true
+            sameSite: true,
+            maxAge: config.get('session.maxAge')
         }
     }));
 } else {
     app.use(session({
-        secret: config.get("sessionSecret"),
+        secret: config.get('session.secret'),
         resave: false,
         saveUninitialized: true,
         cookie: {
