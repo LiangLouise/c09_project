@@ -42,6 +42,7 @@ const onFinishFailed = errorInfo => {
 
 
 class Signup extends React.Component {
+    formRef = React.createRef();
     constructor(props){
         super(props);
         this.state = { 
@@ -54,13 +55,17 @@ class Signup extends React.Component {
     
   
     showModal = () => {
-      this.setState({
-        visible: true,
-        // username: '',
-        // password: '',
-      });
+        this.setState({
+          visible: true,
+          // username: '',
+          // password: '',
+        });
     };
   
+    onReset = () => {
+        this.formRef.current.resetFields();
+    }
+
     handleChange = (e) =>
         this.setState({ [e.target.name]: e.target.value });
 
@@ -77,13 +82,15 @@ class Signup extends React.Component {
         this.setState({
             visible: false,
         });
+        this.onReset();
     }
   
     handleCancel = e => {
-      console.log(e);
-      this.setState({
-        visible: false,
-      });
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+        this.onReset();
     };
   
     render() {
@@ -102,6 +109,7 @@ class Signup extends React.Component {
                 name="register"
                 {...formItemLayout}
                 onFinish={this.handleSubmit}
+                ref={this.formRef}
             >
                 <Form.Item {...titleLayout}>
                     <Typography>
