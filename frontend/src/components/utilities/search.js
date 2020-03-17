@@ -1,34 +1,11 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
-import { Input, Modal, Table } from 'antd';
+import { Input, Modal, Table, Row } from 'antd';
 import axios from 'axios';
 
 const { Search } = Input;
-
-const data2 = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-      tags: ['loser'],
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park',
-      tags: ['cool', 'teacher'],
-    },
-  ];
+const username = '';
 
 class SearchBar extends Component{
     constructor(){
@@ -37,48 +14,102 @@ class SearchBar extends Component{
             visible: false,
             query:'',
             result: [],
-            action: '',
             data: [],
-            columns:[
-                {
-                    title: 'Name',
-                    dataIndex: 'name',
-                    key: 'name',
-                    render: text => <a>{text}</a>,
-                },
-                {
-                    title: 'Action',
-                    dataIndex: 'action',
-                    key: 'action',
-                    render: () => (
-                      <span>
-                        <a style={{ marginRight: 16 }}>{this.state.action} </a>
-                      </span>
-                    ),
-                  },
-            ]
+            sortOrder: null,
+            // columns:[
+            //     {
+            //         title: 'Name',
+            //         dataIndex: 'name',
+            //         key: 'name',
+            //         sortOrder: 'ascend',
+            //         sorter: (a, b) => a.name.localeCompare(b.name),
+            //         render: text => <a
+            //                             data-name={text}
+            //                         >
+            //                             {text}
+            //                         </a>,
+            //     },
+            //     {
+            //         title: 'Action',
+            //         dataIndex: 'action',
+            //         key: 'action',
+            //         render: (text, record) => (
+            //           <span>
+            //             <a 
+            //                 style={{ marginRight: 16 }}
+            //                 onClick={this.onRequest}
+            //                 data-name={record.name}
+            //                 data-action={record.action}
+            //             >
+            //                 {text} 
+            //             </a>
+            //           </span>
+            //         )
+            //     },
+            // ],
         }
     }
 
+
+    onRequest = (e) => {
+        let username = e.currentTarget.dataset.name;
+        let action = e.currentTarget.dataset.action;
+        let data = this.state.data;
+
+        console.log(username, action);
+        if (action === "Friend"){
+            let req = {username:username};
+            console.log(req)
+            axios
+                .post(process.env.REACT_APP_BASE_URL+
+                    '/api/friend/',
+                    req,
+                    {withCredentials: true})
+                .then(res => {
+                    console.log(res.data)
+
+                })
+        }else{
+            let req = {username:username};
+            console.log(req)
+            axios
+                .delete(process.env.REACT_APP_BASE_URL+
+                    '/api/friend/'+username,
+                    {withCredentials: true})
+                .then(res => {
+                    console.log(res.data)
+                    
+                })   
+        }
+        this.temp();
+        
+    }
     onChange = (e) => {
         this.setState({ [e.target.name]: e.target.value });
     }
 
+    setSortOrder = (pagination, filters, sorter) => {
+        console.log('Various parameters', pagination, filters, sorter);
+        console.log(sorter.order)
+        this.setState({
+            sortedInfo:sorter
+        });
+      };
+      
     hideModal = () => {
         this.setState({
               visible: false,
+              query: '',
           }); 
     };
     
     showModal = () => {
-        console.log("show modal "+this.state.data)
         this.setState({
               visible: true,
           });
            
     };
-    
-    getUsers = () => {
+    temp = () => {
         let username = this.state.query;
         axios
             .get(process.env.REACT_APP_BASE_URL+
@@ -87,6 +118,7 @@ class SearchBar extends Component{
             .then(res => {
                 let data = [];
                 let temp = {};
+                let action = '';
                 this.setState({
                     result:res.data.users
                 })
@@ -97,18 +129,14 @@ class SearchBar extends Component{
                             {withCredentials: true})
                         .then(res => {
                             if (res.data.isFriend){
-                                this.setState({
-                                    action:"Unfriend"
-                                })
+                                action = "Unfriend"
                             }else{
-                                this.setState({
-                                    action:"Friend"
-                                })
+                                action = "Friend"
                             }
                             temp = {
                                 'key': (i+1).toString(),
                                 'name': this.state.result[i],
-                                'action': this.state.action,
+                                'action': action,
                             }
                             data.push(temp)
                             this.setState({
@@ -116,15 +144,50 @@ class SearchBar extends Component{
                             })
                         })
                 }
-                this.showModal();
+                
             });
-        this.setState({
-            query: '',
-        });
-        
+    }
+    getUsers = () => {
+        this.temp();
+        this.showModal();
     }
     
+
     render() {
+        let sortedInfo = this.state.sortedInfo;
+        sortedInfo = sortedInfo || {};
+        const columns =[
+            {
+                title: 'Name',
+                dataIndex: 'name',
+                key: 'name',
+                sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
+                sorter: (a, b) => a.name.localeCompare(b.name),
+                render: text => <a
+                                    data-name={text}
+                                >
+                                    {text}
+                                </a>,
+            },
+            {
+                title: 'Action',
+                dataIndex: 'action',
+                key: 'action',
+                sortOrder: sortedInfo.columnKey === 'action' && sortedInfo.order,
+                render: (text, record) => (
+                  <span>
+                    <a 
+                        style={{ marginRight: 16 }}
+                        onClick={this.onRequest}
+                        data-name={record.name}
+                        data-action={record.action}
+                    >
+                        {text} 
+                    </a>
+                  </span>
+                )
+            },
+        ];
         return (
             <div>
             <Search
@@ -143,8 +206,10 @@ class SearchBar extends Component{
                 footer={null}
                 >
                 <Table
-                columns={this.state.columns}
-                dataSource={this.state.data}/>
+                columns={columns}
+                dataSource={this.state.data}
+                onChange={this.setSortOrder}
+                />
             </Modal>
             </div>
         )}
