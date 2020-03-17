@@ -144,8 +144,6 @@ class Home extends Component{
 
                 <Divider></Divider>
                 <MyTimeline/>
-            
-                <SearchResults/>
               </Content>
             </Layout>
           </Layout>
