@@ -45,16 +45,16 @@ const onFinishFailed = errorInfo => {
   };
 
 class Login extends React.Component{
-    
-  constructor(props){
-    super(props)
-    this.state = { 
-      visible: false,
-      username: '',
-      password: '',
-    };
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
+    formRef = React.createRef();
+    constructor(props){
+        super(props)
+        this.state = { 
+          visible: false,
+          username: '',
+          password: '',
+        };
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
   
 
   showModal = () => {
@@ -70,6 +70,10 @@ class Login extends React.Component{
     //     visible: false,
     //   });
     // };
+
+    onReset = () => {
+      this.formRef.current.resetFields();
+    }
 
     handleChange = (e) =>
         this.setState({ [e.target.name]: e.target.value });
@@ -87,7 +91,7 @@ class Login extends React.Component{
         this.setState({
             visible: false,
         });
-        this.props.form.resetFields()
+        this.onReset();
     }
   
     handleCancel = e => {
@@ -95,7 +99,7 @@ class Login extends React.Component{
       this.setState({
         visible: false,
       });
-      this.props.form.resetFields()
+      this.onReset();
     };
 
     
@@ -114,6 +118,7 @@ class Login extends React.Component{
           >
             <Form
                 name="login"
+                ref={this.formRef}
                 {...formItemLayout}
                 onFinish={this.handleSubmit}
             >
