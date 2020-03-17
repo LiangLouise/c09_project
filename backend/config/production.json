@@ -21,7 +21,6 @@
     "post_pic_dest": "/var/www/moment.ninja.uploads/",
     "max_post_pic_number": 9
   },
-  "sessionSecret": "E3DY6ncIjG5FJs79z1TD",
   "logger": {
     "level": "info",
     "errorLogFilePath": "/var/www/moment.ninja.log/error.log",
@@ -35,6 +34,10 @@
   "redis": {
     "host": "localhost",
     "port": 6379,
-    "ttl": 260
+    "ttl": 86400
+  },
+  "session": {
+    "maxAge": 86400,
+    "secret": "9N8EnnNJh5vgR86s"
   }
 }
