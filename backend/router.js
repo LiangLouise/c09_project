@@ -1,8 +1,9 @@
 const express = require('express');
 const {signin, signout, signup} = require('./controllers/auth');
 const {createPost, getPostByUser, getPostById, getPostPicture} = require('./controllers/posts');
-const {addFriend, removeFriend, getFriendList, isFriend} = require('./controllers/users');
+const {addFriend, removeFriend, getFriendList, isFriend} = require('./controllers/friendship');
 const {searchUser} = require("./controllers/search");
+const {getAvatar, updateAvatar} = require("./controllers/profile");
 const validation = require('./utils/validation.js');
 const {postUploads} = require('./config/multerconfig');
 // const config = require('config');
@@ -19,7 +20,7 @@ module.exports = function (app) {
 
     app.use("/api", apiRoutes);
     apiRoutes.post('/posts', validation.isAuthenticated, postUploads,
-        validation.notEmptyFile, validation.checkImage, createPost);
+        validation.notEmptyFiles, validation.checkImageFiles, createPost);
 
     // GET /api/posts/{PostID}/
     apiRoutes.get('/posts/:id/', validation.isAuthenticated, validation.isObjectId('params'), getPostById);
@@ -56,4 +57,14 @@ module.exports = function (app) {
     // GET /api/search?username={user name}&page={number of page}
     // Res: {"users": [Array of user ids]}
     apiRoutes.get('/search', validation.isAuthenticated, validation.checkUsername('query'), validation.checkPageNumber, searchUser);
+
+    // GET /api/avatar?username={name of user}
+    // Res: avatar file
+    apiRoutes.get('/avatar', validation.isAuthenticated, validation.checkUsername('query'), getAvatar);
+
+    // PUT /api/avatar
+    // FormDat:
+    //  Avatar
+    // Res: 200 success
+    apiRoutes.put('/avatar', validation.isAuthenticated, validation.notEmptyFile, validation.checkImageFile, updateAvatar);
 };

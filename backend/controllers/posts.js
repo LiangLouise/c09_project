@@ -7,7 +7,7 @@ const MAX_POST_PER_PAGE = 10;
 exports.createPost = function (req, res, next) {
     db.images.insertMany(req.files, {ordered: true},
         function (err, images) {
-        if(err) return res.status(500).end(err);
+        if (err) return res.status(500).end(err);
         let imageIDs = images.map(image => image._id);
         db.posts.insert(new Post(req, imageIDs),
             function (err, item) {

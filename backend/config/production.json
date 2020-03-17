@@ -4,7 +4,7 @@
     "url": "mongodb://localhost:27017",
     "dbname": "moment",
     "connectionString": "localhost:27017/moment",
-    "collections": ["users", "posts", "comments", "facedata", "images"]
+    "collections": ["users", "posts", "comments", "facedata", "images","avatars"]
   },
   "cors": {
     "origin": ["https://moment.ninja"],
@@ -26,5 +26,10 @@
     "level": "info",
     "errorLogFilePath": "/var/www/moment.ninja.log/error.log",
     "infoLogFilePath": "/var/www/moment.ninja.log/info.log"
+  },
+  "avatar": {
+    "default_filePath": "/default/default_avatar.png",
+    "default_mimetype": "image/png",
+    "uploads_dest": "/var/www/moment.ninja.avatars/"
   }
 }

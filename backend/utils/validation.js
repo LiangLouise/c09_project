@@ -9,7 +9,7 @@ exports.isAuthenticated = function(req, res, next) {
 
 exports.checkUsername = function(path) {
     return function (req, res, next) {
-        if (!req[path].username) return res.status(400).end("Body missing data");
+        if (!req[path].username) return res.status(400).end("Missing Username");
         if (!validator.isAlphanumeric(req[path].username)) return res.status(400).end("bad input on username");
         next();
     }
@@ -26,20 +26,35 @@ exports.sanitizeContent = function(req, res, next) {
     next();
 };
 
-exports.notEmptyFile = function(req, res, next) {
+exports.notEmptyFiles = function(req, res, next) {
     if(!req.files) return res.status(400).end("Not find the files");
     next();
 };
 
-exports.checkImage = function(req, res, next) {
+exports.checkImageFiles = function(req, res, next) {
     for (let file of req.files) {
         if (
             !file.mimetype.includes("jpeg") &&
             !file.mimetype.includes("jpg") &&
             !file.mimetype.includes("png") &&
             !file.mimetype.includes("gif")
-        ) return res.status(400).end("Having a File is not image");
+        ) return res.status(400).end("image format not supported");
     }
+    next();
+};
+
+exports.notEmptyFile = function(req, res, next) {
+    if(!req.file) return res.status(400).end("Not find the files");
+    next();
+};
+
+exports.checkImageFile = function(req, res, next) {
+    if (
+        !req.file.mimetype.includes("jpeg") &&
+        !req.file.mimetype.includes("jpg") &&
+        !req.file.mimetype.includes("png") &&
+        !req.file.mimetype.includes("gif")
+    ) return res.status(400).end("image format not supported");
     next();
 };
 

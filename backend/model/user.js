@@ -6,7 +6,7 @@ let User = function (username, password) {
     this.salt = generateSalt();
     this.hash = generateHash(password, this.salt);
     this.friend_ids = [];
-    this.profilePic = 'default.png'
+    this.avatar = {};
 };
 
 module.exports = User;
