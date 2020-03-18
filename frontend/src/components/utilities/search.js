@@ -63,7 +63,7 @@ class SearchBar extends Component{
             console.log(req)
             axios
                 .post(process.env.REACT_APP_BASE_URL+
-                    '/api/friend/',
+                    '/api/follow/',
                     req,
                     {withCredentials: true})
                 .then(res => {
@@ -75,7 +75,7 @@ class SearchBar extends Component{
             console.log(req)
             axios
                 .delete(process.env.REACT_APP_BASE_URL+
-                    '/api/friend/'+username,
+                    '/api/follow/'+username,
                     {withCredentials: true})
                 .then(res => {
                     console.log(res.data)
@@ -127,7 +127,7 @@ class SearchBar extends Component{
                 for (let i=0; i< this.state.result.length;i++){
                     axios
                         .get(process.env.REACT_APP_BASE_URL+
-                            '/api/isfriend?username='+this.state.result[i],
+                            '/api/follow/isfollowing?username='+this.state.result[i],
                             {withCredentials: true})
                         .then(res => {
                             if (res.data.isFriend){
