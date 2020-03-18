@@ -29,6 +29,7 @@ exports.createPost = function (req, res, next) {
 exports.deletePostById = function (req, res, next) {
     let post_id = {_id: ObjectId(req.params.id)};
     let sessionUsername = req.session.username;
+
     db.posts.findOne({_id: post_id}, function(err, post) {
         if (err) {
             logger.error(err);
@@ -63,6 +64,7 @@ exports.deletePostById = function (req, res, next) {
 
 exports.getPostById = function (req, res, next) {
     let id = req.params.id;
+
     db.posts.findOne({_id: ObjectId(id)}, {pictures: 0}, function(err, post) {
         if (err) {
             logger.error(err);
@@ -111,6 +113,8 @@ exports.getPostsByUser = function (req, res, next) {
 exports.getPostPicture = function (req, res, next) {
     let post_id = ObjectId(req.params.id);
     let image_index = req.params.image_index;
+    let sessionUsername = req.query.username;
+
     db.posts.findOne({_id: post_id}, function (err, post) {
         if (err) {
             logger.error(err);
@@ -118,7 +122,7 @@ exports.getPostPicture = function (req, res, next) {
         }
 
         // Check if the current user is picture owner or the friends
-        if (req.session.username !== post.username) {
+        if (sessionUsername !== post.username) {
             db.users.find({_id: req.session.username, following_ids: post.username}).count(function(err, count) {
                 if (err) {
                     logger.error(err);

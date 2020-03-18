@@ -21,8 +21,14 @@ exports.checkPageNumber = function(req, res, next) {
     next();
 };
 
-exports.sanitizeContent = function(req, res, next) {
+exports.sanitizeComment = function(req, res, next) {
     req.body.content = validator.escape(req.body.content);
+    next();
+};
+
+exports.sanitizePost = function(req, res, next) {
+    req.body.title = validator.escape(req.body.title);
+    req.body.dis = validator.escape(req.body.dis);
     next();
 };
 

@@ -4,7 +4,7 @@ const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById} 
 const {followUser, unfollowUser, getFollowingList, isFollowing, getFollowerList, isFollowedBy} = require('./controllers/followingController');
 const {searchUser} = require("./controllers/searchController");
 const {getAvatar, updateAvatar, updateFaceData, getFaceData} = require("./controllers/profileController");
-const {addComment, getCommentByPost, getCommentCountByPost} = require("./controllers/commentController");
+const {addComment, getCommentByPost, getCommentCountByPost, deleteCommentById} = require("./controllers/commentController");
 const validation = require('./utils/validation.js');
 const {postUploads} = require('./config/multerconfig');
 // const config = require('config');
@@ -25,11 +25,12 @@ module.exports = function (app) {
     app.use("/api/posts", postRoutes);
     // POST /api/posts/
     // Body formData
-    postRoutes.post('/', validation.isAuthenticated, postUploads,
+    postRoutes.post('/', validation.isAuthenticated, validation.sanitizePost, postUploads,
         validation.notEmptyFiles, validation.checkImageFiles, createPost);
 
     // POST /api/posts/{PostID}/comments/ {"content": "Your Comment Content"}
-    postRoutes.post('/:id/comments/', validation.isAuthenticated, validation.isObjectId('params'), addComment);
+    postRoutes.post('/:id/comments/', validation.isAuthenticated, validation.sanitizeComment,
+        validation.isObjectId('params'), addComment);
 
     // GET /api/posts/{PostID}/
     // Res: Status code: 403 -> Not Owner
@@ -53,6 +54,8 @@ module.exports = function (app) {
     //                   404 -> Post doesn't exists
     //                   200 -> Success
     postRoutes.delete('/:id/', validation.isAuthenticated, validation.isObjectId('params'), deletePostById);
+
+    postRoutes.delete('/comments/:id/', validation.isAuthenticated, validation.isObjectId('params'), deleteCommentById);
 
     // GET /api/posts/?username={friend username}&page={page number}
     // ONLY CAN VIEW following users' POSTS

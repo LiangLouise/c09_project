@@ -31,9 +31,9 @@ exports.addComment = function (req, res, next) {
 };
 
 exports.getCommentByPost = function (req, res, next) {
-    let post_id = req.query.post_id;
+    let post_id = ObjectId(req.query.post_id);
     let page = req.query.page;
-    db.comments.find({post_id: ObjectId(post_id)})
+    db.comments.find({post_id: post_id})
         .skip(MAX_COMMENT_PER_PAGE * page)
         .limit(MAX_COMMENT_PER_PAGE)
         .toArray(function (err, comments) {
@@ -55,4 +55,25 @@ exports.getCommentCountByPost = function (req, res, next) {
             }
             return res.json({count: count});
         });
+};
+
+exports.deleteCommentById = function (req, res, next) {
+  let comment_id = ObjectId(req.params.id);
+  let sessionUsername = req.session.username;
+
+  db.comments.find({_id: comment_id}, function (err, comment) {
+      if (err) {
+          logger.error(err);
+          return res.status(500).end();
+      }
+      if (sessionUsername !== comment.username) return res.status(403).end("You cannot delete other comments");
+      db.comments.remove({_id: comment_id}, function (err) {
+          if (err) {
+              logger.error(err);
+              return res.status(500).end();
+          }
+          return res.status(200).end();
+      });
+  });
+
 };
