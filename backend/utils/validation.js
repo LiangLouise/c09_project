@@ -77,9 +77,9 @@ exports.checkIfUserExisting = function (path){
     }
 };
 
-exports.checkIfFriend = function (path) {
+exports.checkIfFollowing = function (path) {
     return function (req, res, next) {
-        db.users.find({_id: req.session.username, friend_ids: req[path].username}).count(function(err, count) {
+        db.users.find({_id: req.session.username, following_ids: req[path].username}).count(function(err, count) {
             if (err) return res.status(500).end(err);
             if (count !== 1) return res.status(409).end("Not Friend");
         });

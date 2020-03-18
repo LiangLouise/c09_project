@@ -175,16 +175,16 @@ class SearchBar extends Component{
                 key: 'action',
                 sortOrder: sortedInfo.columnKey === 'action' && sortedInfo.order,
                 render: (text, record) => (
-                  <span>
-                    <a 
-                        style={{ marginRight: 16 }}
-                        onClick={this.onRequest}
-                        data-name={record.name}
-                        data-action={record.action}
-                    >
-                        {text} 
-                    </a>
-                  </span>
+                    <span>
+                        <a 
+                            style={{ marginRight: 16 }}
+                            onClick={this.onRequest}
+                            data-name={record.name}
+                            data-action={record.action}
+                        >
+                            {text} 
+                        </a>
+                    </span>
                 )
             },
         ];

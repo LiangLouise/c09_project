@@ -62,7 +62,7 @@ exports.getPostById = function (req, res, next) {
         // Check if the current user is user himself or the friends
         if (req.session.username === post.username) return res.json(post);
         else {
-            db.users.find({_id: req.session.username, friend_ids: post.username}).count(function(err, count) {
+            db.users.find({_id: req.session.username, following_ids: post.username}).count(function(err, count) {
                 if (err) return res.status(500).end(err);
                 if (count !== 1) return res.status(403).end("Not Friend");
                 return res.json(post);
@@ -78,7 +78,7 @@ exports.getPostsByUser = function (req, res, next) {
 
     // If the query name is not the same as the session user name, then check if they are friends
     if (sessionUsername !== queryUsername) {
-        db.users.find({_id: sessionUsername, friend_ids: queryUsername}).count(function(err, count) {
+        db.users.find({_id: sessionUsername, following_ids: queryUsername}).count(function(err, count) {
             if (err) return res.status(500).end(err);
             if (count !== 1) return res.status(409).end("Not Friend");
         });
@@ -99,7 +99,7 @@ exports.getPostPicture = function (req, res, next) {
 
         // Check if the current user is picture owner or the friends
         if (req.session.username !== image.username) {
-            db.users.find({_id: req.session.username, friend_ids: image.username}).count(function(err, count) {
+            db.users.find({_id: req.session.username, following_ids: image.username}).count(function(err, count) {
                 if (err) return res.status(500).end(err);
                 if (count !== 1) return res.status(403).end("Not Friend");
                 res.setHeader('Content-Type', image.mimetype);

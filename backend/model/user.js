@@ -6,6 +6,8 @@ let User = function (username, password) {
     this.salt = generateSalt();
     this.hash = generateHash(password, this.salt);
     this.friend_ids = [];
+    this.follower_ids = [];
+    this.following_ids = [];
     this.avatar = {};
 };
 
