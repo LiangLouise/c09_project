@@ -3,7 +3,7 @@ const {signin, signout, signup} = require('./controllers/authController');
 const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById} = require('./controllers/postController');
 const {followUser, unfollowUser, getFollowingList, isFollowing, getFollowerList, isFollowedBy} = require('./controllers/followingController');
 const {searchUser} = require("./controllers/searchController");
-const {getAvatar, updateAvatar} = require("./controllers/profileController");
+const {getAvatar, updateAvatar, updateFaceData, getFaceData} = require("./controllers/profileController");
 const validation = require('./utils/validation.js');
 const {postUploads} = require('./config/multerconfig');
 // const config = require('config');
@@ -95,4 +95,8 @@ module.exports = function (app) {
     //  Avatar
     // Res: 200 success
     profileRoutes.put('/avatar/', validation.isAuthenticated, validation.notEmptyFile, validation.checkImageFile, updateAvatar);
+
+    profileRoutes.put('/facedata/', validation.isAuthenticated, updateFaceData);
+
+    profileRoutes.get('/facedata/', validation.isAuthenticated, getFaceData);
 };
