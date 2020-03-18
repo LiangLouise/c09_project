@@ -3,10 +3,12 @@ import 'antd/dist/antd.css';
 import './home.css';
 import MyTimeline from './../timeline/timeline';
 import Upload from '../utilities/uploadImage';
-import Login from '../utilities/login';
-import Signup from '../utilities/signup';
+import Login from '../auth/login';
+import Signup from '../auth/signup';
 import SearchBar from '../utilities/search';
+import Logout from '../auth/Logout';
 import { Layout, Menu, Breadcrumb, Button, Row, Col, AutoComplete, Input, Divider } from 'antd';
+import cookie from 'react-cookies'
 
 import { UserOutlined} from '@ant-design/icons';
 import Logo from './../../Logo.png';
@@ -24,45 +26,36 @@ class Home extends Component{
     super();
 
     this.state={
-        friends: [
-            {
-              id: "1",
-               name: "friend1",
-            },
-            {
-              id: "2",
-              name: "friend2",
-            }
-             
-        ],
-
-        availableFriends: [
-          {
-            id: "1",
-             name: "friend1",
-          },
-          {
-            id: "2",
-            name: "friend2",
-          },
-          {
-            id: "3",
-             name: "friend3",
-          },
-          {
-            id: "4",
-            name: "friend4",
-          }
-
-        ]
- 
+      isLoggedIn: (cookie.load('username') !== "" && cookie.load('username') !== undefined)
     };
+    this.rightButtons = this.rightButtons.bind(this);
+    this.loginHandler = this.loginHandler.bind(this);
+  }
 
+  loginHandler() {
+    this.setState({isLoggedIn: !this.state.isLoggedIn});
+  }
 
-}
+  rightButtons () {
+    if (!this.state.isLoggedIn) {
+      return <div style={{float:"right"}}>
+        <div id="signup" style={{float:"right"}}><Signup action={this.loginHandler}/></div>
+        <div id="login" style={{float:"right"}}><Login action={this.loginHandler}/></div>
+        <div id="searchbar" style={{float:"right"}}><SearchBar/></div>
+      </div>;
+    };
+    
+    return <div style={{float:"right"}}>
+      <div id="profile" style={{float:"right"}}><Button ghost={true}>{cookie.load('username')}</Button></div>
+      <div id="logout" style={{float:"right"}}><Logout action={this.loginHandler}/></div>
+    </div>;  
+  }
+
 
   render(){
-   return(
+    let buttons = this.rightButtons();
+
+    return(
           <Layout >
           <Header className="header">
             <img className="icon" src={Icon}/>
@@ -78,11 +71,11 @@ class Home extends Component{
               <Menu.Item key="3">Map</Menu.Item>
               <Menu.Item key="4">Upload</Menu.Item>
               
-              <div id="signup" style={{float:"right"}}><Signup/></div>
+              {/* <div id="signup" style={{float:"right"}}><Signup/></div>
               <div id="login" style={{float:"right"}}><Login/></div>
-              <div id="searchbar" style={{float:"right"}}><SearchBar/></div>
+              <div id="searchbar" style={{float:"right"}}><SearchBar/></div> */}
               
-              
+              {buttons}
 
               {/* <AutoComplete
                   dropdownClassName="certain-category-search-dropdown"
@@ -102,7 +95,7 @@ class Home extends Component{
           </Header>
 
           <Layout>
-            <Sider width={200} className="site-layout-background">
+            {/* <Sider width={200} className="site-layout-background">
               <Menu
                 mode="inline"
                 defaultSelectedKeys={['1']}
@@ -126,7 +119,7 @@ class Home extends Component{
                 </SubMenu>
 
               </Menu>
-            </Sider>
+            </Sider> */}
             <Layout style={{ padding: '0 24px 24px' }}>
               <Breadcrumb style={{ margin: '16px 0' }}>
                 <Breadcrumb.Item>Moments</Breadcrumb.Item>

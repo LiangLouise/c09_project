@@ -13,6 +13,8 @@ exports.signup = function(req, res, next) {
         if (err) return res.status(500).end(err);
         if (user) return res.status(409).end("username " + username + " already exists");
         db.users.insert(new User(username, password), function () {
+            // start a session after sign up
+            req.session.username = user._id;
             return res.json("user " + username + " signed up");
         });
     });
@@ -41,5 +43,5 @@ exports.signin = function (req, res, next) {
 exports.signout = function (req, res, next) {
     req.session.destroy();
     res.setHeader('Set-Cookie', c_configs.cookie.serialize('username', '', c_configs.cookie_config));
-    res.redirect('/');
+    return res.status(200).end();
 };
