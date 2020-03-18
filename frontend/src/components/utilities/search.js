@@ -130,7 +130,7 @@ class SearchBar extends Component{
                             '/api/follow/isfollowing?username='+this.state.result[i],
                             {withCredentials: true})
                         .then(res => {
-                            if (res.data.isFriend){
+                            if (res.data.isFollowing){
                                 action = "Unfollow"
                             }else{
                                 action = "Follow"
