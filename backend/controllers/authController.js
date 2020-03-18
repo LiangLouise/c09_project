@@ -10,11 +10,18 @@ exports.signup = function(req, res, next) {
     let password = req.body.password;
 
     db.users.findOne({_id: username}, function (err, user) {
-        if (err) return res.status(500).end(err);
+        if (err) {
+            logger.error(err);
+            return res.status(500).end();
+        }
         if (user) return res.status(409).end("username " + username + " already exists");
-        db.users.insert(new User(username, password), function () {
+        db.users.insert(new User(username, password), function (err, user) {
+            if (err) {
+                logger.error(err);
+                return res.status(500).end();
+            }
             // start a session after sign up
-            req.session.username = user._id;
+            req.session.username = username;
             return res.json("user " + username + " signed up");
         });
     });
@@ -26,7 +33,10 @@ exports.signin = function (req, res, next) {
     let password = req.body.password;
     // retrieve user from the database
     db.users.findOne({_id: username}, function (err, user) {
-        if (err) return res.status(500).end(err);
+        if (err) {
+            logger.error(err);
+            return res.status(500).end();
+        }
         if (!user) return res.status(401).end("access denied");
         if (user.hash !== generateHash(password, user.salt)) return res.status(401).end("access denied");
         // start a session
