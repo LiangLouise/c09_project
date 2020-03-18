@@ -6,7 +6,7 @@ import axios from 'axios';
 import cookie from 'react-cookies'
 
 const { Search } = Input;
-let username = cookie.load('username');
+
 
 class SearchBar extends Component{
     constructor(){

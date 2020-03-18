@@ -56,9 +56,9 @@ class Signup extends React.Component {
   
     showModal = () => {
         this.setState({
-          visible: true,
-          // username: '',
-          // password: '',
+            visible: true,
+            // username: '',
+            // password: '',
         });
     };
   

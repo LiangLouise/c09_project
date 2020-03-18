@@ -3,8 +3,12 @@ import './timeline.css';
 import 'antd/dist/antd.css';
 import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button, Carousel} from 'antd';
 import moment from 'moment';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { MessageOutlined} from '@ant-design/icons';
 import Image from '../utilities/image';
+import axios from 'axios';
+import cookie from 'react-cookies'
+
 
 
 const { Meta } = Card;
@@ -15,57 +19,81 @@ const onFinish = values => {
     console.log('Success:', values);
   };
 
-  const formItemLayout = {
+const formItemLayout = {
     wrapperCol: {
         span: 24,
         }
     
 };
 
+const style = {
+    height: 30,
+    border: "1px solid green",
+    margin: 6,
+    padding: 8
+  };
+
+  let username = cookie.load('username');
+
 class MyTimeline extends Component{
     constructor(){
         super();
 
         this.state={
-            posts: [
-                {
-                    src: "https://media.discordapp.net/attachments/336909060026793984/689524638254104633/49669943311_911121ab0f_o.jpg?width=702&height=468",
-                    title: "Title",
-                    description: "Author",
-                    date: "2017",
-                    comments:[
-                        {
-                            src: "https://cdn.discordapp.com/attachments/303411519738085377/687180087891984410/16128483_10207514720855500_495867723_n.png",
-                            content: "so funny lol"
-                        }
-                    ]
-                },
-                {
-                    src: "https://media.discordapp.net/attachments/336909060026793984/689524638254104633/49669943311_911121ab0f_o.jpg?width=702&height=468",
-                    title: "when the corona merch sells",
-                    description: "zerojaw",
-                    date: "2019",
-                    comments:[
-                        {
-                            src: "https://cdn.discordapp.com/attachments/303411519738085377/687166367929073727/20517284_1384331048330396_573196050_o.png",
-                            content: "yum yum"
-                        }
-                    ]
-                },
-            ]
-
+            page: 0,
+            posts: [],
+            comments: [],
+            items: Array.from({ length: 20 })
             
         };
     }
+    fetchData = () => {
+        let data = []
+        let temp = {}
+        axios
+            .get(process.env.REACT_APP_BASE_URL+
+            '/api/posts/?username='+username+'&page='+this.state.page,
+            {withCredentials: true})
+            .then(res =>{
+                for (let i=0; i< res.data.length;i++){
+                    console.log(res.data[i])
+                    temp = {
+                        'title': res.data[i].title,
+                        'description': res.data[i].dis,
+                        'pictures': res.data[i].pictures,
+                        'date': Date(res.data[i].time) ,
+                    }
+                    data.push(temp)
+                }   
+                this.setState({
+                    posts: this.state.posts.concat(JSON.parse(JSON.stringify(data))),
+                    page: this.state.page+1
+                })
+            });
+            
+        console.log(this.state.posts)
+    }
+    fetchMoreData = () => {
+        // a fake async api call like which sends
+        // 20 more records in 1.5 secs
+        setTimeout(() => {
+            console.log(this.state.page)
+            this.fetchData();
+        }, 1500);
+        console.log(this.state.posts)
+    };
     
     render(){
         return(
             <div className="timeline">
-                
-                {this.state.posts.map((post) =>{
-                    return(
-  
-                        
+                <InfiniteScroll
+                    dataLength={this.state.posts.length}
+                    next={this.fetchMoreData}
+                    hasMore={true}
+                    style={this.style}
+                    loader={<h4>Loading...</h4>}
+                >
+                    {this.state.posts.map((post) => (
                         <Row>
                         <Col span={2}>{post.date}</Col>
                         <Col span={10}>
@@ -78,6 +106,9 @@ class MyTimeline extends Component{
                                 </div>
                                 <div>
                                     <img src= "https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png"/>
+                                </div>
+                                <div>
+                                    <img src ="https://cdn.discordapp.com/attachments/303411519738085377/687166367929073727/20517284_1384331048330396_573196050_o.png"/>
                                 </div>
                             </Carousel>}
                             >
@@ -92,17 +123,17 @@ class MyTimeline extends Component{
                             
                         </Col>
                         <Col span={12}>
-                            <Content>
+                            {/* <Content>
                                 {post.comments.map((comment) =>{
                                     return(
                                         <Comment
-                                    // actions={actions}
-                                    author={<a>user</a>}
-                                    avatar={
-                                    <Avatar
-                                        src={comment.src}
-                                        alt="Han Solo"
-                                    />
+                                            // actions={actions}
+                                            author={<a>user</a>}
+                                            avatar={
+                                            <Avatar
+                                            src={comment.src}
+                                            alt="Han Solo"
+                                        />
                                     }
                                     content={
                                         <p>
@@ -132,13 +163,14 @@ class MyTimeline extends Component{
                                                 </Button>
                                             </Form.Item> 
                                         </Form>
-                                    </Content>
+                            </Content> */}
                         </Col>
                         <Divider></Divider>
                         </Row>
+                    ))}
+                </InfiniteScroll>
                    
-                    ); 
-                })}
+           
             </div>
         );    
     } 

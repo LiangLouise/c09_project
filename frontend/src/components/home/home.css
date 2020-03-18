@@ -24,13 +24,15 @@
     background: #001529;
 }
 
-.searchbar{
+#searchbar{
   margin: 0 10px 0 10px;
 }
-.login{
+#login{
   margin: 0 10px 0 10px;
+  visibility: visible;
 }
-.signup{
+#signup{
   margin: 0 10px 0 10px;
+  visibility: visible;
 }
   

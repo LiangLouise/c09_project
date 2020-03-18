@@ -6,7 +6,6 @@ import Upload from '../utilities/uploadImage';
 import Login from '../utilities/login';
 import Signup from '../utilities/signup';
 import SearchBar from '../utilities/search';
-import SearchResults from '../utilities/searchResults';
 import { Layout, Menu, Breadcrumb, Button, Row, Col, AutoComplete, Input, Divider } from 'antd';
 
 import { UserOutlined} from '@ant-design/icons';
@@ -17,6 +16,7 @@ import Icon from './../../Icon.png';
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 //const { Meta } = Card;
+
 
 
 class Home extends Component{
@@ -78,9 +78,9 @@ class Home extends Component{
               <Menu.Item key="3">Map</Menu.Item>
               <Menu.Item key="4">Upload</Menu.Item>
               
-              <div className="signup" style={{float:"right"}}><Signup/></div>
-              <div className="login" style={{float:"right"}}><Login/></div>
-              <div className="searchbar" style={{float:"right"}}><SearchBar/></div>
+              <div id="signup" style={{float:"right"}}><Signup/></div>
+              <div id="login" style={{float:"right"}}><Login/></div>
+              <div id="searchbar" style={{float:"right"}}><SearchBar/></div>
               
               
 

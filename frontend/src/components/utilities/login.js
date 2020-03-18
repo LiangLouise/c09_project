@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import cookie from 'react-cookies'
 //import { geolocated } from "react-geolocated";
 import { Form,
     Button,
@@ -10,6 +11,7 @@ import { Form,
 
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
+let username = cookie.load('username');
 const { Title } = Typography;
 const formItemLayout = {
     wrapperCol: {
@@ -109,7 +111,10 @@ class Login extends React.Component{
     render(){
         return(
             <div>
-            <Button type="default" onClick={this.showModal}>
+            <Button 
+              type="default" 
+              onClick={this.showModal}
+              ghost={true}>
                 Log in
             </Button>
             <Modal
