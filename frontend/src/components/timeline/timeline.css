@@ -1,0 +1,14 @@
+/* For demo */
+.ant-carousel .slick-slide {
+    text-align: center;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+
+img{
+    max-width: 100%;
+    max-height: 300px;
+    margin:auto;
+    display: block; /* remove extra space below image */
+}

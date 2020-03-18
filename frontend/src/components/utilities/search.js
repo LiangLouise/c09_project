@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
-import { Input, Modal, Table, Row } from 'antd';
+import { Input, Modal, Table, Row,Button } from 'antd';
 import axios from 'axios';
+import cookie from 'react-cookies'
 
 const { Search } = Input;
-const username = '';
+let username = cookie.load('username');
 
 class SearchBar extends Component{
     constructor(){
@@ -15,6 +16,7 @@ class SearchBar extends Component{
             query:'',
             result: [],
             data: [],
+            page: 0,
             sortOrder: null,
             // columns:[
             //     {
@@ -54,10 +56,9 @@ class SearchBar extends Component{
     onRequest = (e) => {
         let username = e.currentTarget.dataset.name;
         let action = e.currentTarget.dataset.action;
-        let data = this.state.data;
 
         console.log(username, action);
-        if (action === "Friend"){
+        if (action === "Follow"){
             let req = {username:username};
             console.log(req)
             axios
@@ -81,7 +82,7 @@ class SearchBar extends Component{
                     
                 })   
         }
-        this.temp();
+        this.constructTable();
         
     }
     onChange = (e) => {
@@ -104,16 +105,17 @@ class SearchBar extends Component{
     };
     
     showModal = () => {
+        console.log(cookie.load('username'))
         this.setState({
               visible: true,
           });
            
     };
-    temp = () => {
+    constructTable = () => {
         let username = this.state.query;
         axios
             .get(process.env.REACT_APP_BASE_URL+
-                '/api/search/?username='+ username+'&page=0',
+                '/api/search/?username='+username+'&page='+this.state.page,
                 {withCredentials: true})
             .then(res => {
                 let data = [];
@@ -129,9 +131,9 @@ class SearchBar extends Component{
                             {withCredentials: true})
                         .then(res => {
                             if (res.data.isFriend){
-                                action = "Unfriend"
+                                action = "Unfollow"
                             }else{
-                                action = "Friend"
+                                action = "Follow"
                             }
                             temp = {
                                 'key': (i+1).toString(),
@@ -148,7 +150,7 @@ class SearchBar extends Component{
             });
     }
     getUsers = () => {
-        this.temp();
+        this.constructTable();
         this.showModal();
     }
     
@@ -163,7 +165,8 @@ class SearchBar extends Component{
                 key: 'name',
                 sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
                 sorter: (a, b) => a.name.localeCompare(b.name),
-                render: text => <a
+                render: text => 
+                                <a
                                     data-name={text}
                                 >
                                     {text}
@@ -175,16 +178,17 @@ class SearchBar extends Component{
                 key: 'action',
                 sortOrder: sortedInfo.columnKey === 'action' && sortedInfo.order,
                 render: (text, record) => (
-                  <span>
-                    <a 
-                        style={{ marginRight: 16 }}
-                        onClick={this.onRequest}
-                        data-name={record.name}
-                        data-action={record.action}
-                    >
-                        {text} 
-                    </a>
-                  </span>
+                    <span>
+                        <Button 
+                            style={{ marginRight: 16 }}
+                            onClick={this.onRequest}
+                            data-name={record.name}
+                            data-action={record.action}
+                        >
+                            {text} 
+                        </Button>
+                    </span>
+                  
                 )
             },
         ];
