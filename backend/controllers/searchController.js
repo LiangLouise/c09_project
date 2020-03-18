@@ -1,5 +1,6 @@
 const db = require("../services/dbservice");
 const MAX_USER_PER_PAGE = 10;
+const logger = require('../config/loggerconfig');
 
 exports.searchUser = function (req, res, next) {
     let userRegex = "^" + req.query.username + ".*";
@@ -7,7 +8,10 @@ exports.searchUser = function (req, res, next) {
     db.users.find({_id: {$regex: userRegex}}).sort({_id: 1})
         .skip(page * MAX_USER_PER_PAGE)
         .limit(MAX_USER_PER_PAGE).toArray(function(err, users) {
-            if (err) return res.status(500).end(err);
+            if (err) {
+                logger.error(err);
+                return res.status(500).end();
+            }
             // Only Return the usernames other than the current user
             let usernames = users.map(user => user._id).filter(id => id !== req.session.username);
             return res.json({users: usernames});
