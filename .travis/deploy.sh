@@ -28,7 +28,7 @@ ssh -t root@${SERVER_HOST} "sudo systemctl stop moment-back.service"
 
 # Deploy Express Server
 rsync -a -P --delete --exclude '.git*' ${TRAVIS_BUILD_DIR}/backend/* root@${SERVER_HOST}:/var/www/moment.ninja
-rsync -a -P --delete ${TRAVIS_BUILD_DIR}/scripts/* root@${SERVER_HOST}:/~/scripts
+rsync -a -P --delete ${TRAVIS_BUILD_DIR}/scripts/* root@${SERVER_HOST}:~/scripts
 
 if [[ "${TRAVIS_COMMIT_MESSAGE}" == *"${CLEAR_CMD}"* ]]; then
   echo "Detect cmd to clear server uploads and mongo DB"
