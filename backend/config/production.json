@@ -39,5 +39,6 @@
   "session": {
     "maxAge": 86400,
     "secret": "9N8EnnNJh5vgR86s"
-  }
+  },
+  "maxCommentLength":150
 }
