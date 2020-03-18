@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 
 import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button} from 'antd';
-import moment from 'moment';
-import { MessageOutlined} from '@ant-design/icons';
-import { withRouter } from 'react-router-dom';
+
 import { loadModels, getFullFaceDescription } from '../faceapi/face';
 
 
