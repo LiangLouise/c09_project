@@ -188,7 +188,6 @@ class SearchBar extends Component{
                             {text} 
                         </Button>
                     </span>
-                  
                 )
             },
         ];

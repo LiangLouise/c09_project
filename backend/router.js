@@ -1,84 +1,89 @@
 const express = require('express');
-const {signin, signout, signup} = require('./controllers/auth');
-const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById} = require('./controllers/posts');
-const {addFriend, removeFriend, getFriendList, isFriend} = require('./controllers/friendship');
-const {searchUser} = require("./controllers/search");
-const {getAvatar, updateAvatar} = require("./controllers/profile");
+const {signin, signout, signup} = require('./controllers/authController');
+const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById} = require('./controllers/postController');
+const {followUser, unfollowUser, getFollowingList, isFollowing} = require('./controllers/followingController');
+const {searchUser} = require("./controllers/searchController");
+const {getAvatar, updateAvatar} = require("./controllers/profileController");
 const validation = require('./utils/validation.js');
 const {postUploads} = require('./config/multerconfig');
 // const config = require('config');
 
 
 module.exports = function (app) {
-    const apiRoutes = express.Router();
     const authRoutes = express.Router();
+    const profileRoutes = express.Router();
+    const postRoutes = express.Router();
+    const followRoutes = express.Router();
+    const searchRoutes = express.Router();
 
     app.use("/", authRoutes);
     authRoutes.post('/signup', validation.checkUsername('body'), signup);
     authRoutes.post('/signin', validation.checkUsername('body'), signin);
     authRoutes.get('/signout', signout);
 
-    app.use("/api", apiRoutes);
-    // POST /api/posts
+    app.use("/api/posts", postRoutes);
+    // POST /api/posts/
     // Body formData
-    apiRoutes.post('/posts', validation.isAuthenticated, postUploads,
+    postRoutes.post('/', validation.isAuthenticated, postUploads,
         validation.notEmptyFiles, validation.checkImageFiles, createPost);
 
     // GET /api/posts/{PostID}/
     // Res: Status code: 403 -> Not Owner
     //                   404 -> Post doesn't exists
     //                   200 -> Success
-    apiRoutes.get('/posts/:id/', validation.isAuthenticated, validation.isObjectId('params'), getPostById);
+    postRoutes.get('/:id/', validation.isAuthenticated, validation.isObjectId('params'), getPostById);
 
     // GET /api/posts/images/{image id}/
     // You can get the id from the previous one request
-    apiRoutes.get('/posts/images/:id/', validation.isAuthenticated, validation.isObjectId('params'), getPostPicture);
+    postRoutes.get('/images/:id/', validation.isAuthenticated, validation.isObjectId('params'), getPostPicture);
 
     // DELETE /api/posts/{PostID}/
     // ONLY OWNER CAN DELETE THEIR OWN POSTS
     // Res: Status code: 403 -> Not Owner
     //                   404 -> Post doesn't exists
     //                   200 -> Success
-    apiRoutes.delete('/posts/:id/', validation.isAuthenticated, validation.isObjectId('params'), deletePostById);
+    postRoutes.delete('/:id/', validation.isAuthenticated, validation.isObjectId('params'), deletePostById);
 
-    // GET /api/posts?username={friend username}&page={page number}
-    // ONLY CAN VIEW FRIEND'S POSTS
-    apiRoutes.get('/posts', validation.isAuthenticated, validation.checkUsername('query'), getPostsByUser);
+    // GET /api/posts/?username={friend username}&page={page number}
+    // ONLY CAN VIEW following users' POSTS
+    postRoutes.get('/', validation.isAuthenticated, validation.checkUsername('query'), getPostsByUser);
 
-    // POST /api/friend {"username": "Friend username to add"}
+    app.use("/api/follow", followRoutes);
+    // POST /api/follow/ {"username": "user to follow"}
     // Res: Status code: 409 -> Is friend already
     //                   200 -> Success
-    apiRoutes.post('/friend', validation.isAuthenticated, validation.checkUsername('body'),
-        validation.notSameUser('body'), validation.checkIfUserExisting('body'), addFriend);
+    followRoutes.post('/', validation.isAuthenticated, validation.checkUsername('body'),
+        validation.notSameUser('body'), validation.checkIfUserExisting('body'), followUser);
 
-    // DELETE /api/friend/{friend username to remove}
+    // DELETE /api/follow/{friend username to remove}
     // Res: Status code: 409 -> Not friend yet
     //                   200 -> Success
-    apiRoutes.delete('/friend/:username/', validation.isAuthenticated, validation.checkUsername('params'),
-        validation.notSameUser('params'), validation.checkIfUserExisting('params'),
-        validation.checkIfFriend('params'), removeFriend);
+    followRoutes.delete('/:username/', validation.isAuthenticated, validation.checkUsername('params'),
+        validation.notSameUser('params'), validation.checkIfUserExisting('params'), unfollowUser);
 
     // GET friend list
-    // GET /api/friend?page=number
+    // GET /api/follow/?page=number
     // Res: {"users": [Array of user ids]}
-    apiRoutes.get('/friend', validation.isAuthenticated, validation.checkPageNumber, getFriendList);
-    // GET /api/isfriend?username={the name to test}
+    followRoutes.get('/', validation.isAuthenticated, validation.checkPageNumber, getFollowingList);
+
+    // GET /api/isfollowing/?username={the name to test}
     // Res: {"isFriend": true || false}
-    apiRoutes.get('/isfriend', validation.isAuthenticated, validation.checkUsername('query'), isFriend);
+    followRoutes.get('/isfollowing/', validation.isAuthenticated, validation.checkUsername('query'), isFollowing);
 
-
+    app.use("/api/search", searchRoutes);
     // Search User
-    // GET /api/search?username={user name}&page={number of page}
+    // GET /api/search/?username={user name}&page={number of page}
     // Res: {"users": [Array of user ids]}
-    apiRoutes.get('/search', validation.isAuthenticated, validation.checkUsername('query'), validation.checkPageNumber, searchUser);
+    searchRoutes.get('/', validation.isAuthenticated, validation.checkUsername('query'), validation.checkPageNumber, searchUser);
 
+    app.use("/api/profile", profileRoutes);
     // GET /api/avatar?username={name of user}
     // Res: avatar file
-    apiRoutes.get('/avatar', validation.isAuthenticated, validation.checkUsername('query'), getAvatar);
+    profileRoutes.get('/avatar/', validation.isAuthenticated, validation.checkUsername('query'), getAvatar);
 
     // PUT /api/avatar
     // FormDat:
     //  Avatar
     // Res: 200 success
-    apiRoutes.put('/avatar', validation.isAuthenticated, validation.notEmptyFile, validation.checkImageFile, updateAvatar);
+    profileRoutes.put('/avatar/', validation.isAuthenticated, validation.notEmptyFile, validation.checkImageFile, updateAvatar);
 };
