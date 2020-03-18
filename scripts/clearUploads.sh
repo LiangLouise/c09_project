@@ -19,7 +19,7 @@ echo "Start tp delete avatars uploaded"
 rm -f $avatarUploads
 
 echo "Start to clear MongoDB"
-mongo ./clearMongo.js
+mongo ~/scripts/clearMongo.js
 
 echo "Done !"
 exit 0
