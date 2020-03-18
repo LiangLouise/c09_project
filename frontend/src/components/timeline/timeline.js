@@ -41,7 +41,7 @@ class MyTimeline extends Component{
                     ]
                 },
                 {
-                    src: "https://media.discordapp.net/attachments/336909060026793984/689524638254104633/49669943311_911121ab0f_o.jpg?width=702&height=468",
+                    src: "https://miro.medium.com/max/999/1*U502yVUoj4uhLhaMnq54ow.png",
                     title: "when the corona merch sells",
                     description: "zerojaw",
                     date: "2019",
@@ -69,6 +69,7 @@ class MyTimeline extends Component{
                         <Row>
                         <Col span={2}>{post.date}</Col>
                         <Col span={10}>
+                            
                             <Card
                                 hoverable
                                 
@@ -89,6 +90,13 @@ class MyTimeline extends Component{
                                     />}
                                 description={post.description} />
                             </Card>
+
+                            {/* "Image" is a component that makes the facial recognition thingies!!!!!!!!!!!!! */}
+                            {/* temporarily putting this here to show it works... */}
+                            {/* YOU CAN REMOVE THIS TO TEST OTHER STUFF!!!!... */}
+                            <div>
+                                <Image src={post.src}/>
+                            </div>
                             
                         </Col>
                         <Col span={12}>
