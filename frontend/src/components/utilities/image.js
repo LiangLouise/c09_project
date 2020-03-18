@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 
 import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button} from 'antd';
 
-import { loadModels, getFullFaceDescription } from '../faceapi/face';
+import { loadModels, getFullFaceDescription, createMatcher } from '../faceapi/face';
 
-
+const JSON_PROFILE = require('../descriptors/bnk48.json');
 const { Meta } = Card;
 const {Content} = Layout;
 
@@ -23,12 +23,16 @@ class Image extends Component{
             imageURL: this.props.src,
             fullDesc: null,
             detections: null,
+            descriptors: null,
+            match: null,
+            faceMatcher: null
         };
     }
     
 
     componentWillMount = async () => {
         await loadModels();
+        this.setState({ faceMatcher: await createMatcher(JSON_PROFILE) });
         await this.handleImage(this.state.imageURL);
       };
     
@@ -37,10 +41,18 @@ class Image extends Component{
           if (!!fullDesc) {
             this.setState({
               fullDesc,
-              detections: fullDesc.map(fd => fd.detection)
+              detections: fullDesc.map(fd => fd.detection),
+              descriptors: fullDesc.map(fd => fd.descriptor)
             });
           }
         });
+
+        if (!!this.state.descriptors && !!this.state.faceMatcher) {
+            let match = await this.state.descriptors.map(descriptor =>
+              this.state.faceMatcher.findBestMatch(descriptor)
+            );
+            this.setState({ match });
+          }
       };
     
       
@@ -54,7 +66,7 @@ class Image extends Component{
 
         const imageURL = this.state.imageURL;
         const detections = this.state.detections;
-
+        const match = this.state.match;
         let drawBox = null;
         if (!!detections) {
         drawBox = detections.map((detection, i) => {
@@ -63,18 +75,34 @@ class Image extends Component{
             let _X = detection.box._x;
             let _Y = detection.box._y;
             return (
-            <div key={i}>
+                <div key={i}>
                 <div
-                style={{
+                  style={{
                     position: 'absolute',
                     border: 'solid',
                     borderColor: 'blue',
                     height: _H,
                     width: _W,
                     transform: `translate(${_X}px,${_Y}px)`
-                }}
-                />
-            </div>
+                  }}
+                >
+                  {!!match && !!match[i] ? (
+                    <p
+                      style={{
+                        backgroundColor: 'blue',
+                        border: 'solid',
+                        borderColor: 'blue',
+                        width: _W,
+                        marginTop: 0,
+                        color: '#fff',
+                        transform: `translate(-3px,${_H}px)`
+                      }}
+                    >
+                      {match[i]._label}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
             );
         });
         }

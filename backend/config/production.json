@@ -22,7 +22,7 @@
     "max_post_pic_number": 9
   },
   "logger": {
-    "level": "info",
+    "level": "error",
     "errorLogFilePath": "/var/www/moment.ninja.log/error.log",
     "infoLogFilePath": "/var/www/moment.ninja.log/info.log"
   },
