@@ -43,7 +43,9 @@ class MyTimeline extends Component{
             page: 0,
             posts: [],
             comments: [],
-            items: Array.from({ length: 20 })
+            items: Array.from({ length: 20 }),
+            hasMorePost: true,
+            hasMoreCmt: true,
             
         };
     }
@@ -62,25 +64,57 @@ class MyTimeline extends Component{
                         'description': res.data[i].dis,
                         'pictures': res.data[i].pictures,
                         'date': Date(res.data[i].time) ,
+                        // 'comments': [{src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
+                        //             content:"test1"},
+                        //             {src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
+                        //             content:"test2"},
+                        //             {src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
+                        //             content:"test3"},
+                        //             {src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
+                        //             content:"test4"},
+                        //             {src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
+                        //             content:"test5"},]
                     }
                     data.push(temp)
                 }   
                 this.setState({
                     posts: this.state.posts.concat(JSON.parse(JSON.stringify(data))),
                     page: this.state.page+1
-                })
+                }) 
+                
             });
-            
+           
         console.log(this.state.posts)
     }
     fetchMoreData = () => {
         // a fake async api call like which sends
         // 20 more records in 1.5 secs
+        if (this.state.posts.length >= 17) {
+            this.setState({ hasMorePost: false });
+            return;
+        }
         setTimeout(() => {
             console.log(this.state.page)
             this.fetchData();
         }, 1500);
         console.log(this.state.posts)
+    };
+
+    fetchMoreComments = () => {
+        if (this.state.comments.length >= 5) {
+            this.setState({ hasMoreCmt: false });
+            return;
+        }
+        // a fake async api call like which sends
+        // 20 more records in 1.5 secs
+        setTimeout(() => {
+            let comment = [{src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
+                                    content:"test"}]
+            this.setState({
+                comments: this.state.comments.concat(JSON.parse(JSON.stringify(comment)))
+            })
+        }, 1500);
+
     };
     
     render(){
@@ -89,9 +123,14 @@ class MyTimeline extends Component{
                 <InfiniteScroll
                     dataLength={this.state.posts.length}
                     next={this.fetchMoreData}
-                    hasMore={true}
+                    hasMore={this.state.hasMorePost}
                     style={this.style}
                     loader={<h4>Loading...</h4>}
+                    endMessage={
+                        <p style={{textAlign: 'center'}}>
+                          <b>Yay! You have seen it all</b>
+                        </p>
+                      }
                 >
                     {this.state.posts.map((post) => (
                         <Row>
@@ -123,8 +162,17 @@ class MyTimeline extends Component{
                             
                         </Col>
                         <Col span={12}>
-                            {/* <Content>
-                                {post.comments.map((comment) =>{
+                            <Content>
+                            <InfiniteScroll
+
+                                dataLength={this.state.comments.length}
+                                next={this.fetchMoreComments}
+                                hasMore={this.state.hasMoreCmt}
+                                style={this.style}
+                                loader={<h4>Loading...</h4>}
+                            >   
+                                <div>
+                                {this.state.comments.map((comment) =>{
                                     return(
                                         <Comment
                                             // actions={actions}
@@ -133,13 +181,13 @@ class MyTimeline extends Component{
                                             <Avatar
                                             src={comment.src}
                                             alt="Han Solo"
-                                        />
-                                    }
-                                    content={
-                                        <p>
-                                            {comment.content}
-                                        </p>
-                                        }
+                                            />
+                                            }
+                                        content={
+                                            <p>
+                                                {comment.content}
+                                            </p>
+                                            }
                                         datetime={
                                         <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
                                             <span>{moment().fromNow()}</span>
@@ -148,6 +196,8 @@ class MyTimeline extends Component{
                                         />
                                         )
                                         })}
+                                        </div>
+                                        </InfiniteScroll>
                                         <Form
                                             name="login"
                                             {...formItemLayout}
@@ -163,7 +213,7 @@ class MyTimeline extends Component{
                                                 </Button>
                                             </Form.Item> 
                                         </Form>
-                            </Content> */}
+                            </Content>
                         </Col>
                         <Divider></Divider>
                         </Row>

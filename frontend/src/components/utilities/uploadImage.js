@@ -62,6 +62,7 @@ const API_END_POINT = process.env.REACT_APP_BASE_URL;
 
 
 class UploadImage extends React.Component{
+    formRef = React.createRef();
     constructor(props){
         super(props);
         this.state = { 
@@ -81,6 +82,10 @@ class UploadImage extends React.Component{
         this.handleSwitch = this.handleSwitch.bind(this);
 
         
+    }
+
+    onReset = () => {
+        this.formRef.current.resetFields();
     }
 
 
@@ -182,12 +187,13 @@ class UploadImage extends React.Component{
         }).catch((err) => {
             console.log(err)
         })
-        
+        this.onReset();
     }
     
     render(){
         return(
             <Form
+                ref={this.formRef}
                 name="uploadImage"
                 {...formItemLayout}
                 onFinish={this.customSubmit}

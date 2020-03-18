@@ -27,24 +27,6 @@ const titleLayout = {
       },
 }
 
-const validateMessages = {
-    required: 'This field is required!',
-    types: {
-      email: 'Not a validate email!',
-      number: 'Not a validate number!',
-    },
-    number: {
-      range: 'Must be between ${min} and ${max}',
-    },
-  };
-
-const onFinish = values => {
-    console.log('Success:', values);
-  };
-
-const onFinishFailed = errorInfo => {
-    console.log('Failed:', errorInfo);
-  };
 
 class Login extends React.Component{
     formRef = React.createRef();
@@ -64,12 +46,7 @@ class Login extends React.Component{
           }); 
     };
   
-    // handleOk = e => {
-    //   console.log(e);
-    //   this.setState({
-    //     visible: false,
-    //   });
-    // };
+
 
     onReset = () => {
         this.formRef.current.resetFields();
@@ -128,7 +105,6 @@ class Login extends React.Component{
                   ref={this.formRef}
                   {...formItemLayout}
                   onFinish={this.handleSubmit}
-                  ref={this.formRef}
               >
                   <Form.Item {...titleLayout}>
                       <Typography>
