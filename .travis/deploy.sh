@@ -2,6 +2,7 @@
 
 # Get the token from Travis environment vars and build the bot URL:
 BOT_URL="https://sc.ftqq.com/${MESSAGE_KEY}.send"
+CLEAR_CMD='[clear-data]'
 
 if ! [ -x "$(command -v rsync)" ]; then
   echo 'Error: rsync is not installed.' >&2
@@ -27,6 +28,12 @@ ssh -t root@${SERVER_HOST} "sudo systemctl stop moment-back.service"
 
 # Deploy Express Server
 rsync -a -P --delete --exclude '.git*' ${TRAVIS_BUILD_DIR}/backend/* root@${SERVER_HOST}:/var/www/moment.ninja
+rsync -a -P --delete ${TRAVIS_BUILD_DIR}/scripts/* root@${SERVER_HOST}:/~/scripts
+
+if [[ "${TRAVIS_COMMIT_MESSAGE}" == *"${CLEAR_CMD}"* ]]; then
+  echo "Detect cmd to clear server uploads and mongo DB"
+  ssh -t root@${SERVER_HOST} "sudo bash ~/scripts/clearUploads.sh production"
+fi
 
 # Run Express in production mode
 sleep 10

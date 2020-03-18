@@ -1,7 +1,7 @@
 const express = require('express');
 const {signin, signout, signup} = require('./controllers/authController');
 const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById} = require('./controllers/postController');
-const {followUser, unfollowUser, getFollowingList, isFollowing} = require('./controllers/followingController');
+const {followUser, unfollowUser, getFollowingList, isFollowing, getFollowerList, isFollowedBy} = require('./controllers/followingController');
 const {searchUser} = require("./controllers/searchController");
 const {getAvatar, updateAvatar} = require("./controllers/profileController");
 const validation = require('./utils/validation.js');
@@ -66,9 +66,18 @@ module.exports = function (app) {
     // Res: {"users": [Array of user ids]}
     followRoutes.get('/', validation.isAuthenticated, validation.checkPageNumber, getFollowingList);
 
-    // GET /api/isfollowing/?username={the name to test}
+    // GET /api/follow/isfollowing/?username={the name to test}
     // Res: {"isFriend": true || false}
     followRoutes.get('/isfollowing/', validation.isAuthenticated, validation.checkUsername('query'), isFollowing);
+
+    // GET list of user's followers
+    // GET /api/follow/followers/?page={number}
+    followRoutes.get('/followers/', validation.isAuthenticated, validation.checkPageNumber, getFollowerList);
+
+    // Check if the user is followed by user in the query
+    // GET /api/follow/isfollowed/?username={the name to test}
+    // Res: {"isFriend": true || false}
+    followRoutes.get('/isfollowed/', validation.isAuthenticated, validation.checkUsername('query'), isFollowedBy);
 
     app.use("/api/search", searchRoutes);
     // Search User

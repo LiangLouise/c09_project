@@ -60,7 +60,7 @@ exports.getFollowingList = function(req, res, next) {
             function(err, user) {
         if (err) return res.status(500).end(err);
         return res.status(200).json({users: user.following_ids});
-    })
+    });
 };
 
 exports.isFollowing = function(req, res, next) {
@@ -72,4 +72,28 @@ exports.isFollowing = function(req, res, next) {
         if (count === 1) return res.status(200).json({isFollowing: true});
         else return res.status(200).json({isFollowing: false});
     })
+};
+
+exports.getFollowerList = function (req, res, next) {
+    // Get user name from session
+    let username = req.session.username;
+    let page = req.query.page;
+    db.users.findOne(
+        {_id: username},
+        {follower_ids: 1 , follower_ids: {$slice: [10*page, 10]}},
+        function(err, user) {
+            if (err) return res.status(500).end(err);
+            return res.status(200).json({users: user.follower_ids});
+        });
+};
+
+exports.isFollowedBy = function (req, res, next) {
+    // Get user name from session
+    let username = req.session.username;
+    let friendName = req.query.username;
+    db.users.find({_id: username, follower_ids: friendName}).count(function(err, count) {
+        if (err) return res.status(500).end(err);
+        if (count === 1) return res.status(200).json({isFollowed: true});
+        else return res.status(200).json({isFollowed: false});
+    });
 };
