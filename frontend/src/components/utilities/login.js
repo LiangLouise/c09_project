@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { geolocated } from "react-geolocated";
+//import { geolocated } from "react-geolocated";
 import { Form,
     Button,
     Checkbox,

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button} from 'antd';
 import moment from 'moment';
 import { MessageOutlined} from '@ant-design/icons';
+import Image from '../utilities/image';
 
 
 const { Meta } = Card;
@@ -27,7 +28,7 @@ class MyTimeline extends Component{
         this.state={
             posts: [
                 {
-                    src: "https://media.discordapp.net/attachments/303411519738085377/683448614835585057/unknown.png?width=1194&height=672",
+                    src: "https://media.discordapp.net/attachments/336909060026793984/689524638254104633/49669943311_911121ab0f_o.jpg?width=702&height=468",
                     title: "Title",
                     description: "Author",
                     date: "2017",
@@ -39,7 +40,7 @@ class MyTimeline extends Component{
                     ]
                 },
                 {
-                    src: "https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
+                    src: "https://media.discordapp.net/attachments/336909060026793984/689524638254104633/49669943311_911121ab0f_o.jpg?width=702&height=468",
                     title: "when the corona merch sells",
                     description: "zerojaw",
                     date: "2019",
@@ -67,7 +68,7 @@ class MyTimeline extends Component{
                         <Card
                             hoverable
                             //style={{ width: 300 }}
-                            cover={<img alt="example" src={post.src}/>}
+                            cover={<Image src={post.src}/>}
                         >
                             <Meta title={post.title} description={post.description} />
                         </Card>
