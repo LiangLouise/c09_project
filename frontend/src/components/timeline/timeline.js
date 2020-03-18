@@ -11,13 +11,9 @@ import cookie from 'react-cookies'
 
 
 
+
 const { Meta } = Card;
 const {Content} = Layout;
-
-const onFinish = values => {
-    
-    console.log('Success:', values);
-  };
 
 const formItemLayout = {
     wrapperCol: {
@@ -33,13 +29,16 @@ const style = {
     padding: 8
   };
 
-  let username = cookie.load('username');
+let username = cookie.load('username');
+
 
 class MyTimeline extends Component{
+    formRef = React.createRef();
     constructor(){
         super();
 
         this.state={
+            comment: '',
             page: 0,
             posts: [],
             comments: [],
@@ -48,7 +47,15 @@ class MyTimeline extends Component{
             hasMoreCmt: true,
             
         };
+        this.sendComment = this.sendComment.bind(this);
     }
+    onReset = () => {
+        this.formRef.current.resetFields();
+    }
+
+    handleChange = (e) =>
+        this.setState({ [e.target.name]: e.target.value });
+
     fetchData = () => {
         let data = []
         let temp = {}
@@ -63,7 +70,11 @@ class MyTimeline extends Component{
                         'title': res.data[i].title,
                         'description': res.data[i].dis,
                         'pictures': res.data[i].pictures,
-                        'date': Date(res.data[i].time) ,
+                        'date': Date(res.data[i].time),
+                        'count': res.data[i].pictureCounts,
+                        'id': res.data[i]._id,
+                        'page': 0,
+                        'comments': [],
                         // 'comments': [{src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
                         //             content:"test1"},
                         //             {src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
@@ -83,7 +94,7 @@ class MyTimeline extends Component{
                 }) 
                 
             });
-           
+        this.fetchMoreComments();
         console.log(this.state.posts)
     }
     fetchMoreData = () => {
@@ -99,24 +110,55 @@ class MyTimeline extends Component{
         }, 1500);
         console.log(this.state.posts)
     };
+    sendComment(commentId){
 
+        let content = {content:this.state.comment}
+        axios
+            .post(process.env.REACT_APP_BASE_URL+
+                '/api/posts/'+commentId
+                +'/comments/',
+                content,
+                {withCredentials:true})
+            .then(res => {
+                console.log(res)
+            })
+        
+        this.setState({
+            comment: '',
+        })
+        this.onReset()
+    }
     fetchMoreComments = () => {
-        if (this.state.comments.length >= 5) {
-            this.setState({ hasMoreCmt: false });
-            return;
-        }
+        // if (this.state.comments.length >= 3) {
+        //     this.setState({ hasMoreCmt: false });
+        //     return;
+        // }
         // a fake async api call like which sends
         // 20 more records in 1.5 secs
-        setTimeout(() => {
-            let comment = [{src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
-                                    content:"test"}]
-            this.setState({
-                comments: this.state.comments.concat(JSON.parse(JSON.stringify(comment)))
-            })
-        }, 1500);
+        // setTimeout(() => {
+        //     let comment = [{src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
+        //                             content:"test"}]
+        //     this.setState({
+        //         comments: this.state.comments.concat(JSON.parse(JSON.stringify(comment)))
+        //     })
+        // }, 1500);
+        for (let i=0; i<this.state.posts.length;i++){
+            console.log(this.state.posts)
+            axios
+                .get(process.env.REACT_APP_BASE_URL+
+                    '/api/posts/'+this.state.posts[i].id
+                    +'/comments/?page='+this.state.posts[i].page,
+                    {withCredentials:true})
+                .then(res => {
+                    let data = [];
+                    let temp = {};
+                })
+        }
+        
 
     };
     
+   
     render(){
         return(
             <div className="timeline">
@@ -133,6 +175,7 @@ class MyTimeline extends Component{
                       }
                 >
                     {this.state.posts.map((post) => (
+                        
                         <Row>
                         <Col span={2}>{post.date}</Col>
                         <Col span={10}>
@@ -140,15 +183,16 @@ class MyTimeline extends Component{
                                 hoverable
                                 
                                 cover={<Carousel dotPosition="top">
-                                <div>
-                                    <img src= "https://media.discordapp.net/attachments/303411519738085377/683448614835585057/unknown.png?width=1194&height=672"/>
-                                </div>
-                                <div>
-                                    <img src= "https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png"/>
-                                </div>
-                                <div>
-                                    <img src ="https://cdn.discordapp.com/attachments/303411519738085377/687166367929073727/20517284_1384331048330396_573196050_o.png"/>
-                                </div>
+                                        <div>
+                                            <img src= "https://media.discordapp.net/attachments/303411519738085377/683448614835585057/unknown.png?width=1194&height=672"/>
+                                        </div>
+                                        <div>
+                                            <img src= "https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png"/>
+                                        </div>
+                                        <div>
+                                            <img src ="https://cdn.discordapp.com/attachments/303411519738085377/687166367929073727/20517284_1384331048330396_573196050_o.png"/>
+                                        </div>
+
                             </Carousel>}
                             >
                                 <Meta 
@@ -163,14 +207,14 @@ class MyTimeline extends Component{
                         </Col>
                         <Col span={12}>
                             <Content>
-                            <InfiniteScroll
+                            {/* <InfiniteScroll
 
                                 dataLength={this.state.comments.length}
                                 next={this.fetchMoreComments}
                                 hasMore={this.state.hasMoreCmt}
                                 style={this.style}
                                 loader={<h4>Loading...</h4>}
-                            >   
+                            >    */}
                                 <div>
                                 {this.state.comments.map((comment) =>{
                                     return(
@@ -197,18 +241,34 @@ class MyTimeline extends Component{
                                         )
                                         })}
                                         </div>
-                                        </InfiniteScroll>
+                                        {/* </InfiniteScroll> */}
                                         <Form
                                             name="login"
+                                            id={post.id}
                                             {...formItemLayout}
-                                            onFinish={onFinish}
+                                            onFinish={this.sendComment.bind(this,post.id)}
+                                            ref={this.formRef}
                                         >
-                                            <Form.Item name="comment">
-                                                <Input.TextArea placeholder="Write a comment..."/>
+                                            <Form.Item 
+                                                name="comment"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Please input your Comment!',
+                                                    }]}
+                                                >
+                                                <Input.TextArea 
+                                                    value={this.state.comment}
+                                                    name="comment"
+                                                    id={post.id+"comment"}
+                                                    onChange={this.handleChange}
+                                                    placeholder="Write a comment..."/>
                                             </Form.Item>
 
                                             <Form.Item>
-                                                <Button type="primary" htmlType="submit" className="comment-form-button">
+                                                <Button type="primary" 
+                                                        htmlType="submit" 
+                                                        className="comment-form-button">
                                                     Submit
                                                 </Button>
                                             </Form.Item> 

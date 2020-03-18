@@ -86,6 +86,9 @@ class UploadImage extends React.Component{
 
     onReset = () => {
         this.formRef.current.resetFields();
+        this.setState({
+            fileList:[],
+        })
     }
 
 
