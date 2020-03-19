@@ -17,7 +17,7 @@ exports.createPost = function (req, res, next) {
                 return res.status(500).end();
             }
             try {
-                db.users.update({_id: sessionUsername}, {$inc: {post_counts: -1}});
+                db.users.update({_id: sessionUsername}, {$inc: {post_counts: 1}});
             } catch (e) {
                 logger.error(e);
                 return res.status(500).end();

@@ -100,6 +100,8 @@ module.exports = function (app) {
 
     app.use("/api/profile", profileRoutes);
 
+    // GET /api/profile?username={name of user}
+    // Res {follower_ids: [], following_ids: [], post_counts: {number}}
     profileRoutes.get('/', validation.isAuthenticated, validation.checkUsername('query'), getUserProfile);
 
     // GET /api/profile/avatar?username={name of user}
