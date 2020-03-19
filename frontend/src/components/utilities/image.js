@@ -1,19 +1,9 @@
 import React, { Component } from 'react';
 
-import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button} from 'antd';
-
 import { loadModels, getFullFaceDescription, createMatcher } from '../faceapi/face';
 
 const JSON_PROFILE = require('../descriptors/bnk48.json');
-const { Meta } = Card;
-const {Content} = Layout;
 
-
-const onFinish = values => {
-    
-    console.log('Success:', values);
-  
-};
 
 class Image extends Component{
     constructor(props){
@@ -21,6 +11,8 @@ class Image extends Component{
 
         this.state={
             imageURL: this.props.src,
+            width: this.props.width,
+            realwidth: this.props.realwidth,
             fullDesc: null,
             detections: null,
             descriptors: null,
@@ -56,24 +48,24 @@ class Image extends Component{
       };
     
       
-
-
-
-
-
-
     render(){
 
         const imageURL = this.state.imageURL;
         const detections = this.state.detections;
         const match = this.state.match;
+        const width = this.state.width;
+        const realwidth = this.state.realwidth;
+        const ratio = width/realwidth;
+        //console.log("width", width, "real", realwidth);
+
         let drawBox = null;
         if (!!detections) {
         drawBox = detections.map((detection, i) => {
-            let _H = detection.box.height;
-            let _W = detection.box.width;
-            let _X = detection.box._x;
-            let _Y = detection.box._y;
+            let _H = detection.box.height*ratio;
+            let _W = detection.box.width*ratio;
+            let _X = detection.box._x*ratio;
+            let _Y = detection.box._y*ratio;
+            console.log(_H, _W, _X, _Y);
             return (
                 <div key={i}>
                 <div
@@ -110,9 +102,9 @@ class Image extends Component{
         return(
             <div className="image">
 
-                    <div style={{ position: 'relative' }}>
-                    <div style={{ position: 'absolute' }}>
-                        <img src={imageURL} alt="imageURL" />
+                    <div style={{ position: 'relative', width: width }}>
+                    <div style={{ position: 'absolute', width: width }}>
+                        <img src={imageURL} alt="imageURL" style={{ width: width}}/>
                     </div>
                     {!!drawBox ? drawBox : null}
                     </div>
