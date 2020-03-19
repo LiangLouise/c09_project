@@ -77,10 +77,9 @@ class UploadImage extends React.Component{
                 longtitude: null,
             },
         };
-        // this.handleSubmit = this.handleSubmit.bind(this);
         this.customSubmit = this.customSubmit.bind(this);
         this.handleSwitch = this.handleSwitch.bind(this);
-
+        this.removeFile = this.removeFile.bind(this);
         
     }
 
@@ -97,17 +96,6 @@ class UploadImage extends React.Component{
 
 
     handleUpload = info =>{
-        // Get this url from response in real world.
-        // let fileList = [...info.fileList];
-        // fileList = fileList.slice(-9);
-
-        // fileList = fileList.map(file => {
-        //     if (file.response) {
-        //       // Component will show file.url as link
-        //       file.url = file.response.url;
-        //     }
-        //     return file;
-        //   });
 
         if (info.file.status === 'uploading'){
             this.setState({loading: true});
@@ -129,6 +117,13 @@ class UploadImage extends React.Component{
         }
     }
 
+    removeFile(file) {
+        const index = this.state.fileList.indexOf(file);
+        const newFileList = this.state.fileList.slice();
+        newFileList.splice(index, 1);
+        this.setState({fileList: newFileList});
+    }
+
     handleSwitch = (e) => {
         console.log("before "+this.state.checked)
         if (this.state.checked){
@@ -146,24 +141,6 @@ class UploadImage extends React.Component{
         })
         console.log("after "+this.state.checked)
     }
-
-    // handleSubmit = (e) => {
-    //     e.preventDefault();
-    //     let image = {
-    //         title: this.state.title,
-    //         author: this.state.author,
-    //         description: this.state.description,
-    //         imageUrl: this.state.imageUrl,
-    //         // location: this.state.location,
-    //     }
-
-    //     axios
-    //          .post(API_END_POINT+'/api/images', image, {withCredentials: true})
-    //          .then(res => {
-    //              console.log(res);
-    //          })
-
-    // }
     
     customSubmit = () => {
 
@@ -218,11 +195,11 @@ class UploadImage extends React.Component{
                             required: true,
                         },
                         ]}> 
-                    {/* <Upload.Dragger name="files" action="/upload.do"> */}
                         <Upload.Dragger 
                         name="picture"
                         onChange={this.handleUpload}
                         customRequest={dummyRequest}
+                        onRemove={this.removeFile}
                         fileList={this.state.fileList}
                         withCredentials={true}
                         multiple={true}>
