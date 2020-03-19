@@ -45,7 +45,7 @@ class Home extends Component{
   componentDidMount() {
     this.getFriendList();
   }
-
+  
   loginHandler() {
     this.setState({isLoggedIn: !this.state.isLoggedIn});
   }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
-import { Input, Modal, Table,Button } from 'antd';
+import { Input, Modal, Table,Button, message, Empty } from 'antd';
 import axios from 'axios';
 import cookie from 'react-cookies'
 
@@ -37,7 +37,7 @@ class SearchBar extends Component{
                     {withCredentials: true})
                 .then(res => {
                     console.log(res.data)
-
+                    message.success("You are now following "+username+ " yay!!!");
                 })
         }else{
             let req = {username:username};
@@ -48,7 +48,7 @@ class SearchBar extends Component{
                     {withCredentials: true})
                 .then(res => {
                     console.log(res.data)
-                    
+                    message.success("You just unfollowed "+username+ "  :(");
                 })   
         }
         this.constructTable();
