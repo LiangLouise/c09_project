@@ -89,7 +89,7 @@ class MyTimeline extends Component{
                                     + res.data.length 
                                     - this.state.posts.length;
                 for (let i=0; i< newPostsNum;i++){
-                    console.log(res.data[i])
+                    // console.log(res.data[i])
                     temp = {
                         'title': res.data[i].title,
                         'description': res.data[i].dis,
@@ -217,7 +217,7 @@ class MyTimeline extends Component{
                     style={this.style}
                     loader={<h4>Loading...</h4>}
                     endMessage={
-                        <p style={{textAlign: 'center'}}>
+                        <p style={{margin: '0 0 0 360px'}}>
                           <b>Yay! You have seen it all</b>
                         </p>
                       }

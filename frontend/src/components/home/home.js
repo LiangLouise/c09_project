@@ -13,6 +13,7 @@ import cookie from 'react-cookies'
 import { UserOutlined} from '@ant-design/icons';
 import Logo from './../../Logo.png';
 import Icon from './../../Icon.png';
+import axios from 'axios';
 
 
 const { SubMenu } = Menu;
@@ -27,13 +28,22 @@ class Home extends Component{
 
     this.state={
       isLoggedIn: (cookie.load('username') !== "" && cookie.load('username') !== undefined),
-      refresh: false
+      refreshTimeline: false,
+      refreshFriend: false,
+      friends: [],
     };
     this.menu = this.menu.bind(this);
     this.subMenu = this.subMenu.bind(this);
     this.content = this.content.bind(this);
     this.loginHandler = this.loginHandler.bind(this);
     this.refreshTimeLine = this.refreshTimeLine.bind(this);
+    this.refreshFriend = this.refreshFriend.bind(this);
+
+  
+  }
+
+  componentDidMount() {
+    this.getFriendList();
   }
 
   loginHandler() {
@@ -41,8 +51,13 @@ class Home extends Component{
   }
 
   refreshTimeLine() {
-    console.log('Ask to refresh');
-    this.setState({refresh: true});
+    console.log('Ask to refresh timeline');
+    this.setState({refreshTimeline: true});
+  }
+
+  refreshFriend() {
+    console.log('Ask to refresh friend');
+    this.setState({refreshFriend: true});
   }
 
   menu() {
@@ -77,39 +92,58 @@ class Home extends Component{
               <div style={{float:"right"}}>
               <div id="profile" style={{float:"right"}}><Button ghost={true}>{cookie.load('username')}</Button></div>
               <div id="logout" style={{float:"right"}}><Logout action={this.loginHandler}/></div>
-              <div id="searchbar" style={{float:"right"}}><SearchBar/></div>
+              <div id="searchbar" style={{float:"right"}}><SearchBar refresh={this.refreshFriend}/></div>
               </div>
       </Menu>
     );  
   }
 
+  getFriendList () {
+    if (this.state.isLoggedIn){
+      axios.get(process.env.REACT_APP_BASE_URL+'/api/profile?username='+cookie.load('username'),
+                {withCredentials:true})
+            .then(res =>{
+              this.setState({
+                friends: res.data.following_ids,
+                refreshFriend: false,
+              })
+            })
+    }
+    console.log("line 119 listening " +this.state.friends)
+  }
+
   subMenu () {
+    if (this.state.isLoggedIn){
+      if (this.state.refreshFriend) {
+        this.getFriendList();
+      }
+      let friendList = []
+    for (let i=0; i<this.state.friends.length;i++){
+      friendList.push(<Menu.Item key={(i+1).toString()}>{this.state.friends[i]}</Menu.Item>)
+    }
     return (
       <Sider width={200} className="site-layout-background">
         <Menu
           mode="inline"
           defaultSelectedKeys={['1']}
-          defaultOpenKeys={['sub1']}
+          defaultOpenKeys={['FriendList']}
           style={{ height: '100%', borderRight: 0 }}
         >
           <SubMenu
-            key="sub1"
+            key="FriendList"
             title={
               <span>
                 <UserOutlined />
-                subnav 1
+                Friends
               </span>
             }
           >
-            <Menu.Item key="1">option1</Menu.Item>
-            <Menu.Item key="2">option2</Menu.Item>
-            <Menu.Item key="3">option3</Menu.Item>
-            <Menu.Item key="4">option4</Menu.Item>
+            {friendList}
           </SubMenu>
         </Menu>
       </Sider>
-
     )
+    }
   }
 
   content (){
@@ -134,6 +168,7 @@ class Home extends Component{
       )
     }
     return (
+      
       <Content
         className="site-layout-background"
         style={{
@@ -144,7 +179,7 @@ class Home extends Component{
       >
         <Upload refresh={this.refreshTimeLine}/>
         <Divider></Divider>
-        <MyTimeline refresh={this.state.refresh}/>
+        <MyTimeline refresh={this.state.refreshTimeline}/>
       </Content>)
   }
 
@@ -163,9 +198,8 @@ class Home extends Component{
           </Header>
 
             <Layout style={{ padding: '50px 50px 0px 50px' }}>
-              {submenu}
+            {submenu}
             {content}
-
             </Layout>
 
           <Footer style={{ textAlign: 'center' }}>Moment ©2020 Created by Team Random Star</Footer>

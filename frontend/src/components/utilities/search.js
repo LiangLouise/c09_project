@@ -9,8 +9,8 @@ const { Search } = Input;
 
 
 class SearchBar extends Component{
-    constructor(){
-        super()
+    constructor(props){
+        super(props)
         this.state = {
             visible: false,
             query:'',
@@ -70,7 +70,9 @@ class SearchBar extends Component{
         this.setState({
               visible: false,
               query: '',
+              data: [],
           }); 
+          this.props.refresh();
     };
     
     showModal = () => {
@@ -119,8 +121,10 @@ class SearchBar extends Component{
             });
     }
     getUsers = () => {
-        this.constructTable();
-        this.showModal();
+        if (this.state.query.length !==0){
+            this.constructTable();
+            this.showModal();
+        }  
     }
     
 
