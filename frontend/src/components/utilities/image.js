@@ -1,8 +1,17 @@
 import React, { Component } from 'react';
 
 import { loadModels, getFullFaceDescription, createMatcher } from '../faceapi/face';
+import axios from 'axios';
+import ChangeName from "./changeName";
 
-const JSON_PROFILE = require('../descriptors/bnk48.json');
+import { Form,
+    Button,
+    Checkbox,
+    Input,
+    Typography,
+    Modal, message } from 'antd';
+
+let JSON_PROFILE = require('../descriptors/bnk48.json');
 
 
 class Image extends Component{
@@ -20,6 +29,18 @@ class Image extends Component{
             faceMatcher: null
         };
     }
+
+    /*
+    callDb = async () => {
+        axios
+            .get(process.env.REACT_APP_BASE_URL+'/facedata/', {withCredentials: true})
+            .then(res => {
+                JSON_PROFILE = res;
+            })
+            .catch(err => {
+                message.error(err.response.data);
+            });
+    }*/
     
 
     componentWillMount = async () => {
@@ -43,6 +64,7 @@ class Image extends Component{
             let match = await this.state.descriptors.map(descriptor =>
               this.state.faceMatcher.findBestMatch(descriptor)
             );
+            
             this.setState({ match });
           }
       };
@@ -56,6 +78,7 @@ class Image extends Component{
         const width = this.state.width;
         const realwidth = this.state.realwidth;
         const ratio = width/realwidth;
+        const descriptors = this.state.descriptors;
         //console.log("width", width, "real", realwidth);
 
         let drawBox = null;
@@ -79,19 +102,15 @@ class Image extends Component{
                   }}
                 >
                   {!!match && !!match[i] ? (
-                    <p
+                    <div
                       style={{
-                        backgroundColor: 'blue',
-                        border: 'solid',
-                        borderColor: 'blue',
-                        width: _W,
-                        marginTop: 0,
-                        color: '#fff',
-                        transform: `translate(-3px,${_H}px)`
+                        transform: `translate(${_W}px,-3px)`
                       }}
                     >
-                      {match[i]._label}
-                    </p>
+                      {match[i]._label != "unknown" ? (<ChangeName previousName={match[i]._label} descriptors={descriptors[i]}/>) : (
+                          <ChangeName previousName={"Change Me"} descriptors={descriptors[i]}/>
+                      )}
+                    </div>
                   ) : null}
                 </div>
               </div>
