@@ -258,7 +258,7 @@ class MyTimeline extends Component{
                             </Card>
                             
                         </Col>
-                        <Col span={12}>
+                        <Col span={10}>
                             <Content>
                             {/* <InfiniteScroll
 
@@ -326,6 +326,9 @@ class MyTimeline extends Component{
                                             </Form.Item> 
                                         </Form>
                             </Content>
+                        </Col>
+                        <Col span={2}>
+                            <Button danger>Delete</Button>
                         </Col>
                         <Divider></Divider>
                         </Row>
