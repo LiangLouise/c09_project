@@ -3,7 +3,7 @@ const {signin, signout, signup} = require('./controllers/authController');
 const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById} = require('./controllers/postController');
 const {followUser, unfollowUser, getFollowingList, isFollowing, getFollowerList, isFollowedBy} = require('./controllers/followingController');
 const {searchUser} = require("./controllers/searchController");
-const {getAvatar, updateAvatar, updateFaceData, getFaceData} = require("./controllers/profileController");
+const {getAvatar, updateAvatar, updateFaceData, getFaceData, getUserProfile} = require("./controllers/profileController");
 const {addComment, getCommentByPost, getCommentCountByPost, deleteCommentById} = require("./controllers/commentController");
 const validation = require('./utils/validation.js');
 const {postUploads} = require('./config/multerconfig');
@@ -99,6 +99,8 @@ module.exports = function (app) {
     searchRoutes.get('/', validation.isAuthenticated, validation.checkUsername('query'), validation.checkPageNumber, searchUser);
 
     app.use("/api/profile", profileRoutes);
+
+    profileRoutes.get('/', validation.isAuthenticated, validation.checkUsername('query'), getUserProfile);
 
     // GET /api/profile/avatar?username={name of user}
     // Res: avatar file

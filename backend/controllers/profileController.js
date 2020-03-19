@@ -68,3 +68,15 @@ exports.getFaceData = function (req, res, next) {
         return res.json({data: facedata.data});
     });
 };
+
+exports.getUserProfile = function (req, res, next) {
+    let username = req.query.username;
+    db.users.findOne({_id: username}, {salt: 0, hash: 0, avatar:0}, function (err, user) {
+        if (err) {
+            logger.error(err);
+            return res.status(500).end();
+        }
+        if (!user) return res.status(404).end();
+        return res.json(user);
+    })
+};
