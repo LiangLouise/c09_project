@@ -77,10 +77,9 @@ class Signup extends React.Component {
         axios
             .post(process.env.REACT_APP_BASE_URL+'/signup/', user, {withCredentials: true})
             .then(res => {
-                message.success("Welcome to Moment");
+                message.success("Welcome! Please Sign In.");
                 this.setState({ visible: false});
                 this.onReset();
-                this.props.action();
             }).catch(err => {
                 message.error(err.response.data);
                 this.onReset();

@@ -20,8 +20,6 @@ exports.signup = function(req, res, next) {
                 logger.error(err);
                 return res.status(500).end();
             }
-            // start a session after sign up
-            req.session.username = username;
             return res.json("user " + username + " signed up");
         });
     });

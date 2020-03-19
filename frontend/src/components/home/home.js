@@ -39,7 +39,7 @@ class Home extends Component{
   rightButtons () {
     if (!this.state.isLoggedIn) {
       return <div style={{float:"right"}}>
-        <div id="signup" style={{float:"right"}}><Signup action={this.loginHandler}/></div>
+        <div id="signup" style={{float:"right"}}><Signup/></div>
         <div id="login" style={{float:"right"}}><Login action={this.loginHandler}/></div>
         <div id="searchbar" style={{float:"right"}}><SearchBar/></div>
       </div>;
