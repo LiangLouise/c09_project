@@ -55,6 +55,10 @@ class MyTimeline extends Component{
     handleChange = (e) =>
         this.setState({ [e.target.name]: e.target.value });
 
+    componentDidMount() {
+        this.fetchData();
+    }
+
     fetchData = () => {
         let data = []
         let temp = {}
@@ -132,11 +136,11 @@ class MyTimeline extends Component{
 
                                         
 
-        let a;
+        let a = [];
         for (let i=0; i<imgCount; i++){
-            a = <div>
+            a.push(<div>
                     <img src={`${process.env.REACT_APP_BASE_URL}/api/posts/${postId}/images/${i}/`}/>
-                </div>
+                  </div>);
         }
         return a
     }

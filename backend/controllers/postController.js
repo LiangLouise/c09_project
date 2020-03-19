@@ -113,7 +113,7 @@ exports.getPostsByUser = function (req, res, next) {
 exports.getPostPicture = function (req, res, next) {
     let post_id = ObjectId(req.params.id);
     let image_index = req.params.image_index;
-    let sessionUsername = req.query.username;
+    let sessionUsername = req.session.username;
 
     db.posts.findOne({_id: post_id}, function (err, post) {
         if (err) {
