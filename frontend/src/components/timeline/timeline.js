@@ -80,7 +80,7 @@ class MyTimeline extends Component{
     }
 
     fetchData = (fromFirst) => {
-        
+        let data = []
         let temp = {};
         let username = cookie.load('username');
         console.log(this.state.page);
