@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
-import { Input, Modal, Table, Row,Button } from 'antd';
+import { Input, Modal, Table,Button } from 'antd';
 import axios from 'axios';
 import cookie from 'react-cookies'
 

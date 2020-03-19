@@ -4,8 +4,6 @@ import 'antd/dist/antd.css';
 import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button, Carousel} from 'antd';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { MessageOutlined} from '@ant-design/icons';
-import Image from '../utilities/image';
 import axios from 'axios';
 import cookie from 'react-cookies'
 
@@ -48,6 +46,7 @@ class MyTimeline extends Component{
             
         };
         this.sendComment = this.sendComment.bind(this);
+        // this.postImages = this.postImages.bind(this);
     }
     onReset = () => {
         this.formRef.current.resetFields();
@@ -110,12 +109,12 @@ class MyTimeline extends Component{
         }, 1500);
         console.log(this.state.posts)
     };
-    sendComment(commentId){
+    sendComment(postId){
 
         let content = {content:this.state.comment}
         axios
             .post(process.env.REACT_APP_BASE_URL+
-                '/api/posts/'+commentId
+                '/api/posts/'+postId
                 +'/comments/',
                 content,
                 {withCredentials:true})
@@ -126,7 +125,20 @@ class MyTimeline extends Component{
         this.setState({
             comment: '',
         })
-        this.onReset()
+        this.onReset();
+    }
+
+    postImages(postId, imgCount){
+
+                                        
+
+        let a;
+        for (let i=0; i<imgCount; i++){
+            a = <div>
+                    <img src={`${process.env.REACT_APP_BASE_URL}/api/posts/${postId}/images/${i}/`}/>
+                </div>
+        }
+        return a
     }
     fetchMoreComments = () => {
         // if (this.state.comments.length >= 3) {
@@ -181,19 +193,7 @@ class MyTimeline extends Component{
                         <Col span={10}>
                             <Card
                                 hoverable
-                                
-                                cover={<Carousel dotPosition="top">
-                                        <div>
-                                            <img src= "https://media.discordapp.net/attachments/303411519738085377/683448614835585057/unknown.png?width=1194&height=672"/>
-                                        </div>
-                                        <div>
-                                            <img src= "https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png"/>
-                                        </div>
-                                        <div>
-                                            <img src ="https://cdn.discordapp.com/attachments/303411519738085377/687166367929073727/20517284_1384331048330396_573196050_o.png"/>
-                                        </div>
-
-                            </Carousel>}
+                                cover={this.postImages(post.id, post.count)}
                             >
                                 <Meta 
                                 title={post.title}
@@ -244,7 +244,6 @@ class MyTimeline extends Component{
                                         {/* </InfiniteScroll> */}
                                         <Form
                                             name="login"
-                                            id={post.id}
                                             {...formItemLayout}
                                             onFinish={this.sendComment.bind(this,post.id)}
                                             ref={this.formRef}
