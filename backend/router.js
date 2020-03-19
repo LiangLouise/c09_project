@@ -32,6 +32,10 @@ module.exports = function (app) {
     postRoutes.post('/:id/comments/', validation.isAuthenticated, validation.sanitizeComment,
         validation.isObjectId('params'), addComment);
 
+    // GET /api/posts/following/?page={page number}
+    // user to see the all the posts created by their following
+    postRoutes.get('/following/', validation.isAuthenticated, validation.checkPageNumber, getPostOfFollowing);
+
     // GET /api/posts/{PostID}/
     // Res: Status code: 403 -> Not Owner
     //                   404 -> Post doesn't exists
@@ -60,10 +64,6 @@ module.exports = function (app) {
     // GET /api/posts/?username={friend username}&page={page number}
     // ONLY CAN VIEW following users' POSTS
     postRoutes.get('/', validation.isAuthenticated, validation.checkUsername('query'), getPostsByUser);
-
-    // GET /api/posts/following/?page={page number}
-    // user to see the all the posts created by their following
-    postRoutes.get('/following/', validation.isAuthenticated, validation.checkPageNumber, getPostOfFollowing);
 
     app.use("/api/follow", followRoutes);
     // POST /api/follow/ {"username": "user to follow"}
