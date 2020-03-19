@@ -17,7 +17,8 @@
     "react-dom": "^16.13.0",
     "react-geolocated": "^3.0.1",
     "react-infinite-scroll-component": "^5.0.4",
-    "react-scripts": "3.4.0"
+    "react-scripts": "3.4.0",
+    "react-timeago": "^4.4.0"
   },
   "scripts": {
     "start": "react-scripts start",
