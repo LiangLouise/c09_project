@@ -186,10 +186,11 @@ class UploadImage extends React.Component{
         axios
             .post(API_END_POINT+'/api/posts', data, config)
             .then((res) => {
-                console.log(res)
-        }).catch((err) => {
-            console.log(err)
-        })
+                message.success("The Post is sent");
+                this.props.refresh();
+            }).catch((err) => {
+                message.error(err.response.data);
+            })
         this.onReset();
     }
     

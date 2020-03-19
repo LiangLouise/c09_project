@@ -6,9 +6,6 @@ import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
 import cookie from 'react-cookies'
-
-
-
 const { Meta } = Card;
 const {Content} = Layout;
 
@@ -26,13 +23,12 @@ const style = {
     padding: 8
   };
 
-let username = cookie.load('username');
-
+const MAX_POSTS_NUMBER_PER_PAGE = 10;
 
 class MyTimeline extends Component{
     formRef = React.createRef();
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
 
         this.state={
             isLoggedIn: (cookie.load('username') !== "" && cookie.load('username') !== undefined),
@@ -44,8 +40,10 @@ class MyTimeline extends Component{
             hasMorePost: true,
             hasMoreCmt: true,
             postCount: 0,
+
         };
         this.sendComment = this.sendComment.bind(this);
+        this.fetchData = this.fetchData.bind(this);
 
     }
     onReset = () => {
@@ -56,6 +54,7 @@ class MyTimeline extends Component{
         this.setState({ [e.target.name]: e.target.value });
 
     componentDidMount() {
+        this.setState({page: this.state.page});
         this.fetchData();
         this.getPostCount();
     }
@@ -70,15 +69,26 @@ class MyTimeline extends Component{
         }
         
     }
+    componentWillReceiveProps(props) { 
+        if (props.refresh) {
+            console.log(props.refresh);
+            this.fetchData();
+        }
+    }
+
     fetchData = () => {
-        let data = []
-        let temp = {}
+        let data = [];
+        let temp = {};
+        let username = cookie.load('username');
         axios
             .get(process.env.REACT_APP_BASE_URL+
             '/api/posts/?username='+username+'&page='+this.state.page,
             {withCredentials: true})
             .then(res =>{
-                for (let i=0; i< res.data.length;i++){
+                let newPostsNum = this.state.page * MAX_POSTS_NUMBER_PER_PAGE 
+                                    + res.data.length 
+                                    - this.state.posts.length;
+                for (let i=0; i< newPostsNum;i++){
                     console.log(res.data[i])
                     temp = {
                         'title': res.data[i].title,
@@ -89,42 +99,47 @@ class MyTimeline extends Component{
                         'id': res.data[i]._id,
                         'page': 0,
                         'comments': [],
-                        'username': res.data[i].username,
-                        // 'comments': [{src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
-                        //             content:"test1"},
-                        //             {src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
-                        //             content:"test2"},
-                        //             {src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
-                        //             content:"test3"},
-                        //             {src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
-                        //             content:"test4"},
-                        //             {src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
-                        //             content:"test5"},]
+                        'username': res.data[i].username
                     }
-                    data.push(temp)
-                }   
-                this.setState({
-                    posts: this.state.posts.concat(JSON.parse(JSON.stringify(data))),
-                    page: this.state.page+1
-                }) 
+                    data.push(temp);
+                }
+                console.log(data.length);
+
+                if (data.length == 0 && this.state.page > 0) {
+                    this.setState({
+                        hasMorePost: false,
+                        page: this.state.page-1
+                    });
+                }
+                else if (data.length < 10) {
+                    
+                    this.setState({
+                        hasMorePost: false,
+                        posts: JSON.parse(JSON.stringify(data)).concat(this.state.posts)
+                    }); 
+                } else {
+                    this.setState({
+                        hasMorePost: true,
+                        posts: JSON.parse(JSON.stringify(data)).concat(this.state.posts),
+                        page: this.state.page+1
+                    }); 
+                }
                 
             });
         this.fetchMoreComments();
         console.log(this.state.posts)
     }
+    
     fetchMoreData = () => {
         // a fake async api call like which sends
         // 20 more records in 1.5 secs
-        if (this.state.posts.length >= 17) {
-            this.setState({ hasMorePost: false });
-            return;
+        if (this.state.hasMorePost) {
+            setTimeout(() => {
+                this.fetchData();
+            }, 1000);
         }
-        setTimeout(() => {
-            console.log(this.state.page)
-            this.fetchData();
-        }, 1500);
-        console.log(this.state.posts)
     };
+
     sendComment(postId){
 
         let content = {content:this.state.comment}
@@ -222,7 +237,7 @@ class MyTimeline extends Component{
                                 <Meta 
                                 title={post.title}
                                 avatar={<Avatar
-                                    src={"https://cdn.discordapp.com/attachments/303411519738085377/687166367929073727/20517284_1384331048330396_573196050_o.png"}
+                                    src={process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+cookie.load('username')}
                                     alt="Han Solo"
                                     />}
                                 description={post.description} />
