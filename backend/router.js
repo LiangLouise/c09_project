@@ -4,6 +4,7 @@ const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById} 
 const {followUser, unfollowUser, getFollowingList, isFollowing, getFollowerList, isFollowedBy} = require('./controllers/followingController');
 const {searchUser} = require("./controllers/searchController");
 const {getAvatar, updateAvatar, updateFaceData, getFaceData} = require("./controllers/profileController");
+const {addComment, getCommentByPost, getCommentCountByPost, deleteCommentById} = require("./controllers/commentController");
 const validation = require('./utils/validation.js');
 const {postUploads} = require('./config/multerconfig');
 // const config = require('config');
@@ -24,8 +25,12 @@ module.exports = function (app) {
     app.use("/api/posts", postRoutes);
     // POST /api/posts/
     // Body formData
-    postRoutes.post('/', validation.isAuthenticated, postUploads,
+    postRoutes.post('/', validation.isAuthenticated, postUploads, validation.sanitizePost,
         validation.notEmptyFiles, validation.checkImageFiles, createPost);
+
+    // POST /api/posts/{PostID}/comments/ {"content": "Your Comment Content"}
+    postRoutes.post('/:id/comments/', validation.isAuthenticated, validation.sanitizeComment,
+        validation.isObjectId('params'), addComment);
 
     // GET /api/posts/{PostID}/
     // Res: Status code: 403 -> Not Owner
@@ -33,9 +38,15 @@ module.exports = function (app) {
     //                   200 -> Success
     postRoutes.get('/:id/', validation.isAuthenticated, validation.isObjectId('params'), getPostById);
 
-    // GET /api/posts/images/{image id}/
-    // You can get the id from the previous one request
-    postRoutes.get('/images/:id/', validation.isAuthenticated, validation.isObjectId('params'), getPostPicture);
+    // Get Posts comments
+    // GET /api/posts/{PostID}/comments/?page={page number}
+    postRoutes.get('/:id/comments/', validation.isAuthenticated, validation.isObjectId('params'), validation.checkPageNumber, getCommentByPost);
+
+    postRoutes.get('/:id/commentsCount/', validation.isAuthenticated, validation.isObjectId('params'), getCommentCountByPost);
+
+    // GET /api/posts/{PostID}/images/{image_index}/
+    // You can get the total number of images from GET /api/posts/{PostID}/ as "pictureCounts"
+    postRoutes.get('/:id/images/:image_index/', validation.isAuthenticated, validation.isObjectId('params'), getPostPicture);
 
     // DELETE /api/posts/{PostID}/
     // ONLY OWNER CAN DELETE THEIR OWN POSTS
@@ -43,6 +54,8 @@ module.exports = function (app) {
     //                   404 -> Post doesn't exists
     //                   200 -> Success
     postRoutes.delete('/:id/', validation.isAuthenticated, validation.isObjectId('params'), deletePostById);
+
+    postRoutes.delete('/comments/:id/', validation.isAuthenticated, validation.isObjectId('params'), deleteCommentById);
 
     // GET /api/posts/?username={friend username}&page={page number}
     // ONLY CAN VIEW following users' POSTS
@@ -86,11 +99,12 @@ module.exports = function (app) {
     searchRoutes.get('/', validation.isAuthenticated, validation.checkUsername('query'), validation.checkPageNumber, searchUser);
 
     app.use("/api/profile", profileRoutes);
-    // GET /api/avatar?username={name of user}
+
+    // GET /api/profile/avatar?username={name of user}
     // Res: avatar file
     profileRoutes.get('/avatar/', validation.isAuthenticated, validation.checkUsername('query'), getAvatar);
 
-    // PUT /api/avatar
+    // PUT /api/profile/avatar
     // FormDat:
     //  Avatar
     // Res: 200 success

@@ -5,6 +5,9 @@ if [ "$1" == 'production' ]; then
 
 	imagesUploads="/var/www/moment.ninja.uploads/*"
 	avatarUploads="/var/www/moment.ninja.avatars/*"
+
+	echo "Start to clear Redis Session Store"
+  echo FLUSHALL | redis-cli
 else
 	echo 'clear dev uploads files'
 
@@ -21,5 +24,5 @@ rm -f $avatarUploads
 echo "Start to clear MongoDB"
 mongo ~/scripts/clearMongo.js
 
-echo "Done !"
+echo "Done!"
 exit 0

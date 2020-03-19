@@ -4,7 +4,7 @@
     "url": "mongodb://localhost:27017",
     "dbname": "moment",
     "connectionString": "localhost:27017/moment",
-    "collections": ["users", "posts", "comments", "facedata", "images","avatars"]
+    "collections": ["users", "posts", "comments", "facedata"]
   },
   "cors": {
     "origin": ["https://moment.ninja"],
@@ -39,5 +39,6 @@
   "session": {
     "maxAge": 86400,
     "secret": "9N8EnnNJh5vgR86s"
-  }
+  },
+  "maxCommentLength":150
 }

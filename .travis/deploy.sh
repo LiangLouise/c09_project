@@ -32,7 +32,7 @@ rsync -a -P --delete ${TRAVIS_BUILD_DIR}/scripts/* root@${SERVER_HOST}:~/scripts
 
 if [[ "${TRAVIS_COMMIT_MESSAGE}" == *"${CLEAR_CMD}"* ]]; then
   echo "Detect cmd to clear server uploads and mongo DB"
-  ssh -t root@${SERVER_HOST} "sudo bash ~/scripts/clearUploads.sh production"
+  ssh -t root@${SERVER_HOST} "sudo bash ~/scripts/clearData.sh production"
 fi
 
 # Run Express in production mode

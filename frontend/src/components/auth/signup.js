@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
-import { Modal, Button,Form, Checkbox,Input,Typography } from 'antd';
+import { Modal, Button,Form, Checkbox,Input,Typography, message } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
@@ -77,12 +77,14 @@ class Signup extends React.Component {
         axios
             .post(process.env.REACT_APP_BASE_URL+'/signup/', user, {withCredentials: true})
             .then(res => {
-                console.log(res);
+                message.success("Welcome! Please Sign In.");
+                this.setState({ visible: false});
+                this.onReset();
+            }).catch(err => {
+                message.error(err.response.data);
+                this.onReset();
             });
-        this.setState({
-            visible: false,
-        });
-        this.onReset();
+        
     }
   
     handleCancel = e => {

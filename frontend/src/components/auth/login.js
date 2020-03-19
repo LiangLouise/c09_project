@@ -7,7 +7,7 @@ import { Form,
     Checkbox,
     Input,
     Typography,
-    Modal } from 'antd';
+    Modal, message } from 'antd';
 
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
@@ -36,18 +36,15 @@ class Login extends React.Component{
           visible: false,
           username: '',
           password: '',
+          isLoggedIn: false
         };
         this.handleSubmit = this.handleSubmit.bind(this);
     }
   
     showModal = () => {
-        this.setState({
-              visible: true,
-          }); 
+        this.setState({ visible: true }); 
     };
   
-
-
     onReset = () => {
         this.formRef.current.resetFields();
     }
@@ -63,28 +60,29 @@ class Login extends React.Component{
         axios
             .post(process.env.REACT_APP_BASE_URL+'/signin/', user, {withCredentials: true})
             .then(res => {
-                console.log(res);
+                message.success("Welcome to Moment");
+                this.setState({
+                    visible: false,
+                    username: '',
+                    password: '',
+                    isLoggedIn: true
+                });
+                this.onReset();
+                this.props.action();
+            })
+            .catch(err => {
+                message.error(err.response.data);
+                this.onReset();
             });
-        this.setState({
-            visible: false,
-            username: '',
-            password: ''
-        });
-        this.onReset();
-    }
+        
+    };
 
   
     handleCancel = e => {
-      console.log(e);
-      this.setState({
-        visible: false,
-      });
-      this.onReset();
-
+        this.setState({ visible: false });
+        this.onReset();
     };
 
-    
-    
     render(){
         return(
             <div>
