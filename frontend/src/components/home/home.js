@@ -16,7 +16,7 @@ import Icon from './../../Icon.png';
 
 
 const { SubMenu } = Menu;
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Footer, Sider, Breadcrumb } = Layout;
 //const { Meta } = Card;
 
 
@@ -29,6 +29,7 @@ class Home extends Component{
       isLoggedIn: (cookie.load('username') !== "" && cookie.load('username') !== undefined)
     };
     this.menu = this.menu.bind(this);
+    this.subMenu = this.subMenu.bind(this);
     this.content = this.content.bind(this);
     this.loginHandler = this.loginHandler.bind(this);
   }
@@ -70,9 +71,38 @@ class Home extends Component{
               <div id="profile" style={{float:"right"}}><Button ghost={true}>{cookie.load('username')}</Button></div>
               <div id="logout" style={{float:"right"}}><Logout action={this.loginHandler}/></div>
               <div id="searchbar" style={{float:"right"}}><SearchBar/></div>
-            </div>
+              </div>
       </Menu>
     );  
+  }
+
+  subMenu () {
+    return (
+      <Sider width={200} className="site-layout-background">
+        <Menu
+          mode="inline"
+          defaultSelectedKeys={['1']}
+          defaultOpenKeys={['sub1']}
+          style={{ height: '100%', borderRight: 0 }}
+        >
+          <SubMenu
+            key="sub1"
+            title={
+              <span>
+                <UserOutlined />
+                subnav 1
+              </span>
+            }
+          >
+            <Menu.Item key="1">option1</Menu.Item>
+            <Menu.Item key="2">option2</Menu.Item>
+            <Menu.Item key="3">option3</Menu.Item>
+            <Menu.Item key="4">option4</Menu.Item>
+          </SubMenu>
+        </Menu>
+      </Sider>
+
+    )
   }
 
   content (){
@@ -90,8 +120,7 @@ class Home extends Component{
             description="Please Login to Create & View Moments :)" 
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             imageStyle={{
-              margin: '60px',
-              height: 60,
+              height: 250
             }}
             />
         </Content>
@@ -116,6 +145,7 @@ class Home extends Component{
   render(){
     let menu = this.menu();
     let content = this.content();
+    let submenu = this.subMenu();
 
     return(
           <Layout >
@@ -123,10 +153,10 @@ class Home extends Component{
             <img className="icon" src={Icon}/>
             <img className="logo" src={Logo}/>
             {menu}
-            
           </Header>
 
             <Layout style={{ padding: '50px 50px 0px 50px' }}>
+              {submenu}
             {content}
 
             </Layout>

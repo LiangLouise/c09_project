@@ -35,6 +35,7 @@ class MyTimeline extends Component{
         super();
 
         this.state={
+            isLoggedIn: (cookie.load('username') !== "" && cookie.load('username') !== undefined),
             comment: '',
             page: 0,
             posts: [],
@@ -42,7 +43,7 @@ class MyTimeline extends Component{
             items: Array.from({ length: 20 }),
             hasMorePost: true,
             hasMoreCmt: true,
-            
+            postCount: 0,
         };
         this.sendComment = this.sendComment.bind(this);
 
@@ -56,8 +57,19 @@ class MyTimeline extends Component{
 
     componentDidMount() {
         this.fetchData();
+        this.getPostCount();
     }
-
+    getPostCount = () => {
+        if (this.state.isLoggedIn){
+            axios
+                .get(process.env.REACT_APP_BASE_URL+'/api/profile?username='+cookie.load('username'),
+                    {withCredentials: true})
+                .then(res =>{
+                    console.log(res.data)
+                })
+        }
+        
+    }
     fetchData = () => {
         let data = []
         let temp = {}
