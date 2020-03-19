@@ -41,13 +41,13 @@ class Home extends Component{
       return <div style={{float:"right"}}>
         <div id="signup" style={{float:"right"}}><Signup/></div>
         <div id="login" style={{float:"right"}}><Login action={this.loginHandler}/></div>
-        <div id="searchbar" style={{float:"right"}}><SearchBar/></div>
       </div>;
     };
     
     return <div style={{float:"right"}}>
       <div id="profile" style={{float:"right"}}><Button ghost={true}>{cookie.load('username')}</Button></div>
       <div id="logout" style={{float:"right"}}><Logout action={this.loginHandler}/></div>
+      <div id="searchbar" style={{float:"right"}}><SearchBar/></div>
     </div>;  
   }
 

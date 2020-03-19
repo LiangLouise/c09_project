@@ -45,8 +45,9 @@ class MyTimeline extends Component{
             hasMoreCmt: true,
             
         };
+        this.fetchData();
         this.sendComment = this.sendComment.bind(this);
-        // this.postImages = this.postImages.bind(this);
+
     }
     onReset = () => {
         this.formRef.current.resetFields();
@@ -128,16 +129,19 @@ class MyTimeline extends Component{
         this.onReset();
     }
 
-    postImages(postId, imgCount){
-
-                                        
-
-        let a;
-        for (let i=0; i<imgCount; i++){
-            a = <div>
-                    <img src={`${process.env.REACT_APP_BASE_URL}/api/posts/${postId}/images/${i}/`}/>
-                </div>
+    // getImages(postId,imageCount){
+    //     for (let i=0; i<imageCount; i++){
+    //         this.getSpecificImage(postId,i)
+    //     }
+    // }
+    getSpecificImages(postId,imageCount){
+        let a = []
+        for (let i=0; i< imageCount; i++){
+            a.push(<div>
+                <img src={`${process.env.REACT_APP_BASE_URL}/api/posts/${postId}/images/${i}/`}/>
+            </div>)
         }
+         
         return a
     }
     fetchMoreComments = () => {
@@ -193,7 +197,9 @@ class MyTimeline extends Component{
                         <Col span={10}>
                             <Card
                                 hoverable
-                                cover={this.postImages(post.id, post.count)}
+                                cover={<Carousel dotPosition="top">
+                                            {this.getSpecificImages(post.id, post.count)}
+                                        </Carousel>}
                             >
                                 <Meta 
                                 title={post.title}
