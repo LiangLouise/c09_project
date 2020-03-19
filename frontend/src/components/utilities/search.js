@@ -167,7 +167,7 @@ class SearchBar extends Component{
         return (
             <div>
             <Search
-                placeholder="input search text"
+                placeholder="Search users here"
                 name="query"
                 onChange={this.onChange}
                 value={this.state.query}
