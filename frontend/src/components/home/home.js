@@ -26,18 +26,25 @@ class Home extends Component{
     super();
 
     this.state={
-      isLoggedIn: (cookie.load('username') !== "" && cookie.load('username') !== undefined)
+      isLoggedIn: (cookie.load('username') !== "" && cookie.load('username') !== undefined),
+      refresh: false
     };
     this.menu = this.menu.bind(this);
     this.content = this.content.bind(this);
     this.loginHandler = this.loginHandler.bind(this);
+    this.refreshTimeLine = this.refreshTimeLine.bind(this);
   }
 
   loginHandler() {
     this.setState({isLoggedIn: !this.state.isLoggedIn});
   }
 
-  menu () {
+  refreshTimeLine() {
+    console.log('Ask to refresh');
+    this.setState({refresh: true});
+  }
+
+  menu() {
     if (!this.state.isLoggedIn) {
       return(
             <Menu
@@ -106,9 +113,9 @@ class Home extends Component{
         // minHeight: 280,
         }}
       >
-        <Upload/>
+        <Upload refresh={this.refreshTimeLine}/>
         <Divider></Divider>
-        <MyTimeline/>
+        <MyTimeline refresh={this.state.refresh}/>
       </Content>)
   }
 
