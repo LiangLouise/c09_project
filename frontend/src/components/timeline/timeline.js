@@ -9,7 +9,6 @@ import cookie from 'react-cookies'
 
 
 
-
 const { Meta } = Card;
 const {Content} = Layout;
 
@@ -73,7 +72,7 @@ class MyTimeline extends Component{
                         'title': res.data[i].title,
                         'description': res.data[i].dis,
                         'pictures': res.data[i].pictures,
-                        'date': Date(res.data[i].time),
+                        'date': moment(res.data[i].time).format('llll'),
                         'count': res.data[i].pictureCounts,
                         'id': res.data[i]._id,
                         'page': 0,
