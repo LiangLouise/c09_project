@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './timeline.css';
 import 'antd/dist/antd.css';
-import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button, Carousel} from 'antd';
+import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button, Carousel, Spin} from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
@@ -22,6 +23,7 @@ const style = {
     margin: 6,
     padding: 8
   };
+const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 const MAX_POSTS_NUMBER_PER_PAGE = 10;
 
@@ -53,29 +55,38 @@ class MyTimeline extends Component{
 
     componentDidMount() {
         this.setState({page: this.state.page});
-        this.fetchData();
+        this.fetchData(false);
     }
 
     componentWillReceiveProps(props) {
         
         if (props.refresh) {
             console.log(props.refresh);
-            this.fetchData();
+            this.fetchData(true);
         }
     }
 
-    fetchData = () => {
-        let data = [];
+    fetchData = (fromFirst) => {
+        
         let temp = {};
         let username = cookie.load('username');
+        console.log(this.state.page);
+        let page;
+
+        if (fromFirst) page = 0;
+        else page = this.state.page;
+
         axios
             .get(process.env.REACT_APP_BASE_URL+
-            '/api/posts/?username='+username+'&page='+this.state.page,
+            '/api/posts/?username='+username+'&page='+page,
             {withCredentials: true})
             .then(res =>{
+                let data = [];
                 let new_posts_num = this.state.page * MAX_POSTS_NUMBER_PER_PAGE 
                                     + res.data.length 
                                     - this.state.posts.length;
+                console.log(new_posts_num);
+                console.log(res.data);
                 for (let i=0; i< new_posts_num;i++){
                     console.log(res.data[i])
                     temp = {
@@ -91,31 +102,37 @@ class MyTimeline extends Component{
                     }
                     data.push(temp);
                 }
-                console.log(data.length);
-
-                if (data.length == 0 && this.state.page > 0) {
-                    this.setState({
-                        hasMorePost: false,
-                        page: this.state.page-1
-                    });
-                }
-                else if (data.length < 10) {
-                    
-                    this.setState({
-                        hasMorePost: false,
-                        posts: JSON.parse(JSON.stringify(data)).concat(this.state.posts)
-                    }); 
+                if (fromFirst){
+                    if (data.length > 0 && data.length <= 10) {
+                        this.setState({
+                            posts: data.concat(this.state.posts)
+                        });
+                    } else if (data.length > 10) {
+                        // Need to think about 
+                    }
                 } else {
-                    this.setState({
-                        hasMorePost: true,
-                        posts: JSON.parse(JSON.stringify(data)).concat(this.state.posts),
-                        page: this.state.page+1
-                    }); 
+                    if (res.data.length == 0 && this.state.page > 0) {
+                        this.setState({
+                            hasMorePost: false,
+                            page: this.state.page-1
+                        });
+                    }
+                    else if (res.data.length < 10) {
+                        this.setState({
+                            hasMorePost: false,
+                            posts: this.state.posts.concat(data)
+                        }); 
+                    } else {
+                        this.setState({
+                            hasMorePost: true,
+                            posts: this.state.posts.concat(data),
+                            page: this.state.page+1
+                        }); 
+                    }
                 }
-                
             });
         this.fetchMoreComments();
-        console.log(this.state.posts)
+       
     }
     
     fetchMoreData = () => {
@@ -123,7 +140,7 @@ class MyTimeline extends Component{
         // 20 more records in 1.5 secs
         if (this.state.hasMorePost) {
             setTimeout(() => {
-                this.fetchData();
+                this.fetchData(false);
             }, 1000);
         }
     };
@@ -203,7 +220,7 @@ class MyTimeline extends Component{
                     next={this.fetchMoreData}
                     hasMore={this.state.hasMorePost}
                     style={this.style}
-                    loader={<h4>Loading...</h4>}
+                    loader={<div style={{alignContent: 'center'}}><Spin indicator={loadingIcon} /></div>}
                     endMessage={
                         <p style={{textAlign: 'center'}}>
                           <b>Yay! You have seen it all</b>
