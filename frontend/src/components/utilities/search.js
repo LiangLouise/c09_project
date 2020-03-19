@@ -18,37 +18,6 @@ class SearchBar extends Component{
             data: [],
             page: 0,
             sortOrder: null,
-            // columns:[
-            //     {
-            //         title: 'Name',
-            //         dataIndex: 'name',
-            //         key: 'name',
-            //         sortOrder: 'ascend',
-            //         sorter: (a, b) => a.name.localeCompare(b.name),
-            //         render: text => <a
-            //                             data-name={text}
-            //                         >
-            //                             {text}
-            //                         </a>,
-            //     },
-            //     {
-            //         title: 'Action',
-            //         dataIndex: 'action',
-            //         key: 'action',
-            //         render: (text, record) => (
-            //           <span>
-            //             <a 
-            //                 style={{ marginRight: 16 }}
-            //                 onClick={this.onRequest}
-            //                 data-name={record.name}
-            //                 data-action={record.action}
-            //             >
-            //                 {text} 
-            //             </a>
-            //           </span>
-            //         )
-            //     },
-            // ],
         }
     }
 

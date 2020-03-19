@@ -77,7 +77,7 @@ class MyTimeline extends Component{
                         'id': res.data[i]._id,
                         'page': 0,
                         'comments': [],
-                        'username': res.data[1].username,
+                        'username': res.data[i].username,
                         // 'comments': [{src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
                         //             content:"test1"},
                         //             {src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
@@ -180,6 +180,7 @@ class MyTimeline extends Component{
     
    
     render(){
+        
         return(
             <div className="timeline">
                 <InfiniteScroll
