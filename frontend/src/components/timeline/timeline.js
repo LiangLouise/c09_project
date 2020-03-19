@@ -77,6 +77,7 @@ class MyTimeline extends Component{
                         'id': res.data[i]._id,
                         'page': 0,
                         'comments': [],
+                        'username': res.data[1].username,
                         // 'comments': [{src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
                         //             content:"test1"},
                         //             {src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
@@ -200,7 +201,8 @@ class MyTimeline extends Component{
                         <Col span={10}>
                             <Card
                                 hoverable
-                                cover={<Carousel dotPosition="top">
+                                cover={<Carousel 
+                                            dotPosition="top" autoplay>
                                             {this.getSpecificImages(post.id, post.count)}
                                         </Carousel>}
                             >
@@ -211,6 +213,7 @@ class MyTimeline extends Component{
                                     alt="Han Solo"
                                     />}
                                 description={post.description} />
+                                
                             </Card>
                             
                         </Col>
