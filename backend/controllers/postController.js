@@ -110,6 +110,27 @@ exports.getPostsByUser = function (req, res, next) {
         });
 };
 
+exports.getPostOfFollowing = function (req, res, next) {
+    let username = req.session.username;
+    let page = req.query.page;
+
+    db.users.findOne({_id: username}, {following_ids: 1}, function (err, user) {
+        if (err) {
+            logger.error(err);
+            return res.status(500).end();
+        }
+        db.posts.find({username: {$in: user.follower_ids}}).sort({time: -1})
+            .skip(MAX_POST_PER_PAGE * page)
+            .limit(MAX_POST_PER_PAGE)
+            .toArray(function (err, posts) {
+                if(err) return res.status(500).end(err);
+                else return res.json(posts);
+            });
+    })
+};
+
+
+
 exports.getPostPicture = function (req, res, next) {
     let post_id = ObjectId(req.params.id);
     let image_index = req.params.image_index;
