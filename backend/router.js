@@ -1,6 +1,6 @@
 const express = require('express');
 const {signin, signout, signup} = require('./controllers/authController');
-const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById} = require('./controllers/postController');
+const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById, getPostOfFollowing} = require('./controllers/postController');
 const {followUser, unfollowUser, getFollowingList, isFollowing, getFollowerList, isFollowedBy} = require('./controllers/followingController');
 const {searchUser} = require("./controllers/searchController");
 const {getAvatar, updateAvatar, updateFaceData, getFaceData, getUserProfile} = require("./controllers/profileController");
@@ -60,6 +60,10 @@ module.exports = function (app) {
     // GET /api/posts/?username={friend username}&page={page number}
     // ONLY CAN VIEW following users' POSTS
     postRoutes.get('/', validation.isAuthenticated, validation.checkUsername('query'), getPostsByUser);
+
+    // GET /api/posts/following/?page={page number}
+    // user to see the all the posts created by their following
+    postRoutes.get('/following/', validation.isAuthenticated, validation.checkPageNumber, getPostOfFollowing);
 
     app.use("/api/follow", followRoutes);
     // POST /api/follow/ {"username": "user to follow"}
