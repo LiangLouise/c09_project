@@ -7,8 +7,15 @@ import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
 import cookie from 'react-cookies'
+import TimeAgo from 'react-timeago'
+import englishStrings from 'react-timeago/lib/language-strings/en'
+import buildFormatter from 'react-timeago/lib/formatters/buildFormatter'
+
 const { Meta } = Card;
+
 const {Content} = Layout;
+
+const formatter = buildFormatter(englishStrings)
 
 const formItemLayout = {
     wrapperCol: {
@@ -239,14 +246,14 @@ class MyTimeline extends Component{
                     {this.state.posts.map((post) => (
                         
                         <Row>
-                        <Col span={2}>{post.date}</Col>
-                        <Col span={10}>
+                        <Col span={11}>
                             <Card
                                 hoverable
                                 cover={<Carousel 
                                             dotPosition="top" autoplay>
                                             {this.getSpecificImages(post.id, post.count)}
                                         </Carousel>}
+                                title={<TimeAgo date={post.date} formatter={formatter}/>}
                             >
                                 <Meta 
                                 title={post.title}
@@ -258,7 +265,7 @@ class MyTimeline extends Component{
                             </Card>
                             
                         </Col>
-                        <Col span={10}>
+                        <Col span={11}>
                             <Content>
                             {/* <InfiniteScroll
 
