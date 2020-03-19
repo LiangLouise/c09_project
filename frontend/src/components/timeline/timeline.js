@@ -45,7 +45,6 @@ class MyTimeline extends Component{
             hasMoreCmt: true,
             
         };
-        this.fetchData();
         this.sendComment = this.sendComment.bind(this);
 
     }
@@ -55,6 +54,10 @@ class MyTimeline extends Component{
 
     handleChange = (e) =>
         this.setState({ [e.target.name]: e.target.value });
+
+    componentDidMount() {
+        this.fetchData();
+    }
 
     fetchData = () => {
         let data = []
@@ -140,6 +143,7 @@ class MyTimeline extends Component{
             a.push(<div>
                 <img src={`${process.env.REACT_APP_BASE_URL}/api/posts/${postId}/images/${i}/`}/>
             </div>)
+
         }
          
         return a

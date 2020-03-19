@@ -2,6 +2,8 @@ const validator = require('validator');
 const db = require("../services/dbservice");
 const ObjectId = require('mongoose').Types.ObjectId;
 
+const MAX_POST_PICTURE_NUMBER = 9;
+
 exports.isAuthenticated = function(req, res, next) {
     if (!req.session.username) return res.status(401).end("access denied");
     next();
@@ -46,6 +48,7 @@ exports.checkImageFiles = function(req, res, next) {
             !file.mimetype.includes("gif")
         ) return res.status(400).end("image format not supported");
     }
+    if (req.files.length > MAX_POST_PICTURE_NUMBER) return res.status(400).end("At Most 9 pictures");
     next();
 };
 
