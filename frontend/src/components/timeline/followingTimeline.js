@@ -234,8 +234,7 @@ class FollowingTimeline extends Component{
                                         {this.getSpecificImages(post.id, post.count)}
                                     </Carousel>}
                                     title={<div>
-                                            {post.username} created {}     
-                                            <TimeAgo date={post.date} formatter={formatter} />
+                                            {post.username} created, <TimeAgo date={post.date} formatter={formatter} />
                                             </div>}
                                 >
                                     <Meta
