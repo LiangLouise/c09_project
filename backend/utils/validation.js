@@ -28,7 +28,7 @@ exports.sanitizeComment = function(req, res, next) {
 
 exports.sanitizePost = function(req, res, next) {
     req.body.title = validator.escape(req.body.title);
-    req.body.description = validator.escape(req.body.dis);
+    req.body.description = validator.escape(req.body.description);
     next();
 };
 
