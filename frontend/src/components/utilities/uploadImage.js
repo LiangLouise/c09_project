@@ -104,7 +104,7 @@ class UploadImage extends React.Component{
         if (info.file.status === 'done'){
     
             this.state.fileList.push(info.file)
-            message.success(`${info.file.name} file uploaded successfully.`);
+            message.success(`${info.file.name} file is ready to upload.`);
             this.setState({
                 loading: false,
                 fileList: this.state.fileList,
@@ -113,7 +113,7 @@ class UploadImage extends React.Component{
             console.log("fileList "+this.state.fileList)
         }
         else if (info.file.status === 'error') {
-            message.error(`${info.file.name} file upload failed.`);
+            message.error(`${info.file.name} file added failed.`);
         }
     }
 
@@ -125,22 +125,20 @@ class UploadImage extends React.Component{
     }
 
     handleSwitch = (e) => {
-        console.log("before "+this.state.checked)
         if (this.state.checked){
             let loc = {
                 latitude: null,
                 longtitude: null
-            }
+            };
             this.setState({
                 location: loc,
                 checked: !this.state.checked,
-            })
+            });
         }
         this.setState({
             checked: !this.state.checked,
-        })
-        console.log("after "+this.state.checked)
-    }
+        });
+    };
     
     customSubmit = () => {
 
@@ -150,15 +148,13 @@ class UploadImage extends React.Component{
         }
         data.append('title', this.state.title);
         data.append('description', this.state.description);
-        console.log("data "+data)
-
 
         const config= {
             headers: {
                 "content-type": "multipart/form-data",
             },
             withCredentials: true
-        }
+        };
         
         axios
             .post(API_END_POINT+'/api/posts', data, config)
@@ -167,9 +163,9 @@ class UploadImage extends React.Component{
                 this.props.refresh();
             }).catch((err) => {
                 message.error(err.response.data);
-            })
+            });
         this.onReset();
-    }
+    };
     
     render(){
         return(

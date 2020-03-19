@@ -119,7 +119,9 @@ exports.getPostOfFollowing = function (req, res, next) {
             logger.error(err);
             return res.status(500).end();
         }
-        db.posts.find({username: {$in: user.follower_ids}}).sort({time: -1})
+        let listOfLookingUp = user.following_ids;
+        listOfLookingUp.push(username);
+        db.posts.find({username: {$in: listOfLookingUp}}).sort({time: -1})
             .skip(MAX_POST_PER_PAGE * page)
             .limit(MAX_POST_PER_PAGE)
             .toArray(function (err, posts) {
@@ -150,11 +152,15 @@ exports.getPostPicture = function (req, res, next) {
                     return res.status(500).end();
                 }
                 if (count !== 1) return res.status(403).end("Not Friend");
-                res.setHeader('Content-Type', post.pictures[image_index].mimetype);
-                res.sendFile(post.pictures[image_index].path, sendFileOption());
+                else {
+                    res.setHeader('Content-Type', post.pictures[image_index].mimetype);
+                    res.sendFile(post.pictures[image_index].path, sendFileOption());
+                }
+
             });
+        } else {
+            res.setHeader('Content-Type', post.pictures[image_index].mimetype);
+            res.sendFile(post.pictures[image_index].path, sendFileOption());
         }
-        res.setHeader('Content-Type', post.pictures[image_index].mimetype);
-        res.sendFile(post.pictures[image_index].path, sendFileOption());
     });
 };
