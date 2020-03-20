@@ -56,10 +56,6 @@ class Home extends Component{
     this.setState({
                     isLoggedIn: !this.state.isLoggedIn,
                     });
-    if (this.state.isLoggedIn){
-      this.getFriendList();
-    }
-
   }
 
   refreshTimeLine() {

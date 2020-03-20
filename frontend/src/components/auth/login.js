@@ -69,6 +69,7 @@ class Login extends React.Component{
                 });
                 this.onReset();
                 this.props.action();
+                this.props.refresh()
             })
             .catch(err => {
                 message.error(err.response.data);
