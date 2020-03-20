@@ -253,7 +253,10 @@ class MyTimeline extends Component{
                                             dotPosition="top" autoplay>
                                             {this.getSpecificImages(post.id, post.count)}
                                         </Carousel>}
-                                title={<TimeAgo date={post.date} formatter={formatter}/>}
+                                title={<div>
+                                            You created {}
+                                            <TimeAgo date={post.date} formatter={formatter}/>
+                                       </div>}
                             >
                                 <Meta 
                                 title={post.title}

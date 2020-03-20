@@ -78,7 +78,7 @@ class Home extends Component{
               <Menu.Item key="3"/>
               <div style={{float:"right"}}>
               <div id="signup" style={{float:"right"}}><Signup/></div>
-              <div id="login" style={{float:"right"}}><Login action={this.loginHandler}/></div>
+              <div id="login" style={{float:"right"}}><Login refresh={this.refreshFriend} action={this.loginHandler}/></div>
             </div>
       </Menu>)
     }
