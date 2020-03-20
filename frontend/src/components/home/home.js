@@ -41,7 +41,7 @@ class Home extends Component{
     this.refreshTimeLine = this.refreshTimeLine.bind(this);
     this.refreshFriend = this.refreshFriend.bind(this);
     this.updatePage = this.updatePage.bind(this);
-  
+    this.getFriendList = this.getFriendList.bind(this);
   }
 
   componentDidMount() {
@@ -53,7 +53,13 @@ class Home extends Component{
   }
   
   loginHandler() {
-    this.setState({isLoggedIn: !this.state.isLoggedIn});
+    this.setState({
+                    isLoggedIn: !this.state.isLoggedIn,
+                    });
+    if (this.state.isLoggedIn){
+      this.getFriendList();
+    }
+
   }
 
   refreshTimeLine() {

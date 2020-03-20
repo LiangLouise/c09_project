@@ -69,8 +69,8 @@ class Login extends React.Component{
             username: '',
             password: ''
         });
+        this.props.refresh()
         this.onReset();
-        this.props.refresh();
     }
 
   

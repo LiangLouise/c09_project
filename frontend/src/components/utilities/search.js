@@ -21,6 +21,11 @@ class SearchBar extends Component{
         }
     }
 
+    // componentWillReceiveProps(props) {
+    //     if (props.refreshTimline) {
+    //         this.fetchData(true);
+    //     }
+    // }
 
     onRequest = (e) => {
         let username = e.currentTarget.dataset.name;
