@@ -27,7 +27,7 @@ exports.createPost = function (req, res, next) {
 };
 
 exports.deletePostById = function (req, res, next) {
-    let post_id = {_id: ObjectId(req.params.id)};
+    let post_id = ObjectId(req.params.id);
     let sessionUsername = req.session.username;
 
     db.posts.findOne({_id: post_id}, function(err, post) {
