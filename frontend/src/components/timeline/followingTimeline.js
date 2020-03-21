@@ -58,7 +58,6 @@ class FollowingTimeline extends Component{
         super(props);
 
         this.state={
-            deleteVisible: {},
             isLoggedIn: (cookie.load('username') !== "" && cookie.load('username') !== undefined),
             comment: '',
             page: 0,
@@ -135,14 +134,8 @@ class FollowingTimeline extends Component{
                         'page': 0,
                         'comments': [],
                         'username': res.data[i].username,
-                        'deleteVisible': false,
                         'index':i,
                     };
-                    let temp2 = this.state.deleteVisible
-                    temp2[res.data[i]._id]=false
-                    this.setState({
-                        deleteVisible: temp2
-                    })
                     data.push(temp);
                 }
                 if (fromFirst){
@@ -257,10 +250,16 @@ class FollowingTimeline extends Component{
                 {withCredentials: true})
             .then(res =>{
                 this.state.posts.splice(index,1)
+                let temp = this.state.posts
+                for (let i=0; i< temp.length;i++){
+                    console.log("listening from 255 "+temp[i].index)
+                    temp[i].index = i
+                }
                 this.setState({
-                    posts: this.state.posts
+                    posts: temp
                 })
-                console.log(this.state.posts)
+
+                console.log(this.state.posts, index)
             })
 
     }
