@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './timeline.css';
 import 'antd/dist/antd.css';
-import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button, Carousel, Spin, message} from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button, Carousel, Spin, message, Modal} from 'antd';
+import { LoadingOutlined, DeleteOutlined, CommentOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
@@ -33,12 +33,32 @@ const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
 const MAX_POSTS_NUMBER_PER_PAGE = 10;
 
+// function deletePost(){
+//     Modal.confirm({
+//         title: 'Are you sure delete this task?',
+//         icon: <ExclamationCircleOutlined />,
+//         content: 'Some descriptions',
+//         okText: 'Yes',
+//         okType: 'danger',
+//         cancelText: 'No',
+//         onOk() {
+//           console.log('OK');
+//         },
+//         onCancel() {
+//           console.log('Cancel');
+//         },
+//       });
+    
+
+// }
+
 class FollowingTimeline extends Component{
     formRef = React.createRef();
     constructor(props){
         super(props);
 
         this.state={
+            deleteVisible: {},
             isLoggedIn: (cookie.load('username') !== "" && cookie.load('username') !== undefined),
             comment: '',
             page: 0,
@@ -52,6 +72,8 @@ class FollowingTimeline extends Component{
         };
         this.sendComment = this.sendComment.bind(this);
         this.fetchData = this.fetchData.bind(this);
+        this.delPostWindow = this.delPostWindow.bind(this);
+        this.deletePost = this.deletePost.bind(this);
 
     }
 
@@ -112,8 +134,15 @@ class FollowingTimeline extends Component{
                         'id': res.data[i]._id,
                         'page': 0,
                         'comments': [],
-                        'username': res.data[i].username
+                        'username': res.data[i].username,
+                        'deleteVisible': false,
+                        'index':i,
                     };
+                    let temp2 = this.state.deleteVisible
+                    temp2[res.data[i]._id]=false
+                    this.setState({
+                        deleteVisible: temp2
+                    })
                     data.push(temp);
                 }
                 if (fromFirst){
@@ -189,7 +218,7 @@ class FollowingTimeline extends Component{
         }
 
         return a
-    }
+    };
     fetchMoreComments = () => {
         for (let i=0; i<this.state.posts.length;i++){
             axios
@@ -206,12 +235,65 @@ class FollowingTimeline extends Component{
 
     };
 
+    delPostWindow(e,postId,index){
+        let method = this.deletePost
+        Modal.confirm({
+            title: 'Are you sure delete this post?',
+            icon: <ExclamationCircleOutlined />,
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk() {
+              method(postId,index)
+            },
+          });
+    }
+    
+    //option 1:
+    deletePost(postId,index){
+        axios
+            .delete(process.env.REACT_APP_BASE_URL+
+                '/api/posts/'+postId,
+                {withCredentials: true})
+            .then(res =>{
+                this.state.posts.splice(index,1)
+                this.setState({
+                    posts: this.state.posts
+                })
+                console.log(this.state.posts)
+            })
 
-    render(){
+    }
 
+    //option 2
+    // showModal(e,postId){
+    //     let temp = this.state.deleteVisible
+    //     console.log(temp)
+    //     temp[postId] = true
+    //     this.setState({
+    //         deleteVisible: temp
+    //     });
+    //   };
+    
+    //   handleOk(e,postId){
+    //     let temp = this.state.deleteVisible
+    //     temp[postId] = false
+    //     this.setState({
+    //         deleteVisible: temp
+    //     });
+    //   };
+    
+    //   handleCancel(e,postId){
+    //     let temp = this.state.deleteVisible
+    //     temp[postId] = false
+    //     this.setState({
+    //         deleteVisible: temp
+    //     });
+    //   };
+
+    InfiniteScroll(){
         return(
-            <div className="timeline">
-                <InfiniteScroll
+            <InfiniteScroll
                     dataLength={this.state.posts.length}
                     next={this.fetchMoreData}
                     hasMore={this.state.hasMorePost}
@@ -224,9 +306,8 @@ class FollowingTimeline extends Component{
                     }
                 >
                     {this.state.posts.map((post) => (
-
-                        <Row>
-                            <Col span={11}>
+                        <Row >
+                            <Col span={21}>
                                 <Card
                                     hoverable
                                     cover={<Carousel
@@ -235,7 +316,10 @@ class FollowingTimeline extends Component{
                                     </Carousel>}
                                     title={<div>
                                             {post.username} created <TimeAgo date={post.date} formatter={formatter} />
-                                            </div>}
+                                            </div>
+                                            }
+                                    extra={<Button type="primary" ><CommentOutlined />Comments</Button>}
+                                    
                                 >
                                     <Meta
                                         title={post.title}
@@ -248,82 +332,36 @@ class FollowingTimeline extends Component{
                                 </Card>
 
                             </Col>
-                            <Col span={11}>
-                                <Content>
-                                    {/* <InfiniteScroll
-
-                                dataLength={this.state.comments.length}
-                                next={this.fetchMoreComments}
-                                hasMore={this.state.hasMoreCmt}
-                                style={this.style}
-                                loader={<h4>Loading...</h4>}
-                            >    */}
-                                    <div>
-                                        {this.state.comments.map((comment) =>{
-                                            return(
-                                                <Comment
-                                                    // actions={actions}
-                                                    author={<a>user</a>}
-                                                    avatar={
-                                                        <Avatar
-                                                            src={comment.src}
-                                                            alt="Han Solo"
-                                                        />
-                                                    }
-                                                    content={
-                                                        <p>
-                                                            {comment.content}
-                                                        </p>
-                                                    }
-                                                    datetime={
-                                                        <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
-                                                            <span>{moment().fromNow()}</span>
-                                                        </Tooltip>
-                                                    }
-                                                />
-                                            )
-                                        })}
-                                    </div>
-                                    {/* </InfiniteScroll> */}
-                                    <Form
-                                        name="login"
-                                        {...formItemLayout}
-                                        onFinish={this.sendComment.bind(this,post.id)}
-                                        ref={this.formRef}
+                                
+                            <Col span={3}>
+                                <a className="delete-ref" >
+                                    <DeleteOutlined onClick={(e) => this.delPostWindow(e,post.id,post.index)} style={{float:"right"}}/>
+                                    {/* <DeleteOutlined onClick={(e) => this.showModal(e,post.id)} style={{float:"right"}}/>
+                                    <Modal
+                                    title="Basic Modal"
+                                    icon={<ExclamationCircleOutlined />}
+                                    visible={this.state.deleteVisible[post.id]}
+                                    onOk={(e) => this.handleOk(e,post.id)}
+                                    onCancel={(e) => this.handleCancel(e,post.id)}
                                     >
-                                        <Form.Item
-                                            name="comment"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message: 'Please input your Comment!',
-                                                }]}
-                                        >
-                                            <Input.TextArea
-                                                value={this.state.comment}
-                                                name="comment"
-                                                id={post.id+"comment"}
-                                                onChange={this.handleChange}
-                                                placeholder="Write a comment..."/>
-                                        </Form.Item>
-
-                                        <Form.Item>
-                                            <Button type="primary"
-                                                    htmlType="submit"
-                                                    className="comment-form-button">
-                                                Submit
-                                            </Button>
-                                        </Form.Item>
-                                    </Form>
-                                </Content>
-                            </Col>
-                            <Col span={2}>
-                                <Button danger>Delete</Button>
+                                    <p>Some contents...</p>
+                                    <p>Some contents...</p>
+                                    <p>Some contents...</p>
+                                    </Modal> */}
+                                </a>
                             </Col>
                             <Divider/>
                         </Row>
                     ))}
                 </InfiniteScroll>
+        )
+    }
+
+    render(){
+        let infiniteScroll = this.InfiniteScroll()
+        return(
+            <div className="timeline">
+                {infiniteScroll}
             </div>
         );
     }

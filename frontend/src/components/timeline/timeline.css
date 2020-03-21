@@ -12,3 +12,16 @@ img{
     margin:auto;
     display: block; /* remove extra space below image */
 }
+
+.delete-ref{
+  font-size: 35px;
+  color: gray;
+  transition: 0.3s;
+}
+
+.delete-ref:hover{
+  font-size: 55px;
+  color: #FB5A37;
+  transition: 0.3s;
+
+}
