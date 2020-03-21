@@ -143,10 +143,7 @@ class SearchBar extends Component{
                 key: 'name',
                 sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
                 sorter: (a, b) => a.name.localeCompare(b.name),
-                render: text => 
-                                <a
-                                    data-name={text}
-                                >
+                render: text => <a data-name={text}>
                                     {text}
                                 </a>,
             },

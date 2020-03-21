@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './timeline.css';
 import 'antd/dist/antd.css';
-import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button, Carousel, Spin, message, Modal} from 'antd';
+import { Divider, Row, Col, Comment, Empty, Avatar, Card, Layout, Input, Form, Button, Carousel, Spin, message, Modal} from 'antd';
 import { LoadingOutlined, DeleteOutlined, CommentOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -67,9 +67,12 @@ class FollowingTimeline extends Component{
             hasMorePost: true,
             hasMoreCmt: true,
             postCount: 0,
+            commentVisible: {}
 
         };
         this.sendComment = this.sendComment.bind(this);
+        this.showComment = this.showComment.bind(this);
+        this.hideComment = this.hideComment.bind(this);
         this.fetchData = this.fetchData.bind(this);
         this.delPostWindow = this.delPostWindow.bind(this);
         this.deletePost = this.deletePost.bind(this);
@@ -110,6 +113,7 @@ class FollowingTimeline extends Component{
     fetchData = (fromFirst) => {
         let data = [];
         let temp = {};
+        let temp2 = {};
         let page;
 
         if (fromFirst) page = 0;
@@ -136,12 +140,17 @@ class FollowingTimeline extends Component{
                         'username': res.data[i].username,
                         'index':i,
                     };
+                    temp2[res.data[i]._id] = false
                     data.push(temp);
                 }
+                this.setState({
+                    commentVisible: temp2
+                })
+                console.log(this.state.commentVisible)
                 if (fromFirst){
                     if (data.length > 0 && data.length <= 10) {
                         this.setState({
-                            posts: data.concat(this.state.posts)
+                            posts: data.concat(this.state.posts),
                         });
                     } else if (data.length > 10) {
                         // Need to think about
@@ -200,6 +209,21 @@ class FollowingTimeline extends Component{
         this.onReset();
     }
 
+    showComment(e, postId){
+        this.state.commentVisible[postId]=true
+        console.log(this.state.commentVisible)
+        this.setState({
+            commentVisible: this.state.commentVisible,
+        })
+    }
+
+    hideComment(e, postId){
+        this.state.commentVisible[postId]=false
+        console.log(this.state.commentVisible)
+        this.setState({
+            commentVisible: this.state.commentVisible,
+        })
+    }
 
     getSpecificImages(postId,imageCount){
         let a = [];
@@ -263,8 +287,21 @@ class FollowingTimeline extends Component{
             })
 
     }
-
+    
+    commentSection(){
+        return(
+            <Empty 
+                description="Be the first one to comment on this post!" 
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                imageStyle={{
+                height: 250
+                }}
+                />
+        )
+    }
+    
     InfiniteScroll(){
+        let content = this.commentSection()
         return(
             <InfiniteScroll
                     dataLength={this.state.posts.length}
@@ -291,7 +328,56 @@ class FollowingTimeline extends Component{
                                             {post.username} created <TimeAgo date={post.date} formatter={formatter} />
                                             </div>
                                             }
-                                    extra={<Button type="primary" ><CommentOutlined />Comments</Button>}
+                                    extra={<div>
+                                           <Button 
+                                                type="primary" 
+                                                onClick={(e) => this.showComment(e,post.id)}
+                                            ><CommentOutlined />Comments</Button>
+                                           <Modal
+                                                footer={null}
+                                                title={"Comments"}
+                                                width={900}
+                                                visible={this.state.commentVisible[post.id]}
+                                                onCancel={(e) => this.hideComment(e,post.id)}
+                                                >
+                                                {content}
+                                                <Form
+                                                    name="comment_form"
+                                                    {...formItemLayout}
+                                                    onFinish={this.sendComment.bind(this,post.id)}
+                                                    ref={this.formRef}
+                                                >
+                                                    <Form.Item 
+                                                        name="comment_input"
+                                                        rules={[
+                                                            {
+                                                                required: true,
+                                                                message: 'Please input your Comment!',
+                                                            }]}
+                                                    >
+                                                    <Input.TextArea 
+                                                        value={this.state.comment}
+                                                        name="comment"
+                                                        id={post.id+"comment"}
+                                                        onChange={this.handleChange}
+                                                        placeholder="Write a comment..."
+                                                    />
+                                                    </Form.Item>
+
+                                                    <Form.Item>
+                                                        <Button type="primary" 
+                                                                htmlType="submit" 
+                                                                className="comment-form-button">
+                                                            Submit
+                                                        </Button>
+                                                    </Form.Item> 
+                                                </Form>
+                                            
+            
+
+                                                </Modal>
+                                           </div>
+                                          }
                                     
                                 >
                                     <Meta
