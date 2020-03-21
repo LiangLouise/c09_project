@@ -18,8 +18,7 @@ exports.addComment = function (req, res, next) {
         }
         if(count !== 1) return res.status(404).end("No such post to comment");
         else {
-            let comment = new Comment(req);
-            db.comments.insert(comment, function (err, item) {
+            db.comments.insert(new Comment(req, post_id), function (err, item) {
                 if (err) {
                     logger.error(err);
                     return res.status(500).end();
