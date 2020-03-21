@@ -258,37 +258,11 @@ class FollowingTimeline extends Component{
                 this.setState({
                     posts: temp
                 })
-
+                message.success("Post is deleted")
                 console.log(this.state.posts, index)
             })
 
     }
-
-    //option 2
-    // showModal(e,postId){
-    //     let temp = this.state.deleteVisible
-    //     console.log(temp)
-    //     temp[postId] = true
-    //     this.setState({
-    //         deleteVisible: temp
-    //     });
-    //   };
-    
-    //   handleOk(e,postId){
-    //     let temp = this.state.deleteVisible
-    //     temp[postId] = false
-    //     this.setState({
-    //         deleteVisible: temp
-    //     });
-    //   };
-    
-    //   handleCancel(e,postId){
-    //     let temp = this.state.deleteVisible
-    //     temp[postId] = false
-    //     this.setState({
-    //         deleteVisible: temp
-    //     });
-    //   };
 
     InfiniteScroll(){
         return(
@@ -335,18 +309,6 @@ class FollowingTimeline extends Component{
                             <Col span={3}>
                                 <a className="delete-ref" >
                                     <DeleteOutlined onClick={(e) => this.delPostWindow(e,post.id,post.index)} style={{float:"right"}}/>
-                                    {/* <DeleteOutlined onClick={(e) => this.showModal(e,post.id)} style={{float:"right"}}/>
-                                    <Modal
-                                    title="Basic Modal"
-                                    icon={<ExclamationCircleOutlined />}
-                                    visible={this.state.deleteVisible[post.id]}
-                                    onOk={(e) => this.handleOk(e,post.id)}
-                                    onCancel={(e) => this.handleCancel(e,post.id)}
-                                    >
-                                    <p>Some contents...</p>
-                                    <p>Some contents...</p>
-                                    <p>Some contents...</p>
-                                    </Modal> */}
                                 </a>
                             </Col>
                             <Divider/>

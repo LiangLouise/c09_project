@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './timeline.css';
 import 'antd/dist/antd.css';
-import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button, Carousel, Spin, message} from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import { Divider, Row, Col, Comment, Tooltip, Avatar, Card, Layout, Input, Form, Button, Carousel, Spin,Modal, message} from 'antd';
+import { LoadingOutlined, DeleteOutlined, CommentOutlined, ExclamationCircleOutlined  } from '@ant-design/icons';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
@@ -53,6 +53,8 @@ class MyTimeline extends Component{
         };
         this.sendComment = this.sendComment.bind(this);
         this.fetchData = this.fetchData.bind(this);
+        this.delPostWindow = this.delPostWindow.bind(this);
+        this.deletePost = this.deletePost.bind(this);
 
     };
 
@@ -115,7 +117,8 @@ class MyTimeline extends Component{
                         'id': res.data[i]._id,
                         'page': 0,
                         'comments': [],
-                        'username': res.data[i].username
+                        'username': res.data[i].username,
+                        'index': i,
                     };
                     data.push(temp);
                 }
@@ -221,17 +224,48 @@ class MyTimeline extends Component{
                     let data = [];
                     let temp = {};
                 })
-        }
-        
-
+        }  
     };
+
+    delPostWindow(e,postId,index){
+        let method = this.deletePost
+        Modal.confirm({
+            title: 'Are you sure delete this post?',
+            icon: <ExclamationCircleOutlined />,
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk() {
+              method(postId,index)
+            },
+          });
+    }
     
-   
-    render(){
-        
+    //option 1:
+    deletePost(postId,index){
+        axios
+            .delete(process.env.REACT_APP_BASE_URL+
+                '/api/posts/'+postId,
+                {withCredentials: true})
+            .then(res =>{
+                this.state.posts.splice(index,1)
+                let temp = this.state.posts
+                for (let i=0; i< temp.length;i++){
+                    console.log("listening from 255 "+temp[i].index)
+                    temp[i].index = i
+                }
+                this.setState({
+                    posts: temp
+                })
+                message.success("Post is deleted")
+                console.log(this.state.posts, index)
+            })
+
+    }
+    
+    InfiniteScroll(){
         return(
-            <div className="timeline">
-                <InfiniteScroll
+            <InfiniteScroll
                     dataLength={this.state.posts.length}
                     next={this.fetchMoreData}
                     hasMore={this.state.hasMorePost}
@@ -239,113 +273,55 @@ class MyTimeline extends Component{
                     loader={<div style={{alignContent: 'center'}}><Spin indicator={loadingIcon} /></div>}
                     endMessage={
                         <p style={{margin: '0 0 0 360px'}}>
-                          <b>Yay! You have seen it all</b>
+                            <b>Yay! You have seen it all</b>
                         </p>
-                      }
+                    }
                 >
                     {this.state.posts.map((post) => (
-                        
-                        <Row>
-                        <Col span={11}>
-                            <Card
-                                hoverable
-                                cover={<Carousel 
-                                            dotPosition="top" autoplay>
-                                            {this.getSpecificImages(post.id, post.count)}
-                                        </Carousel>}
-                                title={<div>
-                                            You created {}
-                                            <TimeAgo date={post.date} formatter={formatter}/>
-                                       </div>}
-                            >
-                                <Meta 
-                                title={post.title}
-                                avatar={<Avatar
-                                    src={process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+cookie.load('username')}
-                                    alt="Han Solo"
-                                    />}
-                                description={post.description} />
-                            </Card>
-                            
-                        </Col>
-                        <Col span={11}>
-                            <Content>
-                            {/* <InfiniteScroll
-
-                                dataLength={this.state.comments.length}
-                                next={this.fetchMoreComments}
-                                hasMore={this.state.hasMoreCmt}
-                                style={this.style}
-                                loader={<h4>Loading...</h4>}
-                            >    */}
-                                <div>
-                                {this.state.comments.map((comment) =>{
-                                    return(
-                                        <Comment
-                                            // actions={actions}
-                                            author={<a>user</a>}
-                                            avatar={
-                                            <Avatar
-                                            src={comment.src}
+                        <Row >
+                            <Col span={21}>
+                                <Card
+                                    hoverable
+                                    cover={<Carousel
+                                        dotPosition="top" autoplay>
+                                        {this.getSpecificImages(post.id, post.count)}
+                                    </Carousel>}
+                                    title={<div>
+                                            {post.username} created <TimeAgo date={post.date} formatter={formatter} />
+                                            </div>
+                                            }
+                                    extra={<Button type="primary" ><CommentOutlined />Comments</Button>}
+                                    
+                                >
+                                    <Meta
+                                        title={post.title}
+                                        avatar={<Avatar
+                                            src={process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+cookie.load('username')}
                                             alt="Han Solo"
-                                            />
-                                            }
-                                        content={
-                                            <p>
-                                                {comment.content}
-                                            </p>
-                                            }
-                                        datetime={
-                                        <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
-                                            <span>{moment().fromNow()}</span>
-                                        </Tooltip>
-                                        }
-                                        />
-                                        )
-                                        })}
-                                        </div>
-                                        {/* </InfiniteScroll> */}
-                                        <Form
-                                            name="login"
-                                            {...formItemLayout}
-                                            onFinish={this.sendComment.bind(this,post.id)}
-                                            ref={this.formRef}
-                                        >
-                                            <Form.Item 
-                                                name="comment"
-                                                rules={[
-                                                    {
-                                                        required: true,
-                                                        message: 'Please input your Comment!',
-                                                    }]}
-                                                >
-                                                <Input.TextArea 
-                                                    value={this.state.comment}
-                                                    name="comment"
-                                                    id={post.id+"comment"}
-                                                    onChange={this.handleChange}
-                                                    placeholder="Write a comment..."/>
-                                            </Form.Item>
+                                        />}
+                                        description={post.description}
+                                    />
+                                </Card>
 
-                                            <Form.Item>
-                                                <Button type="primary" 
-                                                        htmlType="submit" 
-                                                        className="comment-form-button">
-                                                    Submit
-                                                </Button>
-                                            </Form.Item> 
-                                        </Form>
-                            </Content>
-                        </Col>
-                        <Col span={2}>
-                            <Button danger>Delete</Button>
-                        </Col>
-                        <Divider></Divider>
+                            </Col>
+                                
+                            <Col span={3}>
+                                <a className="delete-ref" >
+                                    <DeleteOutlined onClick={(e) => this.delPostWindow(e,post.id,post.index)} style={{float:"right"}}/>
+                                </a>
+                            </Col>
+                            <Divider/>
                         </Row>
                     ))}
                 </InfiniteScroll>
-                   
-           
+        )
+    }
+   
+    render(){
+        let InfiniteScroll = this.InfiniteScroll()
+        return(
+            <div className="timeline">
+                {InfiniteScroll}   
             </div>
         );    
     } 
