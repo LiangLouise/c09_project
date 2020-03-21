@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './timeline.css';
 import 'antd/dist/antd.css';
-import { Divider, Row, Col, Comment, Empty, Avatar, Card, Layout, Input, Form, Button, Carousel, Spin, message, Modal} from 'antd';
+import { Divider, Row, Col, Tooltip, Comment, Empty, Avatar, Card, Layout, Input, Form, Button, Carousel, Spin, message, Modal} from 'antd';
 import { LoadingOutlined, DeleteOutlined, CommentOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -59,10 +59,26 @@ class FollowingTimeline extends Component{
 
         this.state={
             isLoggedIn: (cookie.load('username') !== "" && cookie.load('username') !== undefined),
-            comment: '',
             page: 0,
             posts: [],
-            comments: [],
+            comments:
+                {"5e75ac6e6d01ef9f93a7ae2d":[
+                                                {
+                                                    "name":"Cheng",
+                                                    "content":"Cool",
+                                                    "date":"2019",
+                                                    "src":"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
+                                                },
+                                                {
+                                                    "name":"Cheng",
+                                                    "content":"Cool",
+                                                    "date":"2019",
+                                                    "src":"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
+                                                },
+                                               
+                                            ]
+                },
+        
             items: Array.from({ length: 20 }),
             hasMorePost: true,
             hasMoreCmt: true,
@@ -136,17 +152,24 @@ class FollowingTimeline extends Component{
                         'count': res.data[i].pictureCounts,
                         'id': res.data[i]._id,
                         'page': 0,
-                        'comments': [],
                         'username': res.data[i].username,
                         'index':i,
                     };
-                    temp2[res.data[i]._id] = false
+                    temp2[res.data[i]._id] = false;
                     data.push(temp);
                 }
+                // get comments for each post
+                // axios
+                //     .get(process.env.REACT_APP_BASE_URL+
+                //         '/api/posts/following/?page='+page,
+                //         {withCredentials: true})
+
+
+
+
                 this.setState({
                     commentVisible: temp2
                 })
-                console.log(this.state.commentVisible)
                 if (fromFirst){
                     if (data.length > 0 && data.length <= 10) {
                         this.setState({
@@ -211,7 +234,7 @@ class FollowingTimeline extends Component{
 
     showComment(e, postId){
         this.state.commentVisible[postId]=true
-        console.log(this.state.commentVisible)
+        console.log(this.state.comments[postId])
         this.setState({
             commentVisible: this.state.commentVisible,
         })
@@ -219,7 +242,7 @@ class FollowingTimeline extends Component{
 
     hideComment(e, postId){
         this.state.commentVisible[postId]=false
-        console.log(this.state.commentVisible)
+        console.log(postId)
         this.setState({
             commentVisible: this.state.commentVisible,
         })
@@ -289,15 +312,17 @@ class FollowingTimeline extends Component{
     }
     
     commentSection(){
-        return(
-            <Empty 
-                description="Be the first one to comment on this post!" 
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                imageStyle={{
-                height: 250
-                }}
-                />
-        )
+        if (this.state.comments["5e75ac6e6d01ef9f93a7ae2d"].length === 0){
+            return(
+                <Empty 
+                    description="Be the first one to comment on this post!" 
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    imageStyle={{
+                    height: 250
+                    }}
+                    />
+            )}
+        return <div></div>
     }
     
     InfiniteScroll(){
@@ -337,10 +362,55 @@ class FollowingTimeline extends Component{
                                                 footer={null}
                                                 title={"Comments"}
                                                 width={900}
+                                                centered={true}
                                                 visible={this.state.commentVisible[post.id]}
                                                 onCancel={(e) => this.hideComment(e,post.id)}
                                                 >
                                                 {content}
+                                                {this.state.comments["5e75ac6e6d01ef9f93a7ae2d"].map((comment) =>(
+                                                        <Comment
+                                                            actions={[<span key="comment-nested-reply-to">Reply to</span>]}
+                                                            author={comment.name}
+                                                            avatar={
+                                                            <Avatar
+                                                            src={comment.src}
+                                                            alt="Han Solo"
+                                                            />
+                                                            }
+                                                        content={
+                                                            <p>
+                                                                {comment.content}
+                                                            </p>
+                                                            }
+                                                        datetime={
+                                                        <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
+                                                            <span>{moment().fromNow()}</span>
+                                                        </Tooltip>
+                                                        }
+                                                        >
+                                                            <Comment
+                                                                actions={[<span key="comment-nested-reply-to">Reply to</span>]}
+                                                                author={comment.name}
+                                                                avatar={
+                                                                <Avatar
+                                                                src={comment.src}
+                                                                alt="Han Solo"
+                                                                />
+                                                                }
+                                                            content={
+                                                                <p>
+                                                                    {comment.content}
+                                                                </p>
+                                                                }
+                                                            datetime={
+                                                            <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
+                                                                <span>{moment().fromNow()}</span>
+                                                            </Tooltip>
+                                                            }
+                                                            ></Comment>
+                                                        </Comment>
+                                                        
+                                                ))}
                                                 <Form
                                                     name="comment_form"
                                                     {...formItemLayout}
@@ -373,9 +443,10 @@ class FollowingTimeline extends Component{
                                                     </Form.Item> 
                                                 </Form>
                                             
-            
+                                                
 
                                                 </Modal>
+                                                
                                            </div>
                                           }
                                     
@@ -393,6 +464,7 @@ class FollowingTimeline extends Component{
                             </Col>
                                 
                             <Col span={3}>
+                                
                                 <a className="delete-ref" >
                                     <DeleteOutlined onClick={(e) => this.delPostWindow(e,post.id,post.index)} style={{float:"right"}}/>
                                 </a>
