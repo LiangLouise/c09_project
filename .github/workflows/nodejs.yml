@@ -58,7 +58,8 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_PRIVATE_KEY }}
-        script: sudo systemctl stop moment-back.service              
+        sync: true
+        script: sudo systemctl stop moment-back.service         
     
     - name: Wait for Stopping
       run: sleep 10       
@@ -97,6 +98,7 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_PRIVATE_KEY }}
+        sync: true
         script: sudo bash ~/scripts/clearData.sh production      
     
     - name: Restart Express Server
@@ -105,5 +107,6 @@ jobs:
         host: ${{ secrets.SERVER_HOST }}
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_PRIVATE_KEY }}
+        sync: true
         script: sudo systemctl restart moment-back.service 
     
