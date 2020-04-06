@@ -1,6 +1,6 @@
 # This workflow will do a clean install of node dependencies, build the source code and deploy the package to server
 
-name: Node.js CI
+name: Node.js CI & Deploy
 
 on:
   push:
@@ -29,7 +29,8 @@ jobs:
         npm ci
     
     - name: Create Frontend production Files 
-      run: | 
+      run: |
+        unset CI      
         cd frontend
         npm run build --if-present
         
