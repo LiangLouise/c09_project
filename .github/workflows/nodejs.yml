@@ -26,7 +26,7 @@ jobs:
     - name: Install Frontend Packages
       run: | 
         cd frontend
-        npm ci
+        npm install
     
     - name: Create Frontend production Files 
       run: |
@@ -43,7 +43,7 @@ jobs:
     - name: Install Backend package
       run: |
         cd backend
-        npm ci
+        npm install
             
   deploy:
     name: Deploy
