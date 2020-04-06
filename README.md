@@ -1,4 +1,4 @@
-![[Node.js CI & Deploy](https://github.com/UTSCC09/project-team_random_star/workflows/Node.js%20CI%20&%20Deploy/badge.svg)](https://github.com/UTSCC09/project-team_random_star/actions?query=workflow%3A%22Node.js+CI+%26+Deploy%22)
+[![Node.js CI & Deploy](https://github.com/UTSCC09/project-team_random_star/workflows/Node.js%20CI%20&%20Deploy/badge.svg)](https://github.com/UTSCC09/project-team_random_star/actions?query=workflow%3A%22Node.js+CI+%26+Deploy%22)
 
 # Project
 
