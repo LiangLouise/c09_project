@@ -1,0 +1,86 @@
+# This workflow will do a clean install of node dependencies, build the source code and deploy the package to server
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore: 
+      - "docs/**"
+  pull_request:
+    branches: [ master ]
+
+jobs:        
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[ci-skip]')"
+    
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    
+    - name: Install Frontend Packages
+      run: | 
+        cd frontend
+        npm ci
+    
+    - name: Create Frontend production Files 
+      run: npm run build --if-present
+    
+    - name: Copy Files for deployment
+      run: | 
+        cd ../backend
+        mkdir static
+        cp -r ../frontend/build/* static/
+    
+    - name: Install Backend package
+      run: | 
+        npm ci
+        cd ..
+            
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: [build]
+    
+    steps:
+    - name: Prepare SSH Public Key 
+      run: |
+        touch ~/.ssh/deploy
+        echo ${{ secrets.SERVER_PUBLIC_KEY }} >> ~/.ssh/deploy
+        chmod 600 ~/.ssh/deploy
+        echo -e "Host ${{ secrets.SERVER_HOST }}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/deploy" >> ~/.ssh/config
+        
+    - name: Stop Server
+      run: |
+        echo "Stopping Express Server..."
+        ssh -t root@${SERVER_HOST} "sudo systemctl stop moment-back.service"
+        sleep 10       
+    
+    - name: Deploy Server
+      run: |    
+        rsync -a -P --delete backend/* root@${SERVER_HOST}:/var/www/moment.ninja
+    
+    - name: Deploy Server Scripts
+      run: |
+        rsync -a -P --delete scripts/* root@${SERVER_HOST}:~/scripts
+          
+    - name: Clear Data
+      if: "!contains(github.event.head_commit.message, '[clear-data]')"
+      run: |
+        echo "Detect cmd to clear server uploads and mongo DB"
+        ssh -t root@${SERVER_HOST} "sudo bash ~/scripts/clearData.sh production"
+    
+    - name: Restart Server
+      run: |
+        echo "Restart Express Server..."
+        sleep 10
+        ssh -t root@${SERVER_HOST} "sudo systemctl restart moment-back.service"
