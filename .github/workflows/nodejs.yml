@@ -50,7 +50,7 @@ jobs:
         # Artifact name
         name: moment.production_version$GITHUB_RUN_ID
         # Directory containing files to upload
-        path: backend/*
+        path: backend/
             
   deploy:
     name: Deploy
