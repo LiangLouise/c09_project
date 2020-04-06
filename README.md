@@ -1,4 +1,6 @@
-# Project Proposal
+![Node.js CI & Deploy](https://github.com/UTSCC09/project-team_random_star/workflows/Node.js%20CI%20&%20Deploy/badge.svg)
+
+# Project
 
 ## Project Title
 
