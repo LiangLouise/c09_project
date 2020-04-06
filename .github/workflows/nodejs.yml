@@ -16,16 +16,12 @@ jobs:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[ci-skip]')"
     
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x]
-
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 12.x
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 12.x
     
     - name: Install Frontend Packages
       run: | 
@@ -33,18 +29,20 @@ jobs:
         npm ci
     
     - name: Create Frontend production Files 
-      run: npm run build --if-present
-    
+      run: | 
+        cd frontend
+        npm run build --if-present
+        
     - name: Copy Files for deployment
       run: | 
-        cd ../backend
+        cd backend
         mkdir static
         cp -r ../frontend/build/* static/
     
     - name: Install Backend package
-      run: | 
+      run: |
+        cd backend
         npm ci
-        cd ..
             
   deploy:
     name: Deploy
@@ -55,32 +53,32 @@ jobs:
     - name: Prepare SSH Public Key 
       run: |
         touch ~/.ssh/deploy
-        echo ${{ secrets.SERVER_PUBLIC_KEY }} >> ~/.ssh/deploy
+        echo ${{ secrets.SERVER_PRIVATE_KEY }} >> ~/.ssh/deploy
         chmod 600 ~/.ssh/deploy
         echo -e "Host ${{ secrets.SERVER_HOST }}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/deploy" >> ~/.ssh/config
         
     - name: Stop Server
       run: |
         echo "Stopping Express Server..."
-        ssh -t root@${SERVER_HOST} "sudo systemctl stop moment-back.service"
+        ssh -t root@${{ secrets.SERVER_HOST }} "sudo systemctl stop moment-back.service"
         sleep 10       
     
     - name: Deploy Server
       run: |    
-        rsync -a -P --delete backend/* root@${SERVER_HOST}:/var/www/moment.ninja
+        rsync -a -P --delete backend/* root@${{ secrets.SERVER_HOST }}:/var/www/moment.ninja
     
     - name: Deploy Server Scripts
       run: |
-        rsync -a -P --delete scripts/* root@${SERVER_HOST}:~/scripts
+        rsync -a -P --delete scripts/* root@${{ secrets.SERVER_HOST }}:~/scripts
           
     - name: Clear Data
       if: "!contains(github.event.head_commit.message, '[clear-data]')"
       run: |
         echo "Detect cmd to clear server uploads and mongo DB"
-        ssh -t root@${SERVER_HOST} "sudo bash ~/scripts/clearData.sh production"
+        ssh -t root@${{ secrets.SERVER_HOST }} "sudo bash ~/scripts/clearData.sh production"
     
     - name: Restart Server
       run: |
         echo "Restart Express Server..."
         sleep 10
-        ssh -t root@${SERVER_HOST} "sudo systemctl restart moment-back.service"
+        ssh -t root@${{ secrets.SERVER_HOST }} "sudo systemctl restart moment-back.service"
