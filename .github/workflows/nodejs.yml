@@ -44,6 +44,13 @@ jobs:
       run: |
         cd backend
         npm install
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        # Artifact name
+        name: moment.production_version$GITHUB_RUN_ID
+        # Directory containing files to upload
+        path: backend/*
             
   deploy:
     name: Deploy
@@ -58,29 +65,59 @@ jobs:
         echo ${{ secrets.SERVER_PRIVATE_KEY }} >> ~/.ssh/deploy
         chmod 600 ~/.ssh/deploy
         echo -e "Host ${{ secrets.SERVER_HOST }}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/deploy" >> ~/.ssh/config
-        
+    
     - name: Stop Server
-      run: |
-        echo "Stopping Express Server..."
-        ssh -t root@${{ secrets.SERVER_HOST }} "sudo systemctl stop moment-back.service"
-        sleep 10       
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SERVER_PRIVATE_KEY }}
+        script: sudo systemctl stop moment-back.service              
     
-    - name: Deploy Server
-      run: |    
-        rsync -a -P --delete backend/* root@${{ secrets.SERVER_HOST }}:/var/www/moment.ninja
+    - name: Wait for Stopping
+      run: sleep 10       
     
-    - name: Deploy Server Scripts
-      run: |
-        rsync -a -P --delete scripts/* root@${{ secrets.SERVER_HOST }}:~/scripts
-          
+    - name: Deploy Express code to server
+      id: deploy
+      uses: Pendect/action-rsyncer@v1.1.0
+      env:
+        DEPLOY_KEY: ${{ secrets.SERVER_PRIVATE_KEY }}
+      with:
+        flags: '-a -P --delete'
+        options: ''
+        ssh_options: ''
+        src: 'backend/*'
+        dest: '${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:/var/www/moment.ninja'
+
+    - name: Display status from deploy Express
+      run: echo "${{ steps.deploy.outputs.status }}"
+    
+    - name: Deploy scripts to server
+      id: deploy_Scripts
+      uses: Pendect/action-rsyncer@v1.1.0
+      env:
+        DEPLOY_KEY: ${{ secrets.SERVER_PRIVATE_KEY }}
+      with:
+        flags: '-a -P --delete'
+        options: ''
+        ssh_options: ''
+        src: 'scripts/*'
+        dest: '${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:~/scripts'
+    
     - name: Clear Data
       if: "!contains(github.event.head_commit.message, '[clear-data]')"
-      run: |
-        echo "Detect cmd to clear server uploads and mongo DB"
-        ssh -t root@${{ secrets.SERVER_HOST }} "sudo bash ~/scripts/clearData.sh production"
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SERVER_PRIVATE_KEY }}
+        script: sudo bash ~/scripts/clearData.sh production      
     
-    - name: Restart Server
-      run: |
-        echo "Restart Express Server..."
-        sleep 10
-        ssh -t root@${{ secrets.SERVER_HOST }} "sudo systemctl restart moment-back.service"
+    - name: Restart Express Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SERVER_PRIVATE_KEY }}
+        script: sudo systemctl restart moment-back.service 
+    
