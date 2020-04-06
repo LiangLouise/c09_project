@@ -51,13 +51,6 @@ jobs:
     needs: [build]
     
     steps:
-    - name: Prepare SSH Public Key 
-      run: |
-        mkdir ~/.ssh
-        touch ~/.ssh/deploy
-        echo ${{ secrets.SERVER_PRIVATE_KEY }} >> ~/.ssh/deploy
-        chmod 600 ~/.ssh/deploy
-        echo -e "Host ${{ secrets.SERVER_HOST }}\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/deploy" >> ~/.ssh/config
     
     - name: Stop Server
       uses: appleboy/ssh-action@master
