@@ -146,21 +146,15 @@ exports.getPostPicture = function (req, res, next) {
 
         // Check if the current user is picture owner or the friends
         if (sessionUsername !== post.username) {
-            db.users.find({_id: req.session.username, following_ids: post.username}).count(function(err, count) {
+            db.users.find({_id: sessionUsername, following_ids: post.username}).count(function(err, count) {
                 if (err) {
                     logger.error(err);
                     return res.status(500).end();
                 }
                 if (count !== 1) return res.status(403).end("Not Friend");
-                else {
-                    res.setHeader('Content-Type', post.pictures[image_index].mimetype);
-                    res.sendFile(post.pictures[image_index].path, sendFileOption());
-                }
-
             });
-        } else {
-            res.setHeader('Content-Type', post.pictures[image_index].mimetype);
-            res.sendFile(post.pictures[image_index].path, sendFileOption());
         }
+        res.setHeader('Content-Type', post.pictures[image_index].mimetype);
+        res.sendFile(post.pictures[image_index].path, sendFileOption());
     });
 };
