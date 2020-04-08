@@ -1,6 +1,6 @@
 # This workflow will Update the API Documentation Page
 
-name: Node.js CI
+name: Update Project API Doc Page
 
 on:
   push:
