@@ -12,10 +12,10 @@ const logger = require('../config/loggerconfig');
  * @apiExample {curl} Example Usage:
  *  curl -H "Content-Type: application/json" -X POST -d '{"username":"alice","password":"alice"}' -c cookie.txt localhost:5000/signup/
  *
- * @apiParam {String} [username] New User Username.
- * @apiParam {String} [password] New User Password.
+ * @apiParam {String} username New User Username.
+ * @apiParam {String} password New User Password.
  *
- * @apiSuccess {String} user {username} signed up
+ * @apiSuccess {String} success user {username} signed up
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -41,7 +41,9 @@ exports.signup = function(req, res, next) {
                 logger.error(err);
                 return res.status(500).end();
             }
-            return res.json("user " + username + " signed up");
+            return res.json({
+                success: "user " + username + " signed up"
+            });
         });
     });
 };

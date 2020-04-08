@@ -18,14 +18,14 @@
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
+            "optional": false,
             "field": "username",
             "description": "<p>New User Username.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
+            "optional": false,
             "field": "password",
             "description": "<p>New User Password.</p>"
           }
@@ -39,8 +39,8 @@
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "user",
-            "description": "<p>{username} signed up</p>"
+            "field": "success",
+            "description": "<p>user {username} signed up</p>"
           }
         ]
       },
