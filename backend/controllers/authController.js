@@ -4,7 +4,28 @@ const { generateHash } = require("../utils/hash");
 const User = require("../model/user");
 const logger = require('../config/loggerconfig');
 
-// curl -H "Content-Type: application/json" -X POST -d '{"username":"alice","password":"alice"}' -c cookie.txt localhost:5000/signup/
+/**
+ * @api {post} /signup Register a new account
+ * @apiName Sign Up
+ * @apiGroup Auth
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -H "Content-Type: application/json" -X POST -d '{"username":"alice","password":"alice"}' -c cookie.txt localhost:5000/signup/
+ *
+ * @apiParam {String} [username] New User Username.
+ * @apiParam {String} [password] New User Password.
+ *
+ * @apiSuccess {String} user {username} signed up
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "user {username} signed up"
+ *     }
+ *
+ * @apiError (Error 409) UsernameUsed The Username has been used by others.
+ * @apiError (Error 500) InternalServerError Error Message from backend.
+ */
 exports.signup = function(req, res, next) {
     let username = req.body.username;
     let password = req.body.password;

@@ -25,6 +25,7 @@ module.exports = function (app) {
     app.use("/api/posts", postRoutes);
     // POST /api/posts/
     // Body formData
+
     postRoutes.post('/', validation.isAuthenticated, postUploads, validation.sanitizePost,
         validation.notEmptyFiles, validation.checkImageFiles, createPost);
 
