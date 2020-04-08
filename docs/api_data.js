@@ -27,16 +27,16 @@ define({ "api": [
     },
     "parameter": {
       "fields": {
-        "Parameter": [
+        "Body": [
           {
-            "group": "Parameter",
+            "group": "Body",
             "type": "String",
             "optional": false,
             "field": "username",
             "description": "<p>Username of the user to sign in, must be Alphanumeric.</p>"
           },
           {
-            "group": "Parameter",
+            "group": "Body",
             "type": "String",
             "optional": false,
             "field": "password",
@@ -101,7 +101,7 @@ define({ "api": [
     "type": "get",
     "url": "/signout",
     "title": "User Sign Out",
-    "name": "Sign_In",
+    "name": "Sign_Out",
     "group": "Auth",
     "examples": [
       {
@@ -162,16 +162,16 @@ define({ "api": [
     },
     "parameter": {
       "fields": {
-        "Parameter": [
+        "Body": [
           {
-            "group": "Parameter",
+            "group": "Body",
             "type": "String",
             "optional": false,
             "field": "username",
             "description": "<p>New User Username, must be Alphanumeric.</p>"
           },
           {
-            "group": "Parameter",
+            "group": "Body",
             "type": "String",
             "optional": false,
             "field": "password",
@@ -231,5 +231,90 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "backend/controllers/authController.js",
     "groupTitle": "Auth"
+  },
+  {
+    "type": "get",
+    "url": "/api/search?username=:username&page=:page",
+    "title": "Search Users",
+    "name": "Search_Users_by_Username",
+    "group": "Search",
+    "examples": [
+      {
+        "title": "Example Usage:",
+        "content": "curl -b cookie.txt -c cookie.txt localhost:3000/api/search/?username=alice&page=0",
+        "type": "curl"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Query": [
+          {
+            "group": "Query",
+            "type": "String",
+            "optional": false,
+            "field": "username",
+            "description": "<p>username regex to search.</p>"
+          },
+          {
+            "group": "Query",
+            "type": "Integer",
+            "optional": false,
+            "field": "page",
+            "description": "<p>the page number of the result, Each page has at most 10 result</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String[]",
+            "optional": false,
+            "field": "users",
+            "description": "<p>Array of User ids that contains the username in request</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"users\": [\"roy\", \"flydog\", \"rockrock\"]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "optional": false,
+            "field": "BadFormat",
+            "description": "<p>Username is not Alphanumeric or page is not an int.</p>"
+          }
+        ],
+        "Error 401": [
+          {
+            "group": "Error 401",
+            "optional": false,
+            "field": "AccessDeny",
+            "description": "<p>Not Log In.</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "optional": false,
+            "field": "InternalServerError",
+            "description": ""
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "backend/controllers/searchController.js",
+    "groupTitle": "Search"
   }
 ] });
