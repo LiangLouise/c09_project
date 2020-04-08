@@ -36,5 +36,8 @@
     "maxAge": 86400,
     "secret": "bpXja2BoZ5Uoxlnc"
   },
-  "maxCommentLength":150
+  "maxCommentLength":150,
+  "faceapi": {
+    "models": "../models/"
+  }
 }

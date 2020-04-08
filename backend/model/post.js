@@ -3,6 +3,7 @@ let Post = function (req) {
     this.username = req.session.username;
     // Array of picture Info
     this.pictures = req.files;
+    this.picturesFaceData = [];
     this.pictureCounts = req.files.length;
     this.dis = req.body.description;
     this.time =  Date.now();
