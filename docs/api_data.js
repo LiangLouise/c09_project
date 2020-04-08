@@ -20,23 +20,23 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "Content-Type",
-            "description": "<p>Only Accept <code>application/json</code>.</p>"
+            "description": "<p>Must be <code>application/json</code>.</p>"
           }
         ]
       }
     },
     "parameter": {
       "fields": {
-        "Body": [
+        "Request Body": [
           {
-            "group": "Body",
+            "group": "Request Body",
             "type": "String",
             "optional": false,
             "field": "username",
             "description": "<p>Username of the user to sign in, must be Alphanumeric.</p>"
           },
           {
-            "group": "Body",
+            "group": "Request Body",
             "type": "String",
             "optional": false,
             "field": "password",
@@ -88,7 +88,7 @@ define({ "api": [
             "group": "Error 500",
             "optional": false,
             "field": "InternalServerError",
-            "description": "<p>Error Message from backend.</p>"
+            "description": "<p>Error from backend.</p>"
           }
         ]
       }
@@ -106,7 +106,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example Usage:",
-        "content": "curl -b cookie.txt -c cookie.txt localhost:3000/signout/",
+        "content": "curl -b cookie.txt -c cookie.txt localhost:5000/signout/",
         "type": "curl"
       }
     ],
@@ -155,23 +155,23 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "Content-Type",
-            "description": "<p>Only Accept <code>application/json</code>.</p>"
+            "description": "<p>Must be <code>application/json</code>.</p>"
           }
         ]
       }
     },
     "parameter": {
       "fields": {
-        "Body": [
+        "Request Body": [
           {
-            "group": "Body",
+            "group": "Request Body",
             "type": "String",
             "optional": false,
             "field": "username",
             "description": "<p>New User Username, must be Alphanumeric.</p>"
           },
           {
-            "group": "Body",
+            "group": "Request Body",
             "type": "String",
             "optional": false,
             "field": "password",
@@ -223,7 +223,7 @@ define({ "api": [
             "group": "Error 500",
             "optional": false,
             "field": "InternalServerError",
-            "description": "<p>Error Message from backend.</p>"
+            "description": "<p>Error from backend.</p>"
           }
         ]
       }
@@ -231,6 +231,111 @@ define({ "api": [
     "version": "0.0.0",
     "filename": "backend/controllers/authController.js",
     "groupTitle": "Auth"
+  },
+  {
+    "type": "post",
+    "url": "/api/posts",
+    "title": "Create a new Post",
+    "name": "Create_Post",
+    "group": "Posts",
+    "examples": [
+      {
+        "title": "Example Usage:",
+        "content": "curl -b cookie.txt -c cookie.txt -F \"title=hello\" -F \"description=My New Post!\" -F \"pictures=@hello.jpg\" localhost:5000/api/posts",
+        "type": "curl"
+      }
+    ],
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>Must be <code>multipart/form-data</code>.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Form Data": [
+          {
+            "group": "Form Data",
+            "type": "String",
+            "optional": false,
+            "field": "title",
+            "description": "<p>Title of the post, no more than <code>30</code> chars.</p>"
+          },
+          {
+            "group": "Form Data",
+            "type": "Integer",
+            "optional": false,
+            "field": "description",
+            "description": "<p>The content of the post, no more than <code>200</code> chars.</p>"
+          },
+          {
+            "group": "Form Data",
+            "type": "Files",
+            "optional": false,
+            "field": "pictures",
+            "description": "<p>An array of Post pictures, accepted Format: <code>.jpeg/.jpg/.png/.gif</code> and no more than <code>9</code> pictures.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>The id of the post</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"_id\": \"jed5672jd90xfffsdg4wo\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "optional": false,
+            "field": "BadFormat",
+            "description": "<p>title/description/pictures has the wrong format.</p>"
+          }
+        ],
+        "Error 401": [
+          {
+            "group": "Error 401",
+            "optional": false,
+            "field": "AccessDeny",
+            "description": "<p>Not Log In.</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "optional": false,
+            "field": "InternalServerError",
+            "description": "<p>Error from backend.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "backend/controllers/postController.js",
+    "groupTitle": "Posts"
   },
   {
     "type": "get",
@@ -247,16 +352,16 @@ define({ "api": [
     ],
     "parameter": {
       "fields": {
-        "Query": [
+        "Request Query": [
           {
-            "group": "Query",
+            "group": "Request Query",
             "type": "String",
             "optional": false,
             "field": "username",
             "description": "<p>username regex to search.</p>"
           },
           {
-            "group": "Query",
+            "group": "Request Query",
             "type": "Integer",
             "optional": false,
             "field": "page",
@@ -308,7 +413,7 @@ define({ "api": [
             "group": "Error 500",
             "optional": false,
             "field": "InternalServerError",
-            "description": ""
+            "description": "<p>Error from backend.</p>"
           }
         ]
       }
