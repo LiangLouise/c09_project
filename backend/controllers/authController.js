@@ -14,8 +14,8 @@ const logger = require('../config/loggerconfig');
  *
  * @apiHeader {String} Content-Type Only Accept `application/json`.
  *
- * @apiParam {String} username New User Username, must be Alphanumeric.
- * @apiParam {String} password New User Password.
+ * @apiParam (Body) {String} username New User Username, must be Alphanumeric.
+ * @apiParam (Body) {String} password New User Password.
  *
  * @apiSuccess {String} success user {username} signed up
  *
@@ -61,8 +61,8 @@ exports.signup = function(req, res, next) {
  *
  * @apiHeader {String} Content-Type Only Accept `application/json`.
  *
- * @apiParam {String} username Username of the user to sign in, must be Alphanumeric.
- * @apiParam {String} password Password of the user to sign in.
+ * @apiParam (Body) {String} username Username of the user to sign in, must be Alphanumeric.
+ * @apiParam (Body) {String} password Password of the user to sign in.
  *
  * @apiSuccess {String} success user {username} signed in
  *
@@ -101,7 +101,7 @@ exports.signin = function (req, res, next) {
 
 /**
  * @api {get} /signout User Sign Out
- * @apiName Sign In
+ * @apiName Sign Out
  * @apiGroup Auth
  *
  * @apiExample {curl} Example Usage:
