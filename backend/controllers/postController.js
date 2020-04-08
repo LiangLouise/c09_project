@@ -19,7 +19,7 @@ const MAX_POST_PER_PAGE = 10;
  *
  * @apiParam (Form Data) {String} title Title of the post, no more than `30` chars.
  * @apiParam (Form Data) {Integer} description The content of the post, no more than `200` chars.
- * @apiParam (Form Data) {Image Files} pictures An array of Post pictures, Accepted Format: `.jpeg/.jpg/.png/.gif` and no more than `9` pictures.
+ * @apiParam (Form Data) {Files} pictures An array of Post pictures, accepted Format: `.jpeg/.jpg/.png/.gif` and no more than `9` pictures.
  *
  * @apiSuccess {String} _id The id of the post
  *
