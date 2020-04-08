@@ -7,6 +7,32 @@ const logger = require('../config/loggerconfig');
 
 const MAX_POST_PER_PAGE = 10;
 
+/**
+ * @api {post} /api/posts Create a new Post
+ * @apiName Create Post
+ * @apiGroup Posts
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -b cookie.txt -c cookie.txt -F "title=hello" -F "description=My New Post!" -F "pictures=@hello.jpg" localhost:5000/api/posts
+ *
+ * @apiHeader {String} Content-Type Must be `multipart/form-data`.
+ *
+ * @apiParam (Form Data) {String} title Title of the post, no more than `30` chars.
+ * @apiParam (Form Data) {Integer} description The content of the post, no more than `200` chars.
+ * @apiParam (Form Data) {Image Files} pictures An array of Post pictures, Accepted Format: `.jpeg/.jpg/.png/.gif` and no more than `9` pictures.
+ *
+ * @apiSuccess {String} _id The id of the post
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "_id": "jed5672jd90xfffsdg4wo"
+ *     }
+ *
+ * @apiError (Error 400) BadFormat title/description/pictures has the wrong format.
+ * @apiError (Error 401) AccessDeny Not Log In.
+ * @apiError (Error 500) InternalServerError Error from backend.
+ */
 exports.createPost = function (req, res, next) {
     let sessionUsername = req.session.username;
 

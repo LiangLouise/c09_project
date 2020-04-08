@@ -12,10 +12,10 @@ const logger = require('../config/loggerconfig');
  * @apiExample {curl} Example Usage:
  *  curl -H "Content-Type: application/json" -X POST -d '{"username":"alice","password":"alice"}' -c cookie.txt localhost:5000/signup/
  *
- * @apiHeader {String} Content-Type Only Accept `application/json`.
+ * @apiHeader {String} Content-Type Must be `application/json`.
  *
- * @apiParam (Body) {String} username New User Username, must be Alphanumeric.
- * @apiParam (Body) {String} password New User Password.
+ * @apiParam (Request Body) {String} username New User Username, must be Alphanumeric.
+ * @apiParam (Request Body) {String} password New User Password.
  *
  * @apiSuccess {String} success user {username} signed up
  *
@@ -27,7 +27,7 @@ const logger = require('../config/loggerconfig');
  *
  * @apiError (Error 400) BadFormat Username is not Alphanumeric
  * @apiError (Error 409) UsernameUsed The Username has been used by others.
- * @apiError (Error 500) InternalServerError Error Message from backend.
+ * @apiError (Error 500) InternalServerError Error from backend.
  */
 exports.signup = function(req, res, next) {
     let username = req.body.username;
@@ -59,10 +59,10 @@ exports.signup = function(req, res, next) {
  * @apiExample {curl} Example Usage:
  *  curl -H "Content-Type: application/json" -X POST -d '{"username":"alice","password":"alice"}' -c cookie.txt localhost:5000/signin/
  *
- * @apiHeader {String} Content-Type Only Accept `application/json`.
+ * @apiHeader {String} Content-Type Must be `application/json`.
  *
- * @apiParam (Body) {String} username Username of the user to sign in, must be Alphanumeric.
- * @apiParam (Body) {String} password Password of the user to sign in.
+ * @apiParam (Request Body) {String} username Username of the user to sign in, must be Alphanumeric.
+ * @apiParam (Request Body) {String} password Password of the user to sign in.
  *
  * @apiSuccess {String} success user {username} signed in
  *
@@ -74,7 +74,7 @@ exports.signup = function(req, res, next) {
  *
  * @apiError (Error 400) BadFormat Username is not Alphanumeric
  * @apiError (Error 401) AccessDeny Wrong Username/Password.
- * @apiError (Error 500) InternalServerError Error Message from backend.
+ * @apiError (Error 500) InternalServerError Error from backend.
  */
 exports.signin = function (req, res, next) {
     let username = req.body.username;
@@ -105,7 +105,7 @@ exports.signin = function (req, res, next) {
  * @apiGroup Auth
  *
  * @apiExample {curl} Example Usage:
- *  curl -b cookie.txt -c cookie.txt localhost:3000/signout/
+ *  curl -b cookie.txt -c cookie.txt localhost:5000/signout/
  *
  * @apiSuccess {String} success user {username} signed out
  *

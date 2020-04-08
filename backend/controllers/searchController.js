@@ -10,8 +10,8 @@ const logger = require('../config/loggerconfig');
  * @apiExample {curl} Example Usage:
  *  curl -b cookie.txt -c cookie.txt localhost:3000/api/search/?username=alice&page=0
  *
- * @apiParam (Query) {String} username username regex to search.
- * @apiParam (Query) {Integer} page the page number of the result, Each page has at most 10 result
+ * @apiParam (Request Query) {String} username username regex to search.
+ * @apiParam (Request Query) {Integer} page the page number of the result, Each page has at most 10 result
  *
  * @apiSuccess {String[]} users Array of User ids that contains the username in request
  *
@@ -23,7 +23,7 @@ const logger = require('../config/loggerconfig');
  *
  * @apiError (Error 400) BadFormat Username is not Alphanumeric or page is not an int.
  * @apiError (Error 401) AccessDeny Not Log In.
- * @apiError (Error 500) InternalServerError
+ * @apiError (Error 500) InternalServerError Error from backend.
  */
 exports.searchUser = function (req, res, next) {
     let userRegex = "^" + req.query.username + ".*";
