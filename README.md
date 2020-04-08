@@ -1,4 +1,4 @@
-[![Node.js CI & Deploy](https://github.com/UTSCC09/project-team_random_star/workflows/Node.js%20CI%20&%20Deploy/badge.svg)](https://github.com/UTSCC09/project-team_random_star/actions?query=workflow%3A%22Node.js+CI+%26+Deploy%22)
+
 
 # Project
 
@@ -13,6 +13,14 @@
 | Jiasong    | Liang     | 1004203337    |
 | Cheng      | Gao       | 1004231057    |
 | Tianhao    | Yao       | 1003404728    |
+
+## API Documentation
+
+[RestAPI Documentation](https://utscc09.github.io/project-team_random_star/)
+
+## Build Status
+
+[![Node.js CI & Deploy](https://github.com/UTSCC09/project-team_random_star/workflows/Node.js%20CI%20&%20Deploy/badge.svg)](https://github.com/UTSCC09/project-team_random_star/actions?query=workflow%3A%22Node.js+CI+%26+Deploy%22)
 
 ## App Description
 
