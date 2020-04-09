@@ -8,7 +8,7 @@ const logger = require('../config/loggerconfig');
 /**
  * @api {get} /api/profile/avatar?username=:username Get the avatar of the user
  * @apiName Get the user's avatar
- * @apiGroup Posts
+ * @apiGroup Profile
  * @apiDescription Get the avatar of the user by their's id, if success, a image file will be sent.
  *      Otherwise, response is error message with corresponding error message.
  *
@@ -16,7 +16,7 @@ const logger = require('../config/loggerconfig');
  * @apiExample {curl} Example Usage:
  *  curl -b cookie.txt -c cookie.txt localhost:5000/api/profile/avatar?username=alice
  *
- * @apiParam (Request Query) {String} username The unique id of the avatar's owner
+ * @apiParam (Request Query) {String} username The unique id of the avatar's owner, must be Alphanumeric.
  *
  * @apiSuccess {BinaryFile} image The binary of the image file, the format `Content-Type` is in response header.
  *
@@ -93,6 +93,36 @@ exports.getFaceData = function (req, res, next) {
     });
 };
 
+/**
+ * @api {get} /api/profile?username=:username Get User Profile
+ * @apiName Get User Profile  by Post id
+ * @apiGroup Profile
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -b cookie.txt -c cookie.txt localhost:5000/api/profile/?username=alice
+ *
+ *
+ * @apiParam (Request Query) {String} id The unique id of the user, must be Alphanumeric.
+ *
+ * @apiSuccess (String) _id The unique id of the user.
+ * @apiSuccess {String[]} following_ids The list of the username followed by this user
+ * @apiSuccess {String[]} follower_ids The list of the username who follows this user
+ * @apiSuccess {Integer} post_counts The number of the post created by this user
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "_id": "FlyDog",
+ *       "following_ids": ["Hello", "Leo123", "bill"],
+ *       "follower_ids": ["Keep", "thrree"],
+ *       "post_counts": 11,
+ *     }
+ *
+ * @apiError (Error 400) BadFormat Request Query id has the wrong format.
+ * @apiError (Error 401) AccessDeny Not Log In.
+ * @apiError (Error 404) NotFind Not find user with such username
+ * @apiError (Error 500) InternalServerError Error from backend.
+ */
 exports.getUserProfile = function (req, res, next) {
     let username = req.query.username;
     db.users.findOne({_id: username}, {salt: 0, hash: 0, avatar:0}, function (err, user) {
