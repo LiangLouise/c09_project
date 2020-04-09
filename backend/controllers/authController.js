@@ -5,7 +5,7 @@ const User = require("../model/user");
 const logger = require('../config/loggerconfig');
 
 /**
- * @api {post} /signup Register a new account
+ * @api {post} /signup New User Sign Up
  * @apiName Sign Up
  * @apiGroup Auth
  *

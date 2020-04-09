@@ -52,46 +52,43 @@ exports.createPost = function (req, res, next) {
     });
 };
 
-exports.deletePostById = function (req, res, next) {
-    let post_id = ObjectId(req.params.id);
-    let sessionUsername = req.session.username;
+/**
+ * @api {get} /api/posts/:id/ Get Post By Post id
+ * @apiName Get Post by Post id
+ * @apiGroup Posts
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -b cookie.txt -c cookie.txt localhost:5000/api/posts/jed5672jd90xfffsdg4wo/
+ *
+ *
+ * @apiParam (Path Params) {String} id The unique id of the post
+ *
+ * @apiSuccess (String) _id The unique id of the post
+ * @apiSuccess {String} title The title of the post
+ * @apiSuccess {String} dis The description of the post
+ * @apiSuccess {Integer} pictureCounts The number of the pictures this post has
+ * @apiSuccess {Integer} time The time of post creation
 
-    db.posts.findOne({_id: post_id}, function(err, post) {
-        if (err) {
-            logger.error(err);
-            return res.status(500).end();
-        }
-        if (!post) return res.status(404).end("Post doesn't exits");
-        // Check if the current user is user himself
-        if (sessionUsername !== post.username) return res.status(403).end("You are not the owner of the post");
-        db.posts.findOne({_id: post_id}, function (err, post) {
-            if (err) {
-                logger.error(err);
-                return res.status(500).end();
-            }
-            for (let pic of post.pictures){
-                fs.unlink(pic.path, err => {
-                    if (err) return res.status(500).end("Unable to delete the file");
-                })
-            }
-            try {
-                // Remove all records related to posts
-                db.posts.remove({_id: post_id});
-                db.comments.remove({post_id: post_id});
-                db.users.update({_id: sessionUsername}, {$inc: {post_counts: -1}});
-            } catch (err) {
-                logger.error(err);
-                return res.status(500).end();
-            }
-            return res.status(200).end();
-        })
-    });
-};
-
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "_id": "jed5672jd90xfffsdg4wo",
+ *       "title": "Hello",
+ *       "dis": "This is my first post",
+ *       "pictureCounts": 2,
+ *       "time": 1586391820095
+ *     }
+ *
+ * @apiError (Error 400) BadFormat Path Params id has the wrong format.
+ * @apiError (Error 401) AccessDeny Not Log In.
+ * @apiError (Error 403) AccessForbidden Not the post owner or the owner's follower
+ * @apiError (Error 404) NotFind Not find post with such id
+ * @apiError (Error 500) InternalServerError Error from backend.
+ */
 exports.getPostById = function (req, res, next) {
     let id = req.params.id;
 
-    db.posts.findOne({_id: ObjectId(id)}, {pictures: 0}, function(err, post) {
+    db.posts.findOne({_id: ObjectId(id)}, {pictures: 0, picturesFaceData: 0, geolcation: 0}, function(err, post) {
         if (err) {
             logger.error(err);
             return res.status(500).end();
@@ -112,6 +109,50 @@ exports.getPostById = function (req, res, next) {
     });
 };
 
+/**
+ * @api {get} /api/posts/?username=:username&page=:page Get Posts By username
+ * @apiName Get Posts of some user
+ * @apiGroup Posts
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -b cookie.txt -c cookie.txt localhost:5000/api/posts/?username=Alice&page=0
+ *
+ *
+ * @apiParam (Request Query) {String} username The username of the posts owner, can only be user himself or the user's fpllowing
+ * @apiParam (Request Query) {Integer} page The Page number of the posts to display, each page has at most `10` posts
+ *
+ * @apiSuccess {Objects[]} posts Array of the posts created by the user. The latest posts come first
+ * @apiSuccess (String) posts._id The unique id of the post
+ * @apiSuccess {String} posts.title The title of the post
+ * @apiSuccess {String} posts.dis The description of the post
+ * @apiSuccess {Integer} posts.pictureCounts The number of the pictures this post has
+ * @apiSuccess {Integer} posts.time The time of post creation
+
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *      {
+ *          "_id": "jed5672jd90xfffsdg4wo",
+ *          "title": "Hello",
+ *          "dis": "This is my first post",
+ *          "pictureCounts": 2,
+ *          "time": 1586391820095
+ *      },
+ *      {
+ *          "_id": "jed5672jd90xfffsdg4wo",
+ *          "title": "Good Morning",
+ *          "dis": "This is my second post",
+ *          "pictureCounts": 2,
+ *          "time": 1586391820095
+ *      }
+ *    ]
+ *
+ * @apiError (Error 400) BadFormat Request Query has the wrong format.
+ * @apiError (Error 401) AccessDeny Not Log In.
+ * @apiError (Error 403) AccessForbidden Not the post owner or the owner's follower
+ * @apiError (Error 404) NotFind Not find user of the username
+ * @apiError (Error 500) InternalServerError Error from backend.
+ */
 exports.getPostsByUser = function (req, res, next) {
     let page = req.query.page;
     let sessionUsername = req.query.username;
@@ -124,7 +165,7 @@ exports.getPostsByUser = function (req, res, next) {
                 logger.error(err);
                 return res.status(500).end();
             }
-            if (count !== 1) return res.status(409).end("Not Friend");
+            if (count !== 1) return res.status(403).end("Not Friend");
         });
     }
     db.posts.find({username: queryUsername}, {pictures: 0}).sort({time: -1})
@@ -136,6 +177,53 @@ exports.getPostsByUser = function (req, res, next) {
         });
 };
 
+/**
+ * @api {get} /api/posts/following/?page=:page Get the posts of following
+ * @apiName See the all the posts created by user's following
+ * @apiGroup Posts
+ * @apiDescription Get the posts of following, if success, a list of posts sliced by page number will be sent back.
+ *      Otherwise, response is error message with corresponding error message.
+ *
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -b cookie.txt -c cookie.txt localhost:5000/api/posts/following/?page=0
+ *
+ *
+ * @apiParam (Request Query) {Integer} page The Page number of the posts to display, each page has at most `10` posts
+ *
+ * @apiSuccess {Objects[]} posts Array of the posts created by the user. The latest posts come first
+ * @apiSuccess (String) posts._id The unique id of the post
+ * @apiSuccess (String) posts.username The creator of the post
+ * @apiSuccess {String} posts.title The title of the post
+ * @apiSuccess {String} posts.dis The description of the post
+ * @apiSuccess {Integer} posts.pictureCounts The number of the pictures this post has
+ * @apiSuccess {Integer} posts.time The time of post creation
+
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     [
+ *      {
+ *          "_id": "jed5672jd90xfffsdg4wo",
+ *          "title": "What a nice day",
+ *          "username": "Leo11"
+ *          "dis": "How are you?",
+ *          "pictureCounts": 7,
+ *          "time": 1586391820095
+ *      },
+ *      {
+ *          "_id": "jed5672jd90xfffsdg4wk",
+ *          "title": "Good Morning",
+ *          "username": "Flydog"
+ *          "dis": "Looks delicious",
+ *          "pictureCounts": 1,
+ *          "time": 1586391820033
+ *      }
+ *    ]
+ *
+ * @apiError (Error 400) BadFormat Request Query has the wrong format.
+ * @apiError (Error 401) AccessDeny Not Log In.
+ * @apiError (Error 500) InternalServerError Error from backend.
+ */
 exports.getPostOfFollowing = function (req, res, next) {
     let username = req.session.username;
     let page = req.query.page;
@@ -157,8 +245,32 @@ exports.getPostOfFollowing = function (req, res, next) {
     })
 };
 
-
-
+/**
+ * @api {get} /api/posts/:id/images/:image_index/ Get the picture of the post
+ * @apiName Get the picture of the post
+ * @apiGroup Posts
+ * @apiDescription Get the picture of the post by it's index, if success, a image file will be sent.
+ *      Otherwise, response is error message with corresponding error message.
+ *
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -b cookie.txt -c cookie.txt localhost:5000/api/posts/jed5672jd90xfffsdg4wk/images/0/
+ *
+ * @apiParam (Path Params) {String} id The unique id of the post
+ * @apiParam (Path Params) {String} image_index The index of the picture, to indicate which image to get, max value decided by `posts.pictureCounts`
+ *
+ * @apiSuccess {BinaryFile} image The binary of the image file, the format `Content-Type` is in response header.
+ *
+ * @apiSuccessExample {BinaryFile} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     Content-Type: images/jpeg
+ *
+ * @apiError (Error 400) BadFormat Request Query has the wrong format.
+ * @apiError (Error 401) AccessDeny Not Log In.
+ * @apiError (Error 403) AccessForbidden Not the post owner or the owner's follower.
+ * @apiError (Error 404) NotFind Not find Image or Post in the path.
+ * @apiError (Error 500) InternalServerError Error from backend.
+ */
 exports.getPostPicture = function (req, res, next) {
     let post_id = ObjectId(req.params.id);
     let image_index = req.params.image_index;
@@ -182,5 +294,63 @@ exports.getPostPicture = function (req, res, next) {
         }
         res.setHeader('Content-Type', post.pictures[image_index].mimetype);
         res.sendFile(post.pictures[image_index].path, sendFileOption());
+    });
+};
+
+/**
+ * @api {delete} /api/posts/:id/ Delete a Post By Post id
+ * @apiName Delete a Post
+ * @apiGroup Posts
+ * @apiDescription Delete a Post by it's id, if success, empty response with status code `200`.
+ *      Otherwise, response is error message with corresponding error message
+ *
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -x DELETE -b cookie.txt -c cookie.txt localhost:5000/api/posts/jed5672jd90xfffsdg4wk/
+ *
+ * @apiParam (Path Params) {String} id The unique id of the post to delete
+ *
+ * @apiSuccessExample {empty} Success-Response:
+ *     HTTP/1.1 200 OK
+ *
+ * @apiError (Error 400) BadFormat Request Query has the wrong format.
+ * @apiError (Error 401) AccessDeny Not Log In.
+ * @apiError (Error 403) AccessForbidden Not the post owner.
+ * @apiError (Error 404) NotFind Not Image or Post in the path.
+ * @apiError (Error 500) InternalServerError Error from backend.
+ */
+exports.deletePostById = function (req, res, next) {
+    let post_id = ObjectId(req.params.id);
+    let sessionUsername = req.session.username;
+
+    db.posts.findOne({_id: post_id}, function(err, post) {
+        if (err) {
+            logger.error(err);
+            return res.status(500).end(err);
+        }
+        if (!post) return res.status(404).end("Post doesn't exits");
+        // Check if the current user is user himself
+        if (sessionUsername !== post.username) return res.status(403).end("You are not the owner of the post");
+        db.posts.findOne({_id: post_id}, function (err, post) {
+            if (err) {
+                logger.error(err);
+                return res.status(500).end(err);
+            }
+            for (let pic of post.pictures){
+                fs.unlink(pic.path, err => {
+                    if (err) return res.status(500).end("Unable to delete the file");
+                })
+            }
+            try {
+                // Remove all records related to posts
+                db.posts.remove({_id: post_id});
+                db.comments.remove({post_id: post_id});
+                db.users.update({_id: sessionUsername}, {$inc: {post_counts: -1}});
+            } catch (err) {
+                logger.error(err);
+                return res.status(500).end(err);
+            }
+            return res.status(200).end();
+        })
     });
 };

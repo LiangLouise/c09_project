@@ -8,7 +8,7 @@ const logger = require('../config/loggerconfig');
  * @apiGroup Search
  *
  * @apiExample {curl} Example Usage:
- *  curl -b cookie.txt -c cookie.txt localhost:3000/api/search/?username=alice&page=0
+ *  curl -b cookie.txt -c cookie.txt localhost:5000/api/search/?username=alice&page=0
  *
  * @apiParam (Request Query) {String} username username regex to search.
  * @apiParam (Request Query) {Integer} page the page number of the result, Each page has at most 10 result

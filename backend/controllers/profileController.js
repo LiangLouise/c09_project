@@ -5,6 +5,30 @@ const fs = require('fs');
 const faceData = require('../model/faceData');
 const logger = require('../config/loggerconfig');
 
+/**
+ * @api {get} /api/profile/avatar?username=:username Get the avatar of the user
+ * @apiName Get the user's avatar
+ * @apiGroup Posts
+ * @apiDescription Get the avatar of the user by their's id, if success, a image file will be sent.
+ *      Otherwise, response is error message with corresponding error message.
+ *
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -b cookie.txt -c cookie.txt localhost:5000/api/profile/avatar?username=alice
+ *
+ * @apiParam (Request Query) {String} username The unique id of the avatar's owner
+ *
+ * @apiSuccess {BinaryFile} image The binary of the image file, the format `Content-Type` is in response header.
+ *
+ * @apiSuccessExample {BinaryFile} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     Content-Type: images/jpeg
+ *
+ * @apiError (Error 400) BadFormat Request Query has the wrong format.
+ * @apiError (Error 401) AccessDeny Not Log In.
+ * @apiError (Error 404) NotFind Not find the user in the query.
+ * @apiError (Error 500) InternalServerError Error from backend.
+ */
 exports.getAvatar = function (req, res, next) {
     let username = req.query.username;
     db.users.findOne({_id: username}, function(err, user) {
