@@ -25,21 +25,14 @@ if (process.env.NODE_ENV === 'production') {
         resave: false,
         saveUninitialized: true,
         proxy: true,
-        cookie: {
-            secure: false,
-            sameSite: true,
-            maxAge: config.get('session.maxAge')
-        }
+        cookie: c_configs.cookie_config
     }));
 } else {
     app.use(session({
         secret: config.get('session.secret'),
         resave: false,
         saveUninitialized: true,
-        cookie: {
-            secure: false,
-            sameSite: 'none'
-        }
+        cookie: c_configs.cookie_config
     }));
 }
 
