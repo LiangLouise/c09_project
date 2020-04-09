@@ -34,10 +34,10 @@
   "redis": {
     "host": "localhost",
     "port": 6379,
-    "ttl": 86400
+    "ttl": 604800
   },
   "session": {
-    "maxAge": 86400,
+    "maxAge": 604800,
     "secret": "9N8EnnNJh5vgR86s"
   },
   "maxCommentLength":150
