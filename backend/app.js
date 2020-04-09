@@ -22,17 +22,27 @@ if (process.env.NODE_ENV === 'production') {
     app.use(session({
         store: SessionStore(),
         secret: config.get('session.secret'),
-        resave: false,
+        resave: true,
         saveUninitialized: true,
         proxy: true,
-        cookie: c_configs.cookie_config
+        rolling: true,
+        cookie: {
+            secure: false,
+            sameSite: true,
+            maxAge: config.get('session.maxAge')
+        }
     }));
 } else {
     app.use(session({
         secret: config.get('session.secret'),
-        resave: false,
+        resave: true,
         saveUninitialized: true,
-        cookie: c_configs.cookie_config
+        rolling: true,
+        cookie: {
+            secure: false,
+            sameSite: true,
+            maxAge: config.get('session.maxAge')
+        }
     }));
 }
 
@@ -43,7 +53,6 @@ app.use(function(req, res, next){
     // res.setHeader('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
     // res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials');
     // res.setHeader('Access-Control-Allow-Credentials', 'true');
-
     let username = (req.session.username)? req.session.username : '';
     res.setHeader('Set-Cookie', c_configs.cookie.serialize('username', username, c_configs.cookie_config));
     logger.info("HTTP request %s %s %s %o", req.method, req.url, req.header("cookie"), req.body);

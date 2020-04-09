@@ -33,7 +33,7 @@
     "uploads_dest": "uploads/"
   },
   "session": {
-    "maxAge": 86400,
+    "maxAge": 172800000,
     "secret": "bpXja2BoZ5Uoxlnc"
   },
   "maxCommentLength":150,
