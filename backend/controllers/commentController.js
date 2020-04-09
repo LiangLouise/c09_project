@@ -30,7 +30,7 @@ exports.addComment = function (req, res, next) {
 };
 
 exports.getCommentByPost = function (req, res, next) {
-    let post_id = ObjectId(req.params.post_id);
+    let post_id = ObjectId(req.params.id);
     let page = req.query.page;
     db.comments.find({post_id: post_id})
         .skip(MAX_COMMENT_PER_PAGE * page)
@@ -45,8 +45,8 @@ exports.getCommentByPost = function (req, res, next) {
 };
 
 exports.getCommentCountByPost = function (req, res, next) {
-    let post_id = req.params.post_id;
-    db.comments.find({post_id: ObjectId(post_id)})
+    let post_id = ObjectId(req.params.id);
+    db.comments.find({post_id: post_id})
         .count(function (err, count) {
             if (err) {
                 logger.error(err);
