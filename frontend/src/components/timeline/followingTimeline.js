@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import './timeline.css';
 import 'antd/dist/antd.css';
-import { Divider, Row, Col, Tooltip, Comment, Empty, Avatar, Card, Layout, Input, Form, Button, Carousel, Spin, message, Modal} from 'antd';
-import { LoadingOutlined, DeleteOutlined, CommentOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Divider, Row, Col, Tooltip, Comment, Empty, Avatar, Card, Layout, Input, Form, Button, Carousel, Spin, message, Modal, Pagination} from 'antd';
+import { LoadingOutlined, CommentOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
@@ -52,6 +52,7 @@ const MAX_POSTS_NUMBER_PER_PAGE = 10;
 
 // }
 
+
 class FollowingTimeline extends Component{
     formRef = React.createRef();
     constructor(props){
@@ -60,17 +61,18 @@ class FollowingTimeline extends Component{
         this.state={
             isLoggedIn: (cookie.load('username') !== "" && cookie.load('username') !== undefined),
             page: 0,
+            cmtPage: 0,
             posts: [],
             comments:
                 {"5e75ac6e6d01ef9f93a7ae2d":[
                                                 {
-                                                    "name":"Cheng",
+                                                    "username":"Cheng",
                                                     "content":"Cool",
                                                     "date":"2019",
                                                     "src":"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
                                                 },
                                                 {
-                                                    "name":"Cheng",
+                                                    "username":"Cheng",
                                                     "content":"Cool",
                                                     "date":"2019",
                                                     "src":"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
@@ -92,6 +94,8 @@ class FollowingTimeline extends Component{
         this.fetchData = this.fetchData.bind(this);
         this.delPostWindow = this.delPostWindow.bind(this);
         this.deletePost = this.deletePost.bind(this);
+        this.changePage = this.changePage.bind(this);
+        this.fetchComments = this.fetchComments.bind(this);
 
     }
 
@@ -144,6 +148,7 @@ class FollowingTimeline extends Component{
                     + res.data.length
                     - this.state.posts.length;
                 for (let i=0; i< newPostsNum;i++){
+                    this.fetchComments(res.data[i]._id);
                     temp = {
                         'title': res.data[i].title,
                         'description': res.data[i].dis,
@@ -199,7 +204,6 @@ class FollowingTimeline extends Component{
                     }
                 }
             });
-        this.fetchMoreComments();
 
     };
 
@@ -233,8 +237,8 @@ class FollowingTimeline extends Component{
     }
 
     showComment(e, postId){
+        this.fetchComments(postId);
         this.state.commentVisible[postId]=true
-        console.log(this.state.comments[postId])
         this.setState({
             commentVisible: this.state.commentVisible,
         })
@@ -245,6 +249,7 @@ class FollowingTimeline extends Component{
         console.log(postId)
         this.setState({
             commentVisible: this.state.commentVisible,
+            cmtPage: 0,
         })
     }
 
@@ -259,20 +264,22 @@ class FollowingTimeline extends Component{
 
         return a
     };
-    fetchMoreComments = () => {
-        for (let i=0; i<this.state.posts.length;i++){
-            axios
-                .get(process.env.REACT_APP_BASE_URL+
-                    '/api/posts/'+this.state.posts[i].id
-                    +'/comments/?page='+this.state.posts[i].page,
-                    {withCredentials:true})
-                .then(res => {
-                    let data = [];
-                    let temp = {};
-                })
-        }
-
-
+    fetchComments(postId){
+        let temp = this.state.comments;
+        axios
+            .get(process.env.REACT_APP_BASE_URL+
+                '/api/posts/'+postId
+                +'/comments/?page='+this.state.cmtPage,
+                {withCredentials:true})
+            .then(res => {
+                // temp[postId] = JSON.parse(JSON.stringify(res.data))
+                temp[postId] = res.data
+                console.log(this.state.comments)
+                console.log(this.state.posts)
+            })
+        this.setState({
+            comments : temp
+        })
     };
 
     delPostWindow(e,postId,index){
@@ -311,22 +318,29 @@ class FollowingTimeline extends Component{
 
     }
     
-    commentSection(){
-        if (this.state.comments["5e75ac6e6d01ef9f93a7ae2d"].length === 0){
-            return(
-                <Empty 
-                    description="Be the first one to comment on this post!" 
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    imageStyle={{
-                    height: 250
-                    }}
-                    />
-            )}
-        return <div></div>
+    // commentSection(){
+    //     if (this.state.comments["5e75ac6e6d01ef9f93a7ae2d"].length === 0){
+    //         return(
+    //             <Empty 
+    //                 description="Be the first one to comment on this post!" 
+    //                 image={Empty.PRESENTED_IMAGE_SIMPLE}
+    //                 imageStyle={{
+    //                 height: 250
+    //                 }}
+    //                 />
+    //         )}
+    //     return <div></div>
+    // }
+
+    changePage(pageNumber) {
+        this.setState({
+            cmtPage: pageNumber
+        })
     }
     
+    
     InfiniteScroll(){
-        let content = this.commentSection()
+        // let content = this.commentSection()
         return(
             <InfiniteScroll
                     dataLength={this.state.posts.length}
@@ -366,11 +380,11 @@ class FollowingTimeline extends Component{
                                                 visible={this.state.commentVisible[post.id]}
                                                 onCancel={(e) => this.hideComment(e,post.id)}
                                                 >
-                                                {content}
+                                                {/* {content} */}
                                                 {this.state.comments["5e75ac6e6d01ef9f93a7ae2d"].map((comment) =>(
                                                         <Comment
                                                             actions={[<span key="comment-nested-reply-to">Reply to</span>]}
-                                                            author={comment.name}
+                                                            author={comment.username}
                                                             avatar={
                                                             <Avatar
                                                             src={comment.src}
@@ -388,12 +402,12 @@ class FollowingTimeline extends Component{
                                                         </Tooltip>
                                                         }
                                                         >
-                                                            <Comment
+                                                            {/* <Comment
                                                                 actions={[<span key="comment-nested-reply-to">Reply to</span>]}
-                                                                author={comment.name}
+                                                                author={comment.username}
                                                                 avatar={
                                                                 <Avatar
-                                                                src={comment.src}
+                                                                src={"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"}
                                                                 alt="Han Solo"
                                                                 />
                                                                 }
@@ -407,7 +421,7 @@ class FollowingTimeline extends Component{
                                                                 <span>{moment().fromNow()}</span>
                                                             </Tooltip>
                                                             }
-                                                            ></Comment>
+                                                            ></Comment> */}
                                                         </Comment>
                                                         
                                                 ))}
@@ -442,6 +456,11 @@ class FollowingTimeline extends Component{
                                                         </Button>
                                                     </Form.Item> 
                                                 </Form>
+                                                <Pagination
+                                                    defaultCurrent={1}
+                                                    total={20}
+                                                    onChange={this.changePage}
+                                                />
                                             
                                                 
 
@@ -463,12 +482,7 @@ class FollowingTimeline extends Component{
 
                             </Col>
                                 
-                            <Col span={3}>
-                                
-                                <a className="delete-ref" >
-                                    <DeleteOutlined onClick={(e) => this.delPostWindow(e,post.id,post.index)} style={{float:"right"}}/>
-                                </a>
-                            </Col>
+                            
                             <Divider/>
                         </Row>
                     ))}
