@@ -63,29 +63,13 @@ class FollowingTimeline extends Component{
             page: 0,
             cmtPage: 0,
             posts: [],
-            comments:
-                {"5e75ac6e6d01ef9f93a7ae2d":[
-                                                {
-                                                    "username":"Cheng",
-                                                    "content":"Cool",
-                                                    "date":"2019",
-                                                    "src":"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
-                                                },
-                                                {
-                                                    "username":"Cheng",
-                                                    "content":"Cool",
-                                                    "date":"2019",
-                                                    "src":"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
-                                                },
-                                               
-                                            ]
-                },
-        
+            comments: {},
             items: Array.from({ length: 20 }),
             hasMorePost: true,
             hasMoreCmt: true,
             postCount: 0,
-            commentVisible: {}
+            commentVisible: {},
+            commentsToDis: []
 
         };
         this.sendComment = this.sendComment.bind(this);
@@ -219,7 +203,7 @@ class FollowingTimeline extends Component{
 
     sendComment(postId){
 
-        let content = {content:this.state.comment}
+        let content = {content:this.state.comment};
         axios
             .post(process.env.REACT_APP_BASE_URL+
                 '/api/posts/'+postId
@@ -228,6 +212,7 @@ class FollowingTimeline extends Component{
                 {withCredentials:true})
             .then(res => {
                 message.success("The Comment is sent");
+                this.fetchComments(postId);
             });
 
         this.setState({
@@ -237,18 +222,20 @@ class FollowingTimeline extends Component{
     }
 
     showComment(e, postId){
-        this.fetchComments(postId);
-        this.state.commentVisible[postId]=true
+        let commentVisible = this.state.commentVisible;
+        commentVisible[postId]=true;
         this.setState({
-            commentVisible: this.state.commentVisible,
+            commentVisible: commentVisible,
+            commentsToDis: this.displayComments(postId, 0)
         })
     }
 
     hideComment(e, postId){
-        this.state.commentVisible[postId]=false
-        console.log(postId)
+        let commentVisible = this.state.commentVisible;
+        commentVisible[postId]=false;
+        console.log(postId);
         this.setState({
-            commentVisible: this.state.commentVisible,
+            commentVisible: commentVisible,
             cmtPage: 0,
         })
     }
@@ -264,6 +251,7 @@ class FollowingTimeline extends Component{
 
         return a
     };
+
     fetchComments(postId){
         let temp = this.state.comments;
         axios
@@ -273,17 +261,16 @@ class FollowingTimeline extends Component{
                 {withCredentials:true})
             .then(res => {
                 // temp[postId] = JSON.parse(JSON.stringify(res.data))
-                temp[postId] = res.data
-                console.log(this.state.comments)
-                console.log(this.state.posts)
-            })
-        this.setState({
-            comments : temp
-        })
+                temp[postId] = res.data;
+                this.setState({
+                    comments : temp
+                });
+                console.log(temp[postId]);
+            });
     };
 
     delPostWindow(e,postId,index){
-        let method = this.deletePost
+        let method = this.deletePost;
         Modal.confirm({
             title: 'Are you sure delete this post?',
             icon: <ExclamationCircleOutlined />,
@@ -297,7 +284,7 @@ class FollowingTimeline extends Component{
     }
     
     //option 1:
-    deletePost(postId,index){
+    deletePost(postId, index){
         axios
             .delete(process.env.REACT_APP_BASE_URL+
                 '/api/posts/'+postId,
@@ -317,20 +304,33 @@ class FollowingTimeline extends Component{
             })
 
     }
-    
-    // commentSection(){
-    //     if (this.state.comments["5e75ac6e6d01ef9f93a7ae2d"].length === 0){
-    //         return(
-    //             <Empty 
-    //                 description="Be the first one to comment on this post!" 
-    //                 image={Empty.PRESENTED_IMAGE_SIMPLE}
-    //                 imageStyle={{
-    //                 height: 250
-    //                 }}
-    //                 />
-    //         )}
-    //     return <div></div>
-    // }
+
+    displayComments(post_id, comment_page)
+    {
+
+        return this.state.comments[post_id].map((comment) =>(
+            <Comment
+                actions={[<span key="comment-nested-reply-to">Reply to</span>]}
+                author={comment.username}
+                avatar={
+                    <Avatar
+                        src={comment.src}
+                        alt="Han Solo"
+                    />
+                }
+                content={
+                    <p>
+                        {comment.content}
+                    </p>
+                }
+                datetime={
+                    <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
+                        <span>{moment().fromNow()}</span>
+                    </Tooltip>
+                }
+            >
+            </Comment>));
+    }
 
     changePage(pageNumber) {
         this.setState({
@@ -380,51 +380,7 @@ class FollowingTimeline extends Component{
                                                 visible={this.state.commentVisible[post.id]}
                                                 onCancel={(e) => this.hideComment(e,post.id)}
                                                 >
-                                                {/* {content} */}
-                                                {this.state.comments["5e75ac6e6d01ef9f93a7ae2d"].map((comment) =>(
-                                                        <Comment
-                                                            actions={[<span key="comment-nested-reply-to">Reply to</span>]}
-                                                            author={comment.username}
-                                                            avatar={
-                                                            <Avatar
-                                                            src={comment.src}
-                                                            alt="Han Solo"
-                                                            />
-                                                            }
-                                                        content={
-                                                            <p>
-                                                                {comment.content}
-                                                            </p>
-                                                            }
-                                                        datetime={
-                                                        <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
-                                                            <span>{moment().fromNow()}</span>
-                                                        </Tooltip>
-                                                        }
-                                                        >
-                                                            {/* <Comment
-                                                                actions={[<span key="comment-nested-reply-to">Reply to</span>]}
-                                                                author={comment.username}
-                                                                avatar={
-                                                                <Avatar
-                                                                src={"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"}
-                                                                alt="Han Solo"
-                                                                />
-                                                                }
-                                                            content={
-                                                                <p>
-                                                                    {comment.content}
-                                                                </p>
-                                                                }
-                                                            datetime={
-                                                            <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
-                                                                <span>{moment().fromNow()}</span>
-                                                            </Tooltip>
-                                                            }
-                                                            ></Comment> */}
-                                                        </Comment>
-                                                        
-                                                ))}
+                                               {this.state.commentsToDis}
                                                 <Form
                                                     name="comment_form"
                                                     {...formItemLayout}
