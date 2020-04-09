@@ -22,6 +22,8 @@
 
 [![Node.js CI & Deploy](https://github.com/UTSCC09/project-team_random_star/workflows/Node.js%20CI%20&%20Deploy/badge.svg)](https://github.com/UTSCC09/project-team_random_star/actions?query=workflow%3A%22Node.js+CI+%26+Deploy%22)
 
+[![Update Project API Doc Page](https://github.com/UTSCC09/project-team_random_star/workflows/Update%20Project%20API%20Doc%20Page/badge.svg)](https://github.com/UTSCC09/project-team_random_star/actions?query=workflow%3A%22Update+Project+API+Doc+Page%22)
+
 ## App Description
 
 A web application that allows user to share images with friend and forge meaning connection with each other through our unique features.
