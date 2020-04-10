@@ -184,45 +184,30 @@ class MyTimeline extends Component{
     //     }
     // }
     getSpecificImages(postId,imageCount){
-        let a = []
+        let images = []
         for (let i=0; i< imageCount; i++){
-            a.push(<div>
+            images.push(<div>
                 <img src={`${process.env.REACT_APP_BASE_URL}/api/posts/${postId}/images/${i}/`}/>
             </div>)
 
         }
          
-        return a
+        return images
     }
     fetchMoreComments = () => {
-        // if (this.state.comments.length >= 3) {
-        //     this.setState({ hasMoreCmt: false });
-        //     return;
-        // }
-        // a fake async api call like which sends
-        // 20 more records in 1.5 secs
-        // setTimeout(() => {
-        //     let comment = [{src:"https://cdn.discordapp.com/attachments/303411519738085377/687179308611272734/16395827_10207611523715511_656645643_n.png",
-        //                             content:"test"}]
-        //     this.setState({
-        //         comments: this.state.comments.concat(JSON.parse(JSON.stringify(comment)))
-        //     })
-        // }, 1500);
         for (let i=0; i<this.state.posts.length;i++){
             axios
                 .get(process.env.REACT_APP_BASE_URL+
                     '/api/posts/'+this.state.posts[i].id
                     +'/comments/?page='+this.state.posts[i].page,
                     {withCredentials:true})
-                .then(res => {
-                    let data = [];
-                    let temp = {};
+                .then(() => {
                 })
         }  
     };
 
     delPostWindow(e,postId,index){
-        let method = this.deletePost
+        let method = this.deletePost;
         Modal.confirm({
             title: 'Are you sure delete this post?',
             icon: <ExclamationCircleOutlined />,
