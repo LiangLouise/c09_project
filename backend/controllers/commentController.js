@@ -174,7 +174,7 @@ exports.getCommentCountByPost = function (req, res, next) {
 /**
  * @api {delete} /api/posts/comments/:id/ Delete a Comment
  * @apiName Delete a Comment by its ID
- * @apiGroup Comments
+ * @apiGroup Comment
  * @apiDescription Delete a Comment by its id, if success, empty response with status code `200`.
  *      Otherwise, response is error message with corresponding error message
  *      Note Only Comment owner or the Post owner can delete the comment.
