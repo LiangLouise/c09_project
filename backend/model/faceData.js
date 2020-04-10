@@ -1,6 +1,6 @@
-let FaceData = function (username, data) {
-    this._id = username;
-    this.data = data;
+let FaceData = function (req) {
+    this._id = req.session.username;
+    this.data = req.body.data;
 };
 
 module.exports = FaceData;

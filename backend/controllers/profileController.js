@@ -47,13 +47,37 @@ exports.getAvatar = function (req, res, next) {
     });
 };
 
+/**
+ * @api {post} /api/profile/avatar Update the User Avatar
+ * @apiName Update User Avatar
+ * @apiGroup Profile
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -b cookie.txt -c cookie.txt -F "avatar=@new_avatar.jpg" localhost:5000api/profile/avatar
+ *
+ * @apiParam (Form Data) {File} avatar An image as the new avatar, accepted Format: `.jpeg/.jpg/.png/.gif`
+ *
+ * @apiSuccess {json} success Uploaded Successfully.
+ *
+ * @apiSuccessExample {BinaryFile} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     {
+ *         "success": "Uploaded Successfully!"
+ *     }
+ *
+ * @apiError (Error 400) BadFormat Form Data avatar has the wrong format.
+ * @apiError (Error 401) AccessDeny Not Log In.
+ * @apiError (Error 404) NotFind Not find the user to update.
+ * @apiError (Error 500) InternalServerError Error from backend.
+ */
 exports.updateAvatar = function (req, res, next) {
     let username = req.session.username;
     let image = req.file;
     db.users.findOne({_id: username}, function(err, user) {
         if (err) {
             logger.error(err);
-            return res.status(500).end();
+            return res.status(500).end(err);
         }
         if (!user) return res.status(404).end();
         fs.unlink(user.avatar.path, (err) => {
@@ -62,17 +86,42 @@ exports.updateAvatar = function (req, res, next) {
         db.users.update({_id: username}, {$set: {avatar: image}}, function(err, _) {
             if (err) {
                 logger.error(err);
-                return res.status(500).end();
+                return res.status(500).end(err);
             }
-            return res.status(200).end();
+            return res.json({
+                success: "Uploaded Successfully!"
+            });
         });
     });
 };
 
+/**
+ * @api {put} /api/profile/facedata Update the user's face descriptors
+ * @apiName Update the session user's face descriptors
+ * @apiGroup Profile
+ * @apiDescription The Session User Uploads a image to log their own face descriptor,
+ *      The response is just the status code.
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -b cookie.txt \
+ *      -c cookie.txt \
+ *      -X PUT \
+ *      -d '{"alice": {"name":"alice", "descriptor":[0.1, .... , 0.2323]} \
+ *      localhost:5000/api/profile/facedata
+ *
+ * @apiHeader {String} Content-Type Must be `application/json`.
+ *
+ * @apiParam  {Object} data The content of the face descriptors.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *
+ * @apiError (Error 400) BadFormat title/description/pictures has the wrong format.
+ * @apiError (Error 401) AccessDeny Not Log In.
+ * @apiError (Error 500) InternalServerError Error from backend.
+ */
 exports.updateFaceData = function (req, res, next) {
-    let userName = req.session.username;
-    let data = req.body.facedata;
-    db.facedata.update(new faceData(userName, data), {upsert: true}, function (err, data) {
+    db.facedata.update(new faceData(req), {upsert: true}, function (err, data) {
         if (err) {
             logger.error(err);
             return res.status(500).end();
@@ -80,6 +129,7 @@ exports.updateFaceData = function (req, res, next) {
         else return res.status(200).end();
     });
 };
+
 
 exports.getFaceData = function (req, res, next) {
     let userName = req.session.username;
@@ -104,7 +154,7 @@ exports.getFaceData = function (req, res, next) {
  *
  * @apiParam (Request Query) {String} id The unique id of the user, must be Alphanumeric.
  *
- * @apiSuccess (String) _id The unique id of the user.
+ * @apiSuccess {String} _id The unique id of the user.
  * @apiSuccess {String[]} following_ids The list of the username followed by this user
  * @apiSuccess {String[]} follower_ids The list of the username who follows this user
  * @apiSuccess {Integer} post_counts The number of the post created by this user

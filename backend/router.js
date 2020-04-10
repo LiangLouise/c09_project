@@ -6,7 +6,7 @@ const {searchUser} = require("./controllers/searchController");
 const {getAvatar, updateAvatar, updateFaceData, getFaceData, getUserProfile} = require("./controllers/profileController");
 const {addComment, getCommentByPost, getCommentCountByPost, deleteCommentById} = require("./controllers/commentController");
 const validation = require('./utils/validation.js');
-const {postUploads} = require('./config/multerconfig');
+const {postUploads, avatarUploads} = require('./config/multerconfig');
 // const config = require('config');
 
 
@@ -117,9 +117,9 @@ module.exports = function (app) {
     // FormDat:
     //  Avatar
     // Res: 200 success
-    profileRoutes.put('/avatar/', validation.isAuthenticated, validation.notEmptyFile, validation.checkImageFile, updateAvatar);
+    profileRoutes.post('/avatar/', validation.isAuthenticated, avatarUploads, validation.notEmptyFile, validation.checkImageFile, updateAvatar);
 
-    profileRoutes.put('/facedata/', validation.isAuthenticated, updateFaceData);
+    profileRoutes.put('/facedata/', validation.isAuthenticated, validation.sanitizeFaceData, updateFaceData);
 
-    profileRoutes.get('/facedata/', validation.isAuthenticated, getFaceData);
+    // profileRoutes.get('/facedata/', validation.isAuthenticated, getFaceData);
 };

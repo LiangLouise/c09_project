@@ -8,7 +8,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example Usage:",
-        "content": "curl -H \"Content-Type: application/json\" -X POST -d '{\"username\":\"alice\",\"password\":\"alice\"}' -c cookie.txt localhost:5000/signin/",
+        "content": "curl -H \"Content-Type: application/json\" \\\n    -X POST \\\n    -d '{\"username\":\"alice\",\"password\":\"alice\"}' \\\n    -c cookie.txt \\\n    localhost:5000/signin/",
         "type": "curl"
       }
     ],
@@ -60,7 +60,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"success\": \"user {username} signed up\"\n}",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n  \"success\": \"user {username} signed up\"\n}",
           "type": "json"
         }
       ]
@@ -81,6 +81,14 @@ define({ "api": [
             "optional": false,
             "field": "AccessDeny",
             "description": "<p>Wrong Username/Password.</p>"
+          }
+        ],
+        "Error 404": [
+          {
+            "group": "Error 404",
+            "optional": false,
+            "field": "NotFind",
+            "description": "<p>Not find the corresponding Uses.</p>"
           }
         ],
         "Error 500": [
@@ -125,7 +133,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"success\": \"user {username} signed out\"\n}",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n  \"success\": \"user {username} signed out\"\n}",
           "type": "json"
         }
       ]
@@ -143,7 +151,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example Usage:",
-        "content": "curl -H \"Content-Type: application/json\" -X POST -d '{\"username\":\"alice\",\"password\":\"alice\"}' -c cookie.txt localhost:5000/signup/",
+        "content": "curl -H \"Content-Type: application/json\" \\\n    -X POST -d '{\"username\":\"alice\",\"password\":\"alice\"}' \\\n    -c cookie.txt \\\n    localhost:5000/signup/",
         "type": "curl"
       }
     ],
@@ -195,7 +203,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"success\": \"user {username} signed up\"\n}",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n  \"success\": \"user {username} signed up\"\n}",
           "type": "json"
         }
       ]
@@ -234,6 +242,346 @@ define({ "api": [
   },
   {
     "type": "post",
+    "url": "/api/posts/:id/comments",
+    "title": "Add a comment to the post",
+    "name": "Create_a_new_post",
+    "group": "Comment",
+    "examples": [
+      {
+        "title": "Example Usage:",
+        "content": "curl -b cookie.txt \\\n    -c cookie.txt \\\n    -X POST \\\n    -H \"Content-Type: application/json\"\n    -d '{\"content\": \"Looks very good!\"} \\\n    localhost:5000/api/posts/jed5672jd90xfffsdg4wo/comments",
+        "type": "curl"
+      }
+    ],
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>Must be <code>application/json</code>.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Path Params": [
+          {
+            "group": "Path Params",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The id of Post which you want to comment on.</p>"
+          }
+        ],
+        "Request Body": [
+          {
+            "group": "Request Body",
+            "type": "String",
+            "optional": false,
+            "field": "content",
+            "description": "<p>The content of your comment, max length <code>100</code>.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "String": [
+          {
+            "group": "String",
+            "optional": false,
+            "field": "_id",
+            "description": "<p>The id of the comment</p>"
+          }
+        ],
+        "Integer": [
+          {
+            "group": "Integer",
+            "optional": false,
+            "field": "time",
+            "description": "<p>The time of the comment created.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n    \"_id\": \"jed5672jd90xfffsdg4wo\"\n    \"time\": 1586477573356\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "optional": false,
+            "field": "BadFormat",
+            "description": "<p>content/post id has the wrong format.</p>"
+          }
+        ],
+        "Error 401": [
+          {
+            "group": "Error 401",
+            "optional": false,
+            "field": "AccessDeny",
+            "description": "<p>Not Log In.</p>"
+          }
+        ],
+        "Error 403": [
+          {
+            "group": "Error 403",
+            "optional": false,
+            "field": "AccessForbidden",
+            "description": "<p>Not the post owner or the owner's follower.</p>"
+          }
+        ],
+        "Error 404": [
+          {
+            "group": "Error 404",
+            "optional": false,
+            "field": "NotFind",
+            "description": "<p>Not find the post to comment.</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "optional": false,
+            "field": "InternalServerError",
+            "description": "<p>Error from backend.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "backend/controllers/commentController.js",
+    "groupTitle": "Comment"
+  },
+  {
+    "type": "get",
+    "url": "/api/posts/:id/comments/?page=:page",
+    "title": "Get Comments of Post",
+    "name": "Get_Comments_by_Post_Id",
+    "group": "Comment",
+    "examples": [
+      {
+        "title": "Example Usage:",
+        "content": "curl -b cookie.txt -c cookie.txt localhost:5000/api/posts/jed5672jd90xfffsdg4wo/comments/?page=0",
+        "type": "curl"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Path Params": [
+          {
+            "group": "Path Params",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The id of Post which you want to comment on.</p>"
+          }
+        ],
+        "Request Query": [
+          {
+            "group": "Request Query",
+            "type": "Integer",
+            "optional": false,
+            "field": "page",
+            "description": "<p>The Page number of the comments to display, each page has at most <code>20</code> posts</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Objects[]",
+            "optional": false,
+            "field": "comments",
+            "description": "<p>Array of the posts created by the user. The latest posts come first</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "comments.content",
+            "description": "<p>The content of the comment.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "comments.username",
+            "description": "<p>The comment's author's name.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "comments.post_id",
+            "description": "<p>The of this id of post that the comment belongs to.</p>"
+          }
+        ],
+        "String": [
+          {
+            "group": "String",
+            "optional": false,
+            "field": "comments._id",
+            "description": "<p>The id of the comment</p>"
+          }
+        ],
+        "Integer": [
+          {
+            "group": "Integer",
+            "optional": false,
+            "field": "comments.time",
+            "description": "<p>The time of the comment created.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": " HTTP/1.1 200 OK\n Content-Type: application/json\n [\n  {\n      \"_id\": \"5e8fbeec5023721b3fb7b254\",\n      \"content\": \"Looks very Good!\",\n      \"username\": \"FlyDog\",\n      \"post_id\": 5e8fbee233c09f021093f4cf,\n      \"time\": 1586380820095\n  },\n  {\n      \"_id\": \"5e8fbef16a267cee5f46862e\",\n      \"content\": \"I wish I have it too\",\n      \"username\": \"Fimith109\",\n      \"post_id\": 5e8fbee233c09f021093f4cf,\n      \"time\": 1586391811095\n  }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "optional": false,
+            "field": "BadFormat",
+            "description": "<p>post id/page has the wrong format.</p>"
+          }
+        ],
+        "Error 401": [
+          {
+            "group": "Error 401",
+            "optional": false,
+            "field": "AccessDeny",
+            "description": "<p>Not Log In.</p>"
+          }
+        ],
+        "Error 403": [
+          {
+            "group": "Error 403",
+            "optional": false,
+            "field": "AccessForbidden",
+            "description": "<p>Not the post owner or the owner's follower</p>"
+          }
+        ],
+        "Error 404": [
+          {
+            "group": "Error 404",
+            "optional": false,
+            "field": "NotFind",
+            "description": "<p>Not find user of the username</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "optional": false,
+            "field": "InternalServerError",
+            "description": "<p>Error from backend.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "backend/controllers/commentController.js",
+    "groupTitle": "Comment"
+  },
+  {
+    "type": "get",
+    "url": "/api/posts/:id/commentsCount",
+    "title": "Get the count of the comments",
+    "name": "Get_the_number_of_the_comment_the_post_has",
+    "group": "Comment",
+    "examples": [
+      {
+        "title": "Example Usage:",
+        "content": "curl -b cookie.txt -c cookie.txt localhost:5000/api/posts/jed5672jd90xfffsdg4wo/commentsCount",
+        "type": "curl"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Path Params": [
+          {
+            "group": "Path Params",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The id of Post which you want to comment on.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Integer": [
+          {
+            "group": "Integer",
+            "optional": false,
+            "field": "count",
+            "description": "<p>The number of the comments that the post has.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n    count: 2\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "optional": false,
+            "field": "BadFormat",
+            "description": "<p>post id has the wrong format.</p>"
+          }
+        ],
+        "Error 401": [
+          {
+            "group": "Error 401",
+            "optional": false,
+            "field": "AccessDeny",
+            "description": "<p>Not Log In.</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "optional": false,
+            "field": "InternalServerError",
+            "description": "<p>Error from backend.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "backend/controllers/commentController.js",
+    "groupTitle": "Comment"
+  },
+  {
+    "type": "post",
     "url": "/api/posts",
     "title": "Create a new Post",
     "name": "Create_Post",
@@ -241,7 +589,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example Usage:",
-        "content": "curl -b cookie.txt -c cookie.txt -F \"title=hello\" -F \"description=My New Post!\" -F \"pictures=@hello.jpg\" localhost:5000/api/posts",
+        "content": "curl -b cookie.txt \\\n    -c cookie.txt \\\n    -F \"title=hello\" \\\n    -F \"description=My New Post!\" \\\n    -F \"pictures=@hello.jpg\"\n    localhost:5000/api/posts",
         "type": "curl"
       }
     ],
@@ -300,7 +648,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"_id\": \"jed5672jd90xfffsdg4wo\"\n}",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n  \"_id\": \"jed5672jd90xfffsdg4wo\"\n}",
           "type": "json"
         }
       ]
@@ -339,11 +687,95 @@ define({ "api": [
   },
   {
     "type": "delete",
+    "url": "/api/posts/comments/:id/",
+    "title": "Delete a Comment",
+    "name": "Delete_a_Comment_by_its_ID",
+    "group": "Posts",
+    "description": "<p>Delete a Comment by its id, if success, empty response with status code <code>200</code>. Otherwise, response is error message with corresponding error message Note Only Comment owner or the Post owner can delete the comment.</p>",
+    "examples": [
+      {
+        "title": "Example Usage:",
+        "content": "curl -x DELETE -b cookie.txt -c cookie.txt localhost:5000/api/posts/comments/5e8fc18270865f659e12fc42/",
+        "type": "curl"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Path Params": [
+          {
+            "group": "Path Params",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The unique id of the post to delete</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "empty"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "optional": false,
+            "field": "BadFormat",
+            "description": "<p>Request Query has the wrong format.</p>"
+          }
+        ],
+        "Error 401": [
+          {
+            "group": "Error 401",
+            "optional": false,
+            "field": "AccessDeny",
+            "description": "<p>Not Log In.</p>"
+          }
+        ],
+        "Error 403": [
+          {
+            "group": "Error 403",
+            "optional": false,
+            "field": "AccessForbidden",
+            "description": "<p>Not the comment owner or the post owner.</p>"
+          }
+        ],
+        "Error 404": [
+          {
+            "group": "Error 404",
+            "optional": false,
+            "field": "NotFind",
+            "description": "<p>Not Find Comment with input id.</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "optional": false,
+            "field": "InternalServerError",
+            "description": "<p>Error from backend.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "backend/controllers/commentController.js",
+    "groupTitle": "Posts"
+  },
+  {
+    "type": "delete",
     "url": "/api/posts/:id/",
     "title": "Delete a Post By Post id",
     "name": "Delete_a_Post",
     "group": "Posts",
-    "description": "<p>Delete a Post by it's id, if success, empty response with status code <code>200</code>. Otherwise, response is error message with corresponding error message</p>",
+    "description": "<p>Delete a Post by its id, if success, empty response with status code <code>200</code>. Otherwise, response is error message with corresponding error message</p>",
     "examples": [
       {
         "title": "Example Usage:",
@@ -491,7 +923,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"_id\": \"jed5672jd90xfffsdg4wo\",\n  \"title\": \"Hello\",\n  \"dis\": \"This is my first post\",\n  \"pictureCounts\": 2,\n  \"time\": 1586391820095\n}",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n  \"_id\": \"jed5672jd90xfffsdg4wo\",\n  \"title\": \"Hello\",\n  \"dis\": \"This is my first post\",\n  \"pictureCounts\": 2,\n  \"time\": 1586391820095\n}",
           "type": "json"
         }
       ]
@@ -591,6 +1023,13 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "posts._id",
+            "description": "<p>The unique id of the post</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "posts.title",
             "description": "<p>The title of the post</p>"
           },
@@ -615,20 +1054,12 @@ define({ "api": [
             "field": "posts.time",
             "description": "<p>The time of post creation</p>"
           }
-        ],
-        "String": [
-          {
-            "group": "String",
-            "optional": false,
-            "field": "posts._id",
-            "description": "<p>The unique id of the post</p>"
-          }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": " HTTP/1.1 200 OK\n [\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"Hello\",\n      \"dis\": \"This is my first post\",\n      \"pictureCounts\": 2,\n      \"time\": 1586391820095\n  },\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"Good Morning\",\n      \"dis\": \"This is my second post\",\n      \"pictureCounts\": 2,\n      \"time\": 1586391820095\n  }\n]",
+          "content": " HTTP/1.1 200 OK\n Content-Type: application/json\n [\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"Hello\",\n      \"dis\": \"This is my first post\",\n      \"pictureCounts\": 2,\n      \"time\": 1586391820095\n  },\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"Good Morning\",\n      \"dis\": \"This is my second post\",\n      \"pictureCounts\": 2,\n      \"time\": 1586391820095\n  }\n]",
           "type": "json"
         }
       ]
@@ -824,6 +1255,20 @@ define({ "api": [
             "group": "Success 200",
             "type": "String",
             "optional": false,
+            "field": "posts._id",
+            "description": "<p>The unique id of the post</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "posts.username",
+            "description": "<p>The creator of the post</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
             "field": "posts.title",
             "description": "<p>The title of the post</p>"
           },
@@ -848,26 +1293,12 @@ define({ "api": [
             "field": "posts.time",
             "description": "<p>The time of post creation</p>"
           }
-        ],
-        "String": [
-          {
-            "group": "String",
-            "optional": false,
-            "field": "posts._id",
-            "description": "<p>The unique id of the post</p>"
-          },
-          {
-            "group": "String",
-            "optional": false,
-            "field": "posts.username",
-            "description": "<p>The creator of the post</p>"
-          }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": " HTTP/1.1 200 OK\n [\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"What a nice day\",\n      \"username\": \"Leo11\"\n      \"dis\": \"How are you?\",\n      \"pictureCounts\": 7,\n      \"time\": 1586391820095\n  },\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wk\",\n      \"title\": \"Good Morning\",\n      \"username\": \"Flydog\"\n      \"dis\": \"Looks delicious\",\n      \"pictureCounts\": 1,\n      \"time\": 1586391820033\n  }\n]",
+          "content": " HTTP/1.1 200 OK\n Content-Type: application/json\n [\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"What a nice day\",\n      \"username\": \"Leo11\"\n      \"dis\": \"How are you?\",\n      \"pictureCounts\": 7,\n      \"time\": 1586391820095\n  },\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wk\",\n      \"title\": \"Good Morning\",\n      \"username\": \"Flydog\"\n      \"dis\": \"Looks delicious\",\n      \"pictureCounts\": 1,\n      \"time\": 1586391820033\n  }\n]",
           "type": "json"
         }
       ]
@@ -932,15 +1363,14 @@ define({ "api": [
     },
     "success": {
       "fields": {
-        "String": [
+        "Success 200": [
           {
-            "group": "String",
+            "group": "Success 200",
+            "type": "String",
             "optional": false,
             "field": "_id",
             "description": "<p>The unique id of the user.</p>"
-          }
-        ],
-        "Success 200": [
+          },
           {
             "group": "Success 200",
             "type": "String[]",
@@ -1083,6 +1513,173 @@ define({ "api": [
             "optional": false,
             "field": "NotFind",
             "description": "<p>Not find the user in the query.</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "optional": false,
+            "field": "InternalServerError",
+            "description": "<p>Error from backend.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "backend/controllers/profileController.js",
+    "groupTitle": "Profile"
+  },
+  {
+    "type": "post",
+    "url": "/api/profile/avatar",
+    "title": "Update the User Avatar",
+    "name": "Update_User_Avatar",
+    "group": "Profile",
+    "examples": [
+      {
+        "title": "Example Usage:",
+        "content": "curl -b cookie.txt -c cookie.txt -F \"avatar=@new_avatar.jpg\" localhost:5000api/profile/avatar",
+        "type": "curl"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Form Data": [
+          {
+            "group": "Form Data",
+            "type": "File",
+            "optional": false,
+            "field": "avatar",
+            "description": "<p>An image as the new avatar, accepted Format: <code>.jpeg/.jpg/.png/.gif</code></p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "json",
+            "optional": false,
+            "field": "success",
+            "description": "<p>Uploaded Successfully.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n    \"success\": \"Uploaded Successfully!\"\n}",
+          "type": "BinaryFile"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "optional": false,
+            "field": "BadFormat",
+            "description": "<p>Form Data avatar has the wrong format.</p>"
+          }
+        ],
+        "Error 401": [
+          {
+            "group": "Error 401",
+            "optional": false,
+            "field": "AccessDeny",
+            "description": "<p>Not Log In.</p>"
+          }
+        ],
+        "Error 404": [
+          {
+            "group": "Error 404",
+            "optional": false,
+            "field": "NotFind",
+            "description": "<p>Not find the user to update.</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "optional": false,
+            "field": "InternalServerError",
+            "description": "<p>Error from backend.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "backend/controllers/profileController.js",
+    "groupTitle": "Profile"
+  },
+  {
+    "type": "put",
+    "url": "/api/profile/facedata",
+    "title": "Update the user's face descriptors",
+    "name": "Update_the_session_user's_face_descriptors",
+    "group": "Profile",
+    "description": "<p>The Session User Uploads a image to log their own face descriptor, The response is just the status code.</p>",
+    "examples": [
+      {
+        "title": "Example Usage:",
+        "content": "curl -b cookie.txt \\\n    -c cookie.txt \\\n    -X PUT \\\n    -d '{\"alice\": {\"name\":\"alice\", \"descriptor\":[0.1, .... , 0.2323]} \\\n    localhost:5000/api/profile/facedata",
+        "type": "curl"
+      }
+    ],
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Content-Type",
+            "description": "<p>Must be <code>application/json</code>.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "optional": false,
+            "field": "data",
+            "description": "<p>The content of the face descriptors.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "optional": false,
+            "field": "BadFormat",
+            "description": "<p>title/description/pictures has the wrong format.</p>"
+          }
+        ],
+        "Error 401": [
+          {
+            "group": "Error 401",
+            "optional": false,
+            "field": "AccessDeny",
+            "description": "<p>Not Log In.</p>"
           }
         ],
         "Error 500": [

@@ -4,8 +4,9 @@ const Post = require("../model/post");
 const {sendFileOption} = require("../config/multerconfig");
 const fs = require('fs');
 const logger = require('../config/loggerconfig');
+const config = require('config');
 
-const MAX_POST_PER_PAGE = 10;
+const MAX_POST_PER_PAGE = config.get("posts.MAX_POST_PER_PAGE");
 
 /**
  * @api {post} /api/posts Create a new Post
@@ -13,7 +14,12 @@ const MAX_POST_PER_PAGE = 10;
  * @apiGroup Posts
  *
  * @apiExample {curl} Example Usage:
- *  curl -b cookie.txt -c cookie.txt -F "title=hello" -F "description=My New Post!" -F "pictures=@hello.jpg" localhost:5000/api/posts
+ *  curl -b cookie.txt \
+ *      -c cookie.txt \
+ *      -F "title=hello" \
+ *      -F "description=My New Post!" \
+ *      -F "pictures=@hello.jpg"
+ *      localhost:5000/api/posts
  *
  * @apiHeader {String} Content-Type Must be `multipart/form-data`.
  *
@@ -25,6 +31,7 @@ const MAX_POST_PER_PAGE = 10;
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
  *     {
  *       "_id": "jed5672jd90xfffsdg4wo"
  *     }
@@ -71,6 +78,7 @@ exports.createPost = function (req, res, next) {
 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
  *     {
  *       "_id": "jed5672jd90xfffsdg4wo",
  *       "title": "Hello",
@@ -122,7 +130,7 @@ exports.getPostById = function (req, res, next) {
  * @apiParam (Request Query) {Integer} page The Page number of the posts to display, each page has at most `10` posts
  *
  * @apiSuccess {Objects[]} posts Array of the posts created by the user. The latest posts come first
- * @apiSuccess (String) posts._id The unique id of the post
+ * @apiSuccess {String} posts._id The unique id of the post
  * @apiSuccess {String} posts.title The title of the post
  * @apiSuccess {String} posts.dis The description of the post
  * @apiSuccess {Integer} posts.pictureCounts The number of the pictures this post has
@@ -130,6 +138,7 @@ exports.getPostById = function (req, res, next) {
 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
  *     [
  *      {
  *          "_id": "jed5672jd90xfffsdg4wo",
@@ -192,8 +201,8 @@ exports.getPostsByUser = function (req, res, next) {
  * @apiParam (Request Query) {Integer} page The Page number of the posts to display, each page has at most `10` posts
  *
  * @apiSuccess {Objects[]} posts Array of the posts created by the user. The latest posts come first
- * @apiSuccess (String) posts._id The unique id of the post
- * @apiSuccess (String) posts.username The creator of the post
+ * @apiSuccess {String} posts._id The unique id of the post
+ * @apiSuccess {String} posts.username The creator of the post
  * @apiSuccess {String} posts.title The title of the post
  * @apiSuccess {String} posts.dis The description of the post
  * @apiSuccess {Integer} posts.pictureCounts The number of the pictures this post has
@@ -201,6 +210,7 @@ exports.getPostsByUser = function (req, res, next) {
 
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
  *     [
  *      {
  *          "_id": "jed5672jd90xfffsdg4wo",
@@ -235,7 +245,7 @@ exports.getPostOfFollowing = function (req, res, next) {
         }
         let listOfLookingUp = user.following_ids;
         listOfLookingUp.push(username);
-        db.posts.find({username: {$in: listOfLookingUp}}).sort({time: -1})
+        db.posts.find({username: {$in: listOfLookingUp}}, {pictures: 0}).sort({time: -1})
             .skip(MAX_POST_PER_PAGE * page)
             .limit(MAX_POST_PER_PAGE)
             .toArray(function (err, posts) {
@@ -301,7 +311,7 @@ exports.getPostPicture = function (req, res, next) {
  * @api {delete} /api/posts/:id/ Delete a Post By Post id
  * @apiName Delete a Post
  * @apiGroup Posts
- * @apiDescription Delete a Post by it's id, if success, empty response with status code `200`.
+ * @apiDescription Delete a Post by its id, if success, empty response with status code `200`.
  *      Otherwise, response is error message with corresponding error message
  *
  *
