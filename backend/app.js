@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 // Only Serve static file in production environment
 if (process.env.NODE_ENV === 'production') {
-    const SessionStore = require('./services/redisservice');
+    const {SessionStore} = require('./services/redisservice');
     app.use(express.static('static'));
     app.set('trust proxy', true);
     app.use(session({

@@ -43,7 +43,7 @@ const MAX_COMMENT_PER_PAGE = config.get('comments.MAX_COMMENT_PER_PAGE');
  * @apiError (Error 500) InternalServerError Error from backend.
  */
 exports.addComment = function (req, res, next) {
-    if (req.body.content.length > MAX_COMMENT_LENGTH) return res.status(400).end("No More than 150 Characters");
+    if (req.body.content.length > MAX_COMMENT_LENGTH) return res.status(400).json({error: "No More than 150 Characters"});
 
     let post_id = ObjectId(req.params.id);
     db.posts.findOne({ _id : post_id}, function(err, post) {
@@ -53,8 +53,8 @@ exports.addComment = function (req, res, next) {
         }
         if(!post) return res.status(404).json({error: "No such post to comment"});
         db.users.find({_id: req.session.username, following_ids: post.username}).count(function(err, count) {
-            if (err) return res.status(500).end(err);
-            if (count !== 1 && req.session.username !== post.username) return res.status(409).end("Not Friend");
+            if (err) return res.status(500).json({error: err});;
+            if (count !== 1 && req.session.username !== post.username) return res.status(409).json({error: "Not Friend"});
             db.comments.insert(new Comment(req, post_id), function (err, item) {
                 if (err) {
                     logger.error(err);
@@ -76,7 +76,7 @@ exports.addComment = function (req, res, next) {
  *
  *
  * @apiParam (Path Params) {String} id The id of Post which you want to comment on.
- * @apiParam (Request Query) {Integer} page The Page number of the comments to display, each page has at most `20` posts
+ * @apiParam (Request Query) {Integer} page The Page number of the comments to display, each page has at most `10` posts
  *
  * @apiSuccess {Objects[]} comments Array of the posts created by the user. The latest posts come first
  * @apiSuccess (String) comments._id The id of the comment
@@ -120,13 +120,13 @@ exports.getCommentByPost = function (req, res, next) {
         .toArray(function (err, comments) {
             if (err) {
                 logger.error(err);
-                return res.status(500).end();
+                return res.status(500).json({error: err});
             }
             if (comments.length > 0) {
                 let post_author = comments[0].username;
                 db.users.find({_id: req.session.username, following_ids: post_author}).count(function(err, count) {
-                    if (err) return res.status(500).end(err);
-                    if (count !== 1 && req.session.username !== post_author) return res.status(409).end("Not Friend");
+                    if (err) return res.status(500).json({error: err});
+                    if (count !== 1 && req.session.username !== post_author) return res.status(409).json({error: "Not Friend"});
                     return res.json(comments);
                 });
             } else {
@@ -165,7 +165,7 @@ exports.getCommentCountByPost = function (req, res, next) {
         .count(function (err, count) {
             if (err) {
                 logger.error(err);
-                return res.status(500).end();
+                return res.status(500).json({error: err});
             }
             return res.json({count: count});
         });
@@ -201,20 +201,20 @@ exports.deleteCommentById = function (req, res, next) {
   db.comments.findOne({_id: comment_id}, function (err, comment) {
       if (err) {
           logger.error(err);
-          return res.status(500).end();
+          return res.status(500).json({error: err});
       }
       if (!comment) return res.status(404).json("Comment Not Find").
       db.users.findOne({_id: ObjectId(comment.post_id)}, function(err, post) {
           if (err) {
               logger.error(err);
-              return res.status(500).end();
+              return res.status(500).json({error: err});
           }
           if (sessionUsername !== comment.username && sessionUsername !== post.username)
               return res.status(403).json({error: "You are not allowed delete other comments"});
           db.comments.remove({_id: comment_id}, function (err) {
               if (err) {
                   logger.error(err);
-                  return res.status(500).end();
+                  return res.status(500).json({error: err});
               }
               return res.status(200).end();
           });

@@ -34,7 +34,7 @@ exports.getAvatar = function (req, res, next) {
     db.users.findOne({_id: username}, function(err, user) {
         if (err) {
             logger.error(err);
-            return res.status(500).end();
+            return res.status(500).json({error: err});
         }
         // If there is no avatar uploaded
         if (!user.avatar.path) {
@@ -77,16 +77,16 @@ exports.updateAvatar = function (req, res, next) {
     db.users.findOne({_id: username}, function(err, user) {
         if (err) {
             logger.error(err);
-            return res.status(500).end(err);
+            return res.status(500).json({error: err});
         }
-        if (!user) return res.status(404).end();
+        if (!user) return res.status(404).json({error: "User Not Find"});
         fs.unlink(user.avatar.path, (err) => {
-            if (err) return res.status(500).end("Unable to delete the file");
+            if (err) return res.status(500).json({error: "Unable to delete the file"});
         });
         db.users.update({_id: username}, {$set: {avatar: image}}, function(err, _) {
             if (err) {
                 logger.error(err);
-                return res.status(500).end(err);
+                return res.status(500).json({error: err});
             }
             return res.json({
                 success: "Uploaded Successfully!"
@@ -113,7 +113,7 @@ exports.updateAvatar = function (req, res, next) {
  *
  * @apiParam  {Object} data The content of the face descriptors.
  *
- * @apiSuccessExample {json} Success-Response:
+ * @apiSuccessExample {empty} Success-Response:
  *     HTTP/1.1 200 OK
  *
  * @apiError (Error 400) BadFormat title/description/pictures has the wrong format.
@@ -124,7 +124,7 @@ exports.updateFaceData = function (req, res, next) {
     db.facedata.update(new faceData(req), {upsert: true}, function (err, data) {
         if (err) {
             logger.error(err);
-            return res.status(500).end();
+            return res.status(500).json({error: err});
         }
         else return res.status(200).end();
     });
@@ -136,7 +136,7 @@ exports.getFaceData = function (req, res, next) {
     db.facedata.findOne({_id: userName}, function (err, facedata) {
         if (err) {
             logger.error(err);
-            return res.status(500).end();
+            return res.status(500).json({error: err});
         }
         if (!facedata) return res.json({data: {}});
         return res.json({data: facedata.data});
@@ -178,9 +178,9 @@ exports.getUserProfile = function (req, res, next) {
     db.users.findOne({_id: username}, {salt: 0, hash: 0, avatar:0}, function (err, user) {
         if (err) {
             logger.error(err);
-            return res.status(500).end();
+            return res.status(500).json({error: err});
         }
-        if (!user) return res.status(404).end();
+        if (!user) return res.status(404).json({error: "User not Find"});
         return res.json(user);
     })
 };

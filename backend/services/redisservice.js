@@ -3,20 +3,24 @@ const session = require('express-session');
 const config = require('config');
 const logger = require('../config/loggerconfig');
 
-let RedisStore = require('connect-redis')(session);
-let redisClient = redis.createClient();
+const redisClient = redis.createClient();
+
+redisClient.on('connect', function() {
+    logger.info('Redis client connected');
+});
 
 redisClient.on("error", function(err){
     logger.error(err);
 });
+let RedisStore = require('connect-redis')(session);
 
-function SessionStore() {
+exports.SessionStore= function() {
     return new RedisStore({
         host: config.get('redis.host'),
         port: config.get('redis.port'),
         client: redisClient,
         ttl: config.get('redis.ttl')
     });
-}
+};
 
-module.exports = SessionStore;
+exports.redisClient = redisClient;

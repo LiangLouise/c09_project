@@ -79,7 +79,7 @@ module.exports = function (app) {
     followRoutes.delete('/:username/', validation.isAuthenticated, validation.checkUsername('params'),
         validation.notSameUser('params'), validation.checkIfUserExisting('params'), unfollowUser);
 
-    // GET friend list
+    // GET Following list
     // GET /api/follow/?page=number
     // Res: {"users": [Array of user ids]}
     followRoutes.get('/', validation.isAuthenticated, validation.checkPageNumber, getFollowingList);

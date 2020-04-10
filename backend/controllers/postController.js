@@ -5,6 +5,7 @@ const {sendFileOption} = require("../config/multerconfig");
 const fs = require('fs');
 const logger = require('../config/loggerconfig');
 const config = require('config');
+const {redisClient} = require('../services/redisservice');
 
 const MAX_POST_PER_PAGE = config.get("posts.MAX_POST_PER_PAGE");
 
@@ -47,13 +48,13 @@ exports.createPost = function (req, res, next) {
         function (err, item) {
             if (err) {
                 logger.error(err);
-                return res.status(500).end();
+                return res.status(500).json({error: err});
             }
             try {
                 db.users.update({_id: sessionUsername}, {$inc: {post_counts: 1}});
             } catch (e) {
                 logger.error(e);
-                return res.status(500).end();
+                return res.status(500).json({error: err});
             }
             return res.json({_id: item._id.toString()});
     });
@@ -95,22 +96,24 @@ exports.createPost = function (req, res, next) {
  */
 exports.getPostById = function (req, res, next) {
     let id = req.params.id;
+    let sessionUsername = req.session.username;
+    let post_key = sessionUsername + "/post/" + id;
 
     db.posts.findOne({_id: ObjectId(id)}, {pictures: 0, picturesFaceData: 0, geolcation: 0}, function(err, post) {
         if (err) {
             logger.error(err);
-            return res.status(500).end();
+            return res.status(500).json({error: err});
         }
-        if (!post) return res.status(404).end("Post doesn't exits");
+        if (!post) return res.status(404).json({error: "Post doesn't exits"});
         // Check if the current user is user himself or the friends
-        if (req.session.username === post.username) return res.json(post);
+        if (sessionUsername === post.username) return res.json(post);
         else {
-            db.users.find({_id: req.session.username, following_ids: post.username}).count(function(err, count) {
+            db.users.find({_id: sessionUsername, following_ids: post.username}).count(function(err, count) {
                 if (err) {
                     logger.error(err);
-                    return res.status(500).end();
+                    return res.status(500).json({error: err});
                 }
-                if (count !== 1) return res.status(403).end("Not Friend");
+                if (count !== 1) return res.status(403).json({error: "Not Friend"});
                 return res.json(post);
             });
         }
@@ -164,7 +167,7 @@ exports.getPostById = function (req, res, next) {
  */
 exports.getPostsByUser = function (req, res, next) {
     let page = req.query.page;
-    let sessionUsername = req.query.username;
+    let sessionUsername = req.session.username;
     let queryUsername = req.query.username;
 
     // If the query name is not the same as the session user name, then check if they are friends
@@ -172,17 +175,19 @@ exports.getPostsByUser = function (req, res, next) {
         db.users.find({_id: sessionUsername, following_ids: queryUsername}).count(function(err, count) {
             if (err) {
                 logger.error(err);
-                return res.status(500).end();
+                return res.status(500).json({error: err});
             }
-            if (count !== 1) return res.status(403).end("Not Friend");
+            if (count !== 1) return res.status(403).json({error: "Not Friend"});
         });
     }
     db.posts.find({username: queryUsername}, {pictures: 0}).sort({time: -1})
         .skip(MAX_POST_PER_PAGE * page)
         .limit(MAX_POST_PER_PAGE)
         .toArray(function (err, posts) {
-            if(err) return res.status(500).end(err);
-            else return res.json(posts);
+            if(err) return res.status(500).json({error: err});
+            else {
+                return res.json(posts);
+            }
         });
 };
 
@@ -235,22 +240,26 @@ exports.getPostsByUser = function (req, res, next) {
  * @apiError (Error 500) InternalServerError Error from backend.
  */
 exports.getPostOfFollowing = function (req, res, next) {
-    let username = req.session.username;
+    let sessionUsername = req.session.username;
     let page = req.query.page;
 
-    db.users.findOne({_id: username}, {following_ids: 1}, function (err, user) {
+    db.users.findOne({_id: sessionUsername}, {following_ids: 1}, function (err, user) {
         if (err) {
             logger.error(err);
-            return res.status(500).end();
+            return res.status(500).json({error: err});
         }
         let listOfLookingUp = user.following_ids;
-        listOfLookingUp.push(username);
+        // Ignore the userself
+        //listOfLookingUp.push(sessionUsername);
         db.posts.find({username: {$in: listOfLookingUp}}, {pictures: 0}).sort({time: -1})
             .skip(MAX_POST_PER_PAGE * page)
             .limit(MAX_POST_PER_PAGE)
             .toArray(function (err, posts) {
-                if(err) return res.status(500).end(err);
-                else return res.json(posts);
+                if(err) return res.status(500).json({error: err});
+                else {
+                    console.log("mongo", data);
+                    return res.json(posts);
+                }
             });
     })
 };
@@ -289,7 +298,7 @@ exports.getPostPicture = function (req, res, next) {
     db.posts.findOne({_id: post_id}, function (err, post) {
         if (err) {
             logger.error(err);
-            return res.status(500).end();
+            return res.status(500).json({error: err});
         }
 
         // Check if the current user is picture owner or the friends
@@ -297,9 +306,9 @@ exports.getPostPicture = function (req, res, next) {
             db.users.find({_id: sessionUsername, following_ids: post.username}).count(function(err, count) {
                 if (err) {
                     logger.error(err);
-                    return res.status(500).end();
+                    return res.status(500).json({error: err});
                 }
-                if (count !== 1) return res.status(403).end("Not Friend");
+                if (count !== 1) return res.status(403).json({error: "Not Friend"});
             });
         }
         res.setHeader('Content-Type', post.pictures[image_index].mimetype);
@@ -336,19 +345,19 @@ exports.deletePostById = function (req, res, next) {
     db.posts.findOne({_id: post_id}, function(err, post) {
         if (err) {
             logger.error(err);
-            return res.status(500).end(err);
+            return res.status(500).json({error: err});
         }
-        if (!post) return res.status(404).end("Post doesn't exits");
+        if (!post) return res.status(404).json({error: "Post doesn't exits"});
         // Check if the current user is user himself
-        if (sessionUsername !== post.username) return res.status(403).end("You are not the owner of the post");
+        if (sessionUsername !== post.username) return res.status(403).json({error: "You are not the owner of the post"});
         db.posts.findOne({_id: post_id}, function (err, post) {
             if (err) {
                 logger.error(err);
-                return res.status(500).end(err);
+                return res.status(500).json({error: err});
             }
             for (let pic of post.pictures){
                 fs.unlink(pic.path, err => {
-                    if (err) return res.status(500).end("Unable to delete the file");
+                    if (err) return res.status(500).json({error: err});
                 })
             }
             try {
@@ -358,7 +367,7 @@ exports.deletePostById = function (req, res, next) {
                 db.users.update({_id: sessionUsername}, {$inc: {post_counts: -1}});
             } catch (err) {
                 logger.error(err);
-                return res.status(500).end(err);
+                return res.status(500).json({error: err});
             }
             return res.status(200).end();
         })

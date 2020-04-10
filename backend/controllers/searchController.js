@@ -33,7 +33,7 @@ exports.searchUser = function (req, res, next) {
         .limit(MAX_USER_PER_PAGE).toArray(function(err, users) {
             if (err) {
                 logger.error(err);
-                return res.status(500).end();
+                return res.status(500).json({error: err});
             }
             // Only Return the usernames other than the current user
             let usernames = users.map(user => user._id).filter(id => id !== req.session.username);

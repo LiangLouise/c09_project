@@ -34,7 +34,9 @@
   "redis": {
     "host": "localhost",
     "port": 6379,
-    "ttl": 86400
+    "ttl": 86400,
+    "post_maxAge": 180,
+    "comment_maxAge": 120
   },
   "session": {
     "maxAge": 172800000,
@@ -42,7 +44,10 @@
   },
   "comments": {
     "MAX_COMMENT_LENGTH": 100,
-    "MAX_COMMENT_PER_PAGE": 20
+    "MAX_COMMENT_PER_PAGE": 10
+  },
+  "following": {
+    "MAX_USER_PER_PAGE": 10
   },
   "posts": {
     "MAX_POST_PER_PAGE": 10

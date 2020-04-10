@@ -41,9 +41,22 @@
     "MAX_COMMENT_PER_PAGE": 5
   },
   "posts": {
-    "MAX_POST_PER_PAGE": 5
+    "MAX_POST_PER_PAGE": 5,
+    "MAX_POST_PICTURE_NUMBER": 9,
+    "MAX_POST_TITLE_LENGTH": 30,
+    "MAX_POST_DES_LENGTH": 200
+  },
+  "following": {
+    "MAX_USER_PER_PAGE": 5
   },
   "faceapi": {
     "models": "../models/"
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "ttl": 86400,
+    "post_maxAge": 120,
+    "comment_maxAge": 120
   }
 }

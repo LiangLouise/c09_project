@@ -11,7 +11,8 @@ const logger = require('../config/loggerconfig');
  *
  * @apiExample {curl} Example Usage:
  *  curl -H "Content-Type: application/json" \
- *      -X POST -d '{"username":"alice","password":"alice"}' \
+ *      -X POST \
+ *		-d '{"username":"alice","password":"alice"}' \
  *      -c cookie.txt \
  *      localhost:5000/signup/
  *
@@ -20,7 +21,7 @@ const logger = require('../config/loggerconfig');
  * @apiParam (Request Body) {String} username New User Username, must be Alphanumeric.
  * @apiParam (Request Body) {String} password New User Password.
  *
- * @apiSuccess {String} success user {username} signed up
+ * @apiSuccess {String} success Mark the operation success.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -72,7 +73,7 @@ exports.signup = function(req, res, next) {
  * @apiParam (Request Body) {String} username Username of the user to sign in, must be Alphanumeric.
  * @apiParam (Request Body) {String} password Password of the user to sign in.
  *
- * @apiSuccess {String} success user {username} signed in
+ * @apiSuccess {String} success Mark the operation success.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -83,7 +84,7 @@ exports.signup = function(req, res, next) {
  *
  * @apiError (Error 400) BadFormat Username is not Alphanumeric
  * @apiError (Error 401) AccessDeny Wrong Username/Password.
- * @apiError (Error 404) NotFind Not find the corresponding Uses.
+ * @apiError (Error 404) NotFind Not find the corresponding User.
  * @apiError (Error 500) InternalServerError Error from backend.
  */
 exports.signin = function (req, res, next) {
@@ -117,7 +118,7 @@ exports.signin = function (req, res, next) {
  * @apiExample {curl} Example Usage:
  *  curl -b cookie.txt -c cookie.txt localhost:5000/signout/
  *
- * @apiSuccess {String} success user {username} signed out
+ * @apiSuccess {String} success Mark the operation success.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
