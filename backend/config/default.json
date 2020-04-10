@@ -38,10 +38,10 @@
   },
   "comments": {
     "MAX_COMMENT_LENGTH": 100,
-    "MAX_COMMENT_PER_PAGE": 10
+    "MAX_COMMENT_PER_PAGE": 5
   },
   "posts": {
-    "MAX_POST_PER_PAGE": 10
+    "MAX_POST_PER_PAGE": 5
   },
   "faceapi": {
     "models": "../models/"
