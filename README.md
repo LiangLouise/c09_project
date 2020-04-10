@@ -56,7 +56,8 @@ This application focus on highlighting user's friendship and provides user a cha
 
 * ReactJS - Frontend
 * NodeJS - Backend Server
-* Mongo/SQL - Data Persistence
+* Redis - Server Side Cache [doc](./redis_cache_doc.md)
+* Mongo - Data Persistence
 
 ## Top Five Technical Challenges
 
