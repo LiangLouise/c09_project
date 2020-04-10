@@ -80,7 +80,8 @@ class FollowingTimeline extends Component{
             hasMoreCmt: true,
             postCount: 0,
             commentVisible: {},
-            commentsToDis: []
+            commentsToDis: [],
+            post_highlighted : ""
 
         };
         this.sendComment = this.sendComment.bind(this);
@@ -237,6 +238,7 @@ class FollowingTimeline extends Component{
         commentVisible[postId]=true;
         this.setState({
             commentVisible: commentVisible,
+            post_highlighted: postId,
             commentsToDis: this.displayComments(postId, 0)
         })
     }
@@ -248,6 +250,7 @@ class FollowingTimeline extends Component{
         this.setState({
             commentVisible: commentVisible,
             cmtPage: 0,
+            post_highlighted: ""
         })
     }
 
@@ -263,19 +266,20 @@ class FollowingTimeline extends Component{
         return a
     };
 
-    fetchComments(postId,pageNumber){
-        console.log(pageNumber);
+    fetchComments(postId, pageNumber){
+        if (pageNumber === undefined) pageNumber = 0;
         let temp = this.state.comments;
         axios
             .get(process.env.REACT_APP_BASE_URL+
                 '/api/posts/'+postId
-                +'/comments/?page='+this.state.cmtPage,
+                +'/comments/?page='+pageNumber,
                 {withCredentials:true})
             .then(res => {
                 // temp[postId] = JSON.parse(JSON.stringify(res.data))
                 temp[postId] = res.data;
                 this.setState({
-                    comments : temp
+                    comments : temp,
+                    cmtPage: pageNumber
                 });
                 console.log(temp[postId]);
             });
@@ -347,11 +351,9 @@ class FollowingTimeline extends Component{
 
     changePage(pageNumber) {
 
-        console.log(pageNumber);
-        this.setState({
-            cmtPage: pageNumber
-        })
-        console.log(this.state.cmtPage);
+        console.log(pageNumber-1);
+        this.fetchComments(this.state.post_highlighted, pageNumber-1);
+        // console.log(this.state.cmtPage);
     }
     
     
@@ -430,7 +432,7 @@ class FollowingTimeline extends Component{
                                                 <Pagination
                                                     defaultCurrent={1}
                                                     total={20}
-                                                    onChange={this.fetchComments(post.id)}
+                                                    onChange={this.changePage}
                                                 />
                                             
                                                 
