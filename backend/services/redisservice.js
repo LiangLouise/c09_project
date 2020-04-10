@@ -1,4 +1,5 @@
 const redis = require('redis');
+require('redis-delete-wildcard')(redis);
 const session = require('express-session');
 const config = require('config');
 const logger = require('../config/loggerconfig');
@@ -12,6 +13,7 @@ redisClient.on('connect', function() {
 redisClient.on("error", function(err){
     logger.error(err);
 });
+
 let RedisStore = require('connect-redis')(session);
 
 exports.SessionStore= function() {

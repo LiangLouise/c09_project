@@ -53,12 +53,18 @@ exports.createPost = function (req, res, next) {
             }
             try {
                 db.users.update({_id: sessionUsername}, {$inc: {post_counts: 1}});
-                let key = "*/posts/" + sessionUsername + "/*";
-                redisClient.del(key);
             } catch (e) {
                 logger.error(e);
                 return res.status(500).json({error: err});
             }
+            let pattern = "*/posts/" + sessionUsername + "/*";
+            redisClient.delwild(pattern, function(err, number) {
+                logger.info("Number Deleted:", number);
+                if (err) {
+                    logger.error(err);
+                    return res.status(500).json({error: err});
+                }
+            });
             return res.json({_id: item._id.toString()});
         });
 };
@@ -450,13 +456,33 @@ exports.deletePostById = function (req, res, next) {
                 logger.error(err);
                 return res.status(500).json({error: err});
             }
-            let post_key = "*/post/" + req.params.id + "/*";
-            redisClient.del(post_key);
-            let user_page_key = "*/posts/" + sessionUsername + "/*";
-            redisClient.del(user_page_key);
+
+            let pattern = "*/post/" + req.params.id + "/*";
+            redisClient.delwild(pattern, function(err, number) {
+                logger.info("Number Deleted:", number);
+
+                if (err) {
+                    logger.error(err);
+                    return res.status(500).json({error: err});
+                }
+            });
+
+            pattern = "*/posts/" + sessionUsername + "/*";
+            redisClient.delwild(pattern, function(err, number) {
+                logger.info("Number Deleted:", number);
+
+                if (err) {
+                    logger.error(err);
+                    return res.status(500).json({error: err});
+                }
+            });
+
             for (let pic of post.pictures){
                 fs.unlink(pic.path, err => {
-                    if (err) return res.status(500).json({error: err});
+                    if (err) {
+                        logger.error(err);
+                        return res.status(500).json({error: err});
+                    }
                 })
             }
             try {
