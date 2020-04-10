@@ -38,7 +38,7 @@
   },
   "comments": {
     "MAX_COMMENT_LENGTH": 100,
-    "MAX_COMMENT_PER_PAGE": 20
+    "MAX_COMMENT_PER_PAGE": 10
   },
   "posts": {
     "MAX_POST_PER_PAGE": 10
