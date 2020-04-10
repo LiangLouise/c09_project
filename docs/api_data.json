@@ -364,6 +364,90 @@
     "groupTitle": "Comment"
   },
   {
+    "type": "delete",
+    "url": "/api/posts/comments/:id/",
+    "title": "Delete a Comment",
+    "name": "Delete_a_Comment_by_its_ID",
+    "group": "Comment",
+    "description": "<p>Delete a Comment by its id, if success, empty response with status code <code>200</code>. Otherwise, response is error message with corresponding error message Note Only Comment owner or the Post owner can delete the comment.</p>",
+    "examples": [
+      {
+        "title": "Example Usage:",
+        "content": "curl -x DELETE -b cookie.txt -c cookie.txt localhost:5000/api/posts/comments/5e8fc18270865f659e12fc42/",
+        "type": "curl"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Path Params": [
+          {
+            "group": "Path Params",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The unique id of the post to delete</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "empty"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "optional": false,
+            "field": "BadFormat",
+            "description": "<p>Request Query has the wrong format.</p>"
+          }
+        ],
+        "Error 401": [
+          {
+            "group": "Error 401",
+            "optional": false,
+            "field": "AccessDeny",
+            "description": "<p>Not Log In.</p>"
+          }
+        ],
+        "Error 403": [
+          {
+            "group": "Error 403",
+            "optional": false,
+            "field": "AccessForbidden",
+            "description": "<p>Not the comment owner or the post owner.</p>"
+          }
+        ],
+        "Error 404": [
+          {
+            "group": "Error 404",
+            "optional": false,
+            "field": "NotFind",
+            "description": "<p>Not Find Comment with input id.</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "optional": false,
+            "field": "InternalServerError",
+            "description": "<p>Error from backend.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "backend/controllers/commentController.js",
+    "groupTitle": "Comment"
+  },
+  {
     "type": "get",
     "url": "/api/posts/:id/comments/?page=:page",
     "title": "Get Comments of Post",
@@ -579,90 +663,6 @@
     "version": "0.0.0",
     "filename": "backend/controllers/commentController.js",
     "groupTitle": "Comment"
-  },
-  {
-    "type": "delete",
-    "url": "/api/posts/comments/:id/",
-    "title": "Delete a Comment",
-    "name": "Delete_a_Comment_by_its_ID",
-    "group": "Comments",
-    "description": "<p>Delete a Comment by its id, if success, empty response with status code <code>200</code>. Otherwise, response is error message with corresponding error message Note Only Comment owner or the Post owner can delete the comment.</p>",
-    "examples": [
-      {
-        "title": "Example Usage:",
-        "content": "curl -x DELETE -b cookie.txt -c cookie.txt localhost:5000/api/posts/comments/5e8fc18270865f659e12fc42/",
-        "type": "curl"
-      }
-    ],
-    "parameter": {
-      "fields": {
-        "Path Params": [
-          {
-            "group": "Path Params",
-            "type": "String",
-            "optional": false,
-            "field": "id",
-            "description": "<p>The unique id of the post to delete</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "examples": [
-        {
-          "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK",
-          "type": "empty"
-        }
-      ]
-    },
-    "error": {
-      "fields": {
-        "Error 400": [
-          {
-            "group": "Error 400",
-            "optional": false,
-            "field": "BadFormat",
-            "description": "<p>Request Query has the wrong format.</p>"
-          }
-        ],
-        "Error 401": [
-          {
-            "group": "Error 401",
-            "optional": false,
-            "field": "AccessDeny",
-            "description": "<p>Not Log In.</p>"
-          }
-        ],
-        "Error 403": [
-          {
-            "group": "Error 403",
-            "optional": false,
-            "field": "AccessForbidden",
-            "description": "<p>Not the comment owner or the post owner.</p>"
-          }
-        ],
-        "Error 404": [
-          {
-            "group": "Error 404",
-            "optional": false,
-            "field": "NotFind",
-            "description": "<p>Not Find Comment with input id.</p>"
-          }
-        ],
-        "Error 500": [
-          {
-            "group": "Error 500",
-            "optional": false,
-            "field": "InternalServerError",
-            "description": "<p>Error from backend.</p>"
-          }
-        ]
-      }
-    },
-    "version": "0.0.0",
-    "filename": "backend/controllers/commentController.js",
-    "groupTitle": "Comments"
   },
   {
     "type": "get",
