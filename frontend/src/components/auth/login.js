@@ -72,7 +72,7 @@ class Login extends React.Component{
                 this.props.refresh()
             })
             .catch(err => {
-                message.error(err.response.data);
+                message.error(err.response.data.error);
                 this.onReset();
             });
         

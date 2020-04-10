@@ -81,7 +81,7 @@ class Signup extends React.Component {
                 this.setState({ visible: false});
                 this.onReset();
             }).catch(err => {
-                message.error(err.response.data);
+                message.error(err.response.data.error);
                 this.onReset();
             });
         
