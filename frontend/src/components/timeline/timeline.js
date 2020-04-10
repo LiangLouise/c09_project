@@ -21,16 +21,10 @@ const formItemLayout = {
     wrapperCol: {
         span: 24,
         }
-    
+
 };
 
-const style = {
-    height: 30,
-    border: "1px solid green",
-    margin: 6,
-    padding: 8
-  };
-const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+const loadingIcon = <LoadingOutlined className="loadingIcon" spin />;
 
 const MAX_POSTS_NUMBER_PER_PAGE = 10;
 
@@ -269,10 +263,9 @@ class MyTimeline extends Component{
                     dataLength={this.state.posts.length}
                     next={this.fetchMoreData}
                     hasMore={this.state.hasMorePost}
-                    style={this.style}
-                    loader={<div style={{alignContent: 'center'}}><Spin indicator={loadingIcon} /></div>}
+                    loader={<div className="loader"><Spin indicator={loadingIcon} /></div>}
                     endMessage={
-                        <p style={{margin: '0 0 0 360px'}}>
+                        <p className="endtext">
                             <b>Yay! You have seen it all</b>
                         </p>
                     }
@@ -307,7 +300,7 @@ class MyTimeline extends Component{
                                 
                             <Col span={3}>
                                 <a className="delete-ref" >
-                                    <DeleteOutlined onClick={(e) => this.delPostWindow(e,post.id,post.index)} style={{float:"right"}}/>
+                                    <DeleteOutlined className="delete-btn" onClick={(e) => this.delPostWindow(e,post.id,post.index)}/>
                                 </a>
                             </Col>
                             <Divider/>

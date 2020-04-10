@@ -23,13 +23,7 @@ const formItemLayout = {
 
 };
 
-const style = {
-    height: 30,
-    border: "1px solid green",
-    margin: 6,
-    padding: 8
-};
-const loadingIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+const loadingIcon = <LoadingOutlined className="loadingIcon" spin />;
 
 const MAX_POSTS_NUMBER_PER_PAGE = 10;
 
@@ -63,7 +57,24 @@ class FollowingTimeline extends Component{
             page: 0,
             cmtPage: 0,
             posts: [],
-            comments: {},
+            comments:
+                {"5e75ac6e6d01ef9f93a7ae2d":[
+                                                {
+                                                    "username":"Cheng",
+                                                    "content":"Cool",
+                                                    "date":"2019",
+                                                    "src":"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
+                                                },
+                                                {
+                                                    "username":"Cheng",
+                                                    "content":"Cool",
+                                                    "date":"2019",
+                                                    "src":"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
+                                                },
+                                               
+                                            ]
+                },
+        
             items: Array.from({ length: 20 }),
             hasMorePost: true,
             hasMoreCmt: true,
@@ -252,7 +263,8 @@ class FollowingTimeline extends Component{
         return a
     };
 
-    fetchComments(postId){
+    fetchComments(postId,pageNumber){
+        console.log(pageNumber);
         let temp = this.state.comments;
         axios
             .get(process.env.REACT_APP_BASE_URL+
@@ -305,16 +317,17 @@ class FollowingTimeline extends Component{
 
     }
 
-    displayComments(post_id, comment_page)
+    displayComments(post_id)
     {
+
 
         return this.state.comments[post_id].map((comment) =>(
             <Comment
-                actions={[<span key="comment-nested-reply-to">Reply to</span>]}
+                // actions={[<span key="comment-nested-reply-to">Reply to</span>]}
                 author={comment.username}
                 avatar={
                     <Avatar
-                        src={comment.src}
+                        src={"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"}
                         alt="Han Solo"
                     />
                 }
@@ -333,9 +346,12 @@ class FollowingTimeline extends Component{
     }
 
     changePage(pageNumber) {
+
+        console.log(pageNumber);
         this.setState({
             cmtPage: pageNumber
         })
+        console.log(this.state.cmtPage);
     }
     
     
@@ -346,10 +362,9 @@ class FollowingTimeline extends Component{
                     dataLength={this.state.posts.length}
                     next={this.fetchMoreData}
                     hasMore={this.state.hasMorePost}
-                    style={this.style}
-                    loader={<div style={{alignContent: 'center'}}><Spin indicator={loadingIcon} /></div>}
+                    loader={<div className="loader"><Spin indicator={loadingIcon} /></div>}
                     endMessage={
-                        <p style={{margin: '0 0 0 360px'}}>
+                        <p className="endtext" >
                             <b>Yay! You have seen it all</b>
                         </p>
                     }
@@ -415,7 +430,7 @@ class FollowingTimeline extends Component{
                                                 <Pagination
                                                     defaultCurrent={1}
                                                     total={20}
-                                                    onChange={this.changePage}
+                                                    onChange={this.fetchComments(post.id)}
                                                 />
                                             
                                                 

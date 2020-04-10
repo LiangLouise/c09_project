@@ -25,3 +25,19 @@ img{
   transition: 0.3s;
 
 }
+
+.endtext{
+    margin: 0 0 0 360px;
+}
+
+.loadingIcon{
+    fontSize: 24;
+}
+
+.loader{
+    alignContent: center;
+}
+
+.delete-btn{
+    float : right;
+}

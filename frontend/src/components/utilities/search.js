@@ -187,6 +187,7 @@ class SearchBar extends Component{
                 columns={columns}
                 dataSource={this.state.data}
                 onChange={this.setSortOrder}
+                pagination={false} 
                 />
             </Modal>
             </div>
