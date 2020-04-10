@@ -5,10 +5,10 @@ name: Node.js CI & Deploy
 on:
   push:
     branches: [ master ]
-    paths-ignore: 
-      - "docs/**"
+    paths: [ backend/**, frontend/**, scripts/**, .github/workflows/* ]
   pull_request:
     branches: [ master ]
+    paths: [ backend/**, frontend/**, scripts/**, .github/workflows/* ]
 
 jobs:        
   build:
