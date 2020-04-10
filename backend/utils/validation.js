@@ -28,6 +28,11 @@ exports.sanitizeComment = function(req, res, next) {
     next();
 };
 
+exports.sanitizeFaceData = function(req, res, next) {
+    req.body.data = validator.escape(req.body.data);
+    next();
+};
+
 exports.sanitizePost = function(req, res, next) {
     if (req.body.title.length > 30) return res.status(400).end("Title Length too long");
     if (req.body.title.description > 200) return res.status(400).end("Description Length too long");

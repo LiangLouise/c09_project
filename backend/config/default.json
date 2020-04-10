@@ -36,7 +36,13 @@
     "maxAge": 172800000,
     "secret": "bpXja2BoZ5Uoxlnc"
   },
-  "maxCommentLength":150,
+  "comments": {
+    "MAX_COMMENT_LENGTH": 100,
+    "MAX_COMMENT_PER_PAGE": 20
+  },
+  "posts": {
+    "MAX_POST_PER_PAGE": 10
+  },
   "faceapi": {
     "models": "../models/"
   }
