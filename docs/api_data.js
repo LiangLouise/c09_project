@@ -1625,7 +1625,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example Usage:",
-        "content": "curl -b cookie.txt \\\n    -c cookie.txt \\\n    -X POST \\\n    -d '{\"alice\": {\"name\":\"alice\", \"descriptor\":[0.1, .... , 0.2323]} \\\n    localhost:5000/api/profile/facedata",
+        "content": "curl -b cookie.txt \\\n    -c cookie.txt \\\n    -X PUT \\\n    -d '{\"alice\": {\"name\":\"alice\", \"descriptor\":[0.1, .... , 0.2323]} \\\n    localhost:5000/api/profile/facedata",
         "type": "curl"
       }
     ],
