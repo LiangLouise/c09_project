@@ -36,7 +36,9 @@
     "port": 6379,
     "ttl": 86400,
     "post_maxAge": 180,
-    "comment_maxAge": 120
+    "comment_maxAge": 120,
+    "search_maxAge": 60,
+    "avatar_maxAge": 120
   },
   "session": {
     "maxAge": 172800000,
@@ -51,5 +53,8 @@
   },
   "posts": {
     "MAX_POST_PER_PAGE": 10
+  },
+  "search": {
+    "MAX_USER_PER_PAGE": 10
   }
 }

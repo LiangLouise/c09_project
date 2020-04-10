@@ -49,6 +49,9 @@
   "following": {
     "MAX_USER_PER_PAGE": 5
   },
+  "search": {
+    "MAX_USER_PER_PAGE": 10
+  },
   "faceapi": {
     "models": "../models/"
   },
@@ -57,6 +60,8 @@
     "port": 6379,
     "ttl": 86400,
     "post_maxAge": 120,
-    "comment_maxAge": 120
+    "comment_maxAge": 120,
+    "search_maxAge": 60,
+    "avatar_maxAge": 120
   }
 }

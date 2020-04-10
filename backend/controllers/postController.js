@@ -8,6 +8,7 @@ const config = require('config');
 const {redisClient} = require('../services/redisservice');
 
 const MAX_POST_PER_PAGE = config.get("posts.MAX_POST_PER_PAGE");
+const REDIS_POST_EXPIRE_TIME = config.get("redis.post_maxAge");
 
 /**
  * @api {post} /api/posts Create a new Post
@@ -52,12 +53,14 @@ exports.createPost = function (req, res, next) {
             }
             try {
                 db.users.update({_id: sessionUsername}, {$inc: {post_counts: 1}});
+                let key = "*/posts/" + sessionUsername + "/*";
+                redisClient.del(key);
             } catch (e) {
                 logger.error(e);
                 return res.status(500).json({error: err});
             }
             return res.json({_id: item._id.toString()});
-    });
+        });
 };
 
 /**
@@ -97,27 +100,42 @@ exports.createPost = function (req, res, next) {
 exports.getPostById = function (req, res, next) {
     let id = req.params.id;
     let sessionUsername = req.session.username;
-    let post_key = sessionUsername + "/post/" + id;
 
-    db.posts.findOne({_id: ObjectId(id)}, {pictures: 0, picturesFaceData: 0, geolcation: 0}, function(err, post) {
+    let post_key = sessionUsername + "/post/" + id;
+    redisClient.get(post_key, function(err, data) {
         if (err) {
             logger.error(err);
             return res.status(500).json({error: err});
         }
-        if (!post) return res.status(404).json({error: "Post doesn't exits"});
-        // Check if the current user is user himself or the friends
-        if (sessionUsername === post.username) return res.json(post);
-        else {
-            db.users.find({_id: sessionUsername, following_ids: post.username}).count(function(err, count) {
+        if (data) {
+            // Reset expire time
+            redisClient.setex(post_key, REDIS_POST_EXPIRE_TIME, data);
+            return res.json(JSON.parse(data));
+        } else {
+            db.posts.findOne({_id: ObjectId(id)}, {pictures: 0, picturesFaceData: 0, geolcation: 0}, function(err, post) {
                 if (err) {
                     logger.error(err);
                     return res.status(500).json({error: err});
                 }
-                if (count !== 1) return res.status(403).json({error: "Not Friend"});
-                return res.json(post);
+                if (!post) return res.status(404).json({error: "Post doesn't exits"});
+                // Check if the current user is user himself or the friends
+                if (sessionUsername === post.username) return res.json(post);
+                else {
+                    db.users.find({_id: sessionUsername, following_ids: post.username}).count(function(err, count) {
+                        if (err) {
+                            logger.error(err);
+                            return res.status(500).json({error: err});
+                        }
+                        if (count !== 1) return res.status(403).json({error: "Not Friend"});
+                        redisClient.setex(post_key, REDIS_POST_EXPIRE_TIME, JSON.stringify(post));
+                        return res.json(post);
+                    });
+                }
             });
         }
     });
+
+
 };
 
 /**
@@ -170,25 +188,41 @@ exports.getPostsByUser = function (req, res, next) {
     let sessionUsername = req.session.username;
     let queryUsername = req.query.username;
 
-    // If the query name is not the same as the session user name, then check if they are friends
-    if (sessionUsername !== queryUsername) {
-        db.users.find({_id: sessionUsername, following_ids: queryUsername}).count(function(err, count) {
-            if (err) {
-                logger.error(err);
-                return res.status(500).json({error: err});
-            }
-            if (count !== 1) return res.status(403).json({error: "Not Friend"});
-        });
-    }
-    db.posts.find({username: queryUsername}, {pictures: 0}).sort({time: -1})
-        .skip(MAX_POST_PER_PAGE * page)
-        .limit(MAX_POST_PER_PAGE)
-        .toArray(function (err, posts) {
-            if(err) return res.status(500).json({error: err});
-            else {
-                return res.json(posts);
-            }
-        });
+    let post_key = sessionUsername + "/posts/" + queryUsername + "/" + page;
+
+    redisClient.get(post_key, function(err, data) {
+        if (err) {
+            logger.error(err);
+            return res.status(500).json({error: err});
+        }
+        if (data) {
+            // Reset expire time
+            redisClient.expire(post_key, REDIS_POST_EXPIRE_TIME);
+            return res.json(JSON.parse(data));
+        }
+        // If the query name is not the same as the session user name, then check if they are friends
+        if (sessionUsername !== queryUsername) {
+            db.users.find({_id: sessionUsername, following_ids: queryUsername}).count(function(err, count) {
+                if (err) {
+                    logger.error(err);
+                    return res.status(500).json({error: err});
+                }
+                if (count !== 1) return res.status(403).json({error: "Not Friend"});
+            });
+        }
+        db.posts.find({username: queryUsername}, {pictures: 0}).sort({time: -1})
+            .skip(MAX_POST_PER_PAGE * page)
+            .limit(MAX_POST_PER_PAGE)
+            .toArray(function (err, posts) {
+                if(err) return res.status(500).json({error: err});
+                else {
+                    redisClient.setex(post_key, REDIS_POST_EXPIRE_TIME, JSON.stringify(posts));
+                    return res.json(posts);
+                }
+            });
+    });
+
+
 };
 
 /**
@@ -243,6 +277,36 @@ exports.getPostOfFollowing = function (req, res, next) {
     let sessionUsername = req.session.username;
     let page = req.query.page;
 
+    // let post_key = sessionUsername + "/following_posts/" + page;
+    // let expire_time = config.get("redis.post_maxAge");
+    // redisClient.get(post_key, function(err, data) {
+    //     if (err) throw err;
+    //     if (data != null) {
+    //         // Reset expire time
+    //         redisClient.expire(post_key, expire_time);
+    //         return res.json(JSON.parse(data));
+    //     }
+    //     db.users.findOne({_id: sessionUsername}, {following_ids: 1}, function (err, user) {
+    //         if (err) {
+    //             logger.error(err);
+    //             return res.status(500).json({error: err});
+    //         }
+    //         let listOfLookingUp = user.following_ids;
+    //         // Ignore the userself
+    //         // listOfLookingUp.push(sessionUsername);
+    //         db.posts.find({username: {$in: listOfLookingUp}}, {pictures: 0}).sort({time: -1})
+    //             .skip(MAX_POST_PER_PAGE * page)
+    //             .limit(MAX_POST_PER_PAGE)
+    //             .toArray(function (err, posts) {
+    //                 if(err) return res.status(500).json({error: err});
+    //                 else {
+    //                     redisClient.setex(post_key, expire_time,  JSON.stringify(posts));
+    //                     return res.json(posts);
+    //                 }
+    //             });
+    //     });
+    // });
+
     db.users.findOne({_id: sessionUsername}, {following_ids: 1}, function (err, user) {
         if (err) {
             logger.error(err);
@@ -250,18 +314,17 @@ exports.getPostOfFollowing = function (req, res, next) {
         }
         let listOfLookingUp = user.following_ids;
         // Ignore the userself
-        //listOfLookingUp.push(sessionUsername);
+        // listOfLookingUp.push(sessionUsername);
         db.posts.find({username: {$in: listOfLookingUp}}, {pictures: 0}).sort({time: -1})
             .skip(MAX_POST_PER_PAGE * page)
             .limit(MAX_POST_PER_PAGE)
             .toArray(function (err, posts) {
                 if(err) return res.status(500).json({error: err});
                 else {
-                    console.log("mongo", data);
                     return res.json(posts);
                 }
             });
-    })
+    });
 };
 
 /**
@@ -295,24 +358,55 @@ exports.getPostPicture = function (req, res, next) {
     let image_index = req.params.image_index;
     let sessionUsername = req.session.username;
 
-    db.posts.findOne({_id: post_id}, function (err, post) {
+    let image_key = sessionUsername + "/post/" + req.params.id + "/images/" + image_index;
+    let image_type_key = image_key + "/mime";
+
+    redisClient.mget(image_key, image_type_key, function(err, image){
         if (err) {
             logger.error(err);
             return res.status(500).json({error: err});
         }
-
-        // Check if the current user is picture owner or the friends
-        if (sessionUsername !== post.username) {
-            db.users.find({_id: sessionUsername, following_ids: post.username}).count(function(err, count) {
+        if (image[0]) {
+            // Reset expire time
+            redisClient.expire(image_key+"*", REDIS_POST_EXPIRE_TIME);
+            res.setHeader('Content-Type', image[1]);
+            let image_buffer = Buffer.from(image[0], 'base64');
+            res.send(image_buffer);
+        } else {
+            db.posts.findOne({_id: post_id}, function (err, post) {
                 if (err) {
                     logger.error(err);
                     return res.status(500).json({error: err});
                 }
-                if (count !== 1) return res.status(403).json({error: "Not Friend"});
+
+                // Check if the current user is picture owner or the friends
+                if (sessionUsername !== post.username) {
+                    db.users.find({_id: sessionUsername, following_ids: post.username}).count(function(err, count) {
+                        if (err) {
+                            logger.error(err);
+                            return res.status(500).json({error: err});
+                        }
+                        if (count !== 1) return res.status(403).json({error: "Not Friend"});
+                    });
+                }
+                let image_type = post.pictures[image_index].mimetype;
+                res.setHeader('Content-Type', image_type);
+                let fileStream = fs.createReadStream(post.pictures[image_index].path);
+                let chunks = [];
+
+                fileStream.on('data', (chunk) => {
+                    chunks.push(chunk); // push data chunk to array
+
+                });
+                fileStream.once('end', () => {
+                    // create the final data Buffer from data chunks;
+                    let fileBuffer = Buffer.concat(chunks);
+                    redisClient.setex(image_key, REDIS_POST_EXPIRE_TIME, fileBuffer.toString('base64'));
+                    redisClient.setex(image_type_key, REDIS_POST_EXPIRE_TIME, image_type);
+                    res.send(fileBuffer);
+                });
             });
         }
-        res.setHeader('Content-Type', post.pictures[image_index].mimetype);
-        res.sendFile(post.pictures[image_index].path, sendFileOption());
     });
 };
 
@@ -342,6 +436,7 @@ exports.deletePostById = function (req, res, next) {
     let post_id = ObjectId(req.params.id);
     let sessionUsername = req.session.username;
 
+
     db.posts.findOne({_id: post_id}, function(err, post) {
         if (err) {
             logger.error(err);
@@ -355,6 +450,10 @@ exports.deletePostById = function (req, res, next) {
                 logger.error(err);
                 return res.status(500).json({error: err});
             }
+            let post_key = "*/post/" + req.params.id + "/*";
+            redisClient.del(post_key);
+            let user_page_key = "*/posts/" + sessionUsername + "/*";
+            redisClient.del(user_page_key);
             for (let pic of post.pictures){
                 fs.unlink(pic.path, err => {
                     if (err) return res.status(500).json({error: err});
