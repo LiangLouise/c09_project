@@ -105,7 +105,7 @@ exports.updateAvatar = function (req, res, next) {
  * @apiExample {curl} Example Usage:
  *  curl -b cookie.txt \
  *      -c cookie.txt \
- *      -X POST \
+ *      -X PUT \
  *      -d '{"alice": {"name":"alice", "descriptor":[0.1, .... , 0.2323]} \
  *      localhost:5000/api/profile/facedata
  *
