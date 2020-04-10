@@ -373,7 +373,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example Usage:",
-        "content": "curl -x DELETE -b cookie.txt -c cookie.txt localhost:5000/api/posts/comments/5e8fc18270865f659e12fc42/",
+        "content": "curl -X DELETE -b cookie.txt -c cookie.txt localhost:5000/api/posts/comments/5e8fc18270865f659e12fc42/",
         "type": "curl"
       }
     ],
@@ -385,7 +385,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "id",
-            "description": "<p>The unique id of the post to delete</p>"
+            "description": "<p>The unique id of the comment to delete</p>"
           }
         ]
       }
