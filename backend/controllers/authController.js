@@ -10,7 +10,10 @@ const logger = require('../config/loggerconfig');
  * @apiGroup Auth
  *
  * @apiExample {curl} Example Usage:
- *  curl -H "Content-Type: application/json" -X POST -d '{"username":"alice","password":"alice"}' -c cookie.txt localhost:5000/signup/
+ *  curl -H "Content-Type: application/json" \
+ *      -X POST -d '{"username":"alice","password":"alice"}' \
+ *      -c cookie.txt \
+ *      localhost:5000/signup/
  *
  * @apiHeader {String} Content-Type Must be `application/json`.
  *
@@ -21,6 +24,7 @@ const logger = require('../config/loggerconfig');
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
  *     {
  *       "success": "user {username} signed up"
  *     }
@@ -36,13 +40,13 @@ exports.signup = function(req, res, next) {
     db.users.findOne({_id: username}, function (err, user) {
         if (err) {
             logger.error(err);
-            return res.status(500).end(err);
+            return res.status(500).json({error: err});
         }
-        if (user) return res.status(409).end("username " + username + " already exists");
+        if (user) return res.status(409).json({error: "username " + username + " already exists"});
         db.users.insert(new User(username, password), function (err, user) {
             if (err) {
                 logger.error(err);
-                return res.status(500).end(err);
+                return res.status(500).json({error: err});
             }
             return res.json({
                 success: "user " + username + " signed up"
@@ -57,7 +61,11 @@ exports.signup = function(req, res, next) {
  * @apiGroup Auth
  *
  * @apiExample {curl} Example Usage:
- *  curl -H "Content-Type: application/json" -X POST -d '{"username":"alice","password":"alice"}' -c cookie.txt localhost:5000/signin/
+ *  curl -H "Content-Type: application/json" \
+ *      -X POST \
+ *      -d '{"username":"alice","password":"alice"}' \
+ *      -c cookie.txt \
+ *      localhost:5000/signin/
  *
  * @apiHeader {String} Content-Type Must be `application/json`.
  *
@@ -68,12 +76,14 @@ exports.signup = function(req, res, next) {
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
  *     {
  *       "success": "user {username} signed up"
  *     }
  *
  * @apiError (Error 400) BadFormat Username is not Alphanumeric
  * @apiError (Error 401) AccessDeny Wrong Username/Password.
+ * @apiError (Error 404) NotFind Not find the corresponding Uses.
  * @apiError (Error 500) InternalServerError Error from backend.
  */
 exports.signin = function (req, res, next) {
@@ -83,10 +93,10 @@ exports.signin = function (req, res, next) {
     db.users.findOne({_id: username}, function (err, user) {
         if (err) {
             logger.error(err);
-            return res.status(500).end(err);
+            return res.status(500).json({error: err});
         }
-        if (!user) return res.status(401).end("access denied");
-        if (user.hash !== generateHash(password, user.salt)) return res.status(401).end("access denied");
+        if (!user) return res.status(404).json({error: "User Not Find"});
+        if (user.hash !== generateHash(password, user.salt)) return res.status(401).json({error: "access denied"});
         // start a session
         req.session.username = user._id;
         res.setHeader('Set-Cookie', c_configs.cookie.serialize('username', user._id, c_configs.cookie_config));
@@ -111,6 +121,7 @@ exports.signin = function (req, res, next) {
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
  *     {
  *       "success": "user {username} signed out"
  *     }
