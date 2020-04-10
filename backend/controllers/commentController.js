@@ -181,9 +181,9 @@ exports.getCommentCountByPost = function (req, res, next) {
  *
  *
  * @apiExample {curl} Example Usage:
- *  curl -x DELETE -b cookie.txt -c cookie.txt localhost:5000/api/posts/comments/5e8fc18270865f659e12fc42/
+ *  curl -X DELETE -b cookie.txt -c cookie.txt localhost:5000/api/posts/comments/5e8fc18270865f659e12fc42/
  *
- * @apiParam (Path Params) {String} id The unique id of the post to delete
+ * @apiParam (Path Params) {String} id The unique id of the comment to delete
  *
  * @apiSuccessExample {empty} Success-Response:
  *     HTTP/1.1 200 OK
@@ -203,8 +203,8 @@ exports.deleteCommentById = function (req, res, next) {
           logger.error(err);
           return res.status(500).json({error: err});
       }
-      if (!comment) return res.status(404).json("Comment Not Find").
-      db.users.findOne({_id: ObjectId(comment.post_id)}, function(err, post) {
+      if (!comment) return res.status(404).json("Comment Not Find");
+      db.posts.findOne({_id: comment.post_id}, function(err, post) {
           if (err) {
               logger.error(err);
               return res.status(500).json({error: err});

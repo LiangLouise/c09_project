@@ -3,7 +3,7 @@ const session = require('express-session');
 const config = require('config');
 const logger = require('../config/loggerconfig');
 
-const redisClient = redis.createClient();
+const redisClient = redis.createClient({port: config.get('redis.port')});
 
 redisClient.on('connect', function() {
     logger.info('Redis client connected');
