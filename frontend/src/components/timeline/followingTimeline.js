@@ -66,17 +66,7 @@ class FollowingTimeline extends Component{
         //this.getPostCount();
     }
 
-    getPostCount = () => {
-        if (this.state.isLoggedIn){
-            axios
-                .get(process.env.REACT_APP_BASE_URL+'/api/profile?username='+cookie.load('username'),
-                    {withCredentials: true})
-                .then(res =>{
-                    console.log(res.data)
-                })
-        }
 
-    };
 
     componentWillReceiveProps(props) {
         if (props.refresh) {
@@ -102,8 +92,6 @@ class FollowingTimeline extends Component{
                     + res.data.length
                     - this.state.posts.length;
                 for (let i=0; i< newPostsNum;i++){
-                    this.fetchComments(res.data[i]._id);
-                    this.getCmtCount(res.data[i]._id);
                     temp = {
                         'title': res.data[i].title,
                         'description': res.data[i].dis,
@@ -179,7 +167,6 @@ class FollowingTimeline extends Component{
     };
 
     sendComment(postId){
-
         let content = {content:this.state.comment};
         axios
             .post(process.env.REACT_APP_BASE_URL+
@@ -197,12 +184,13 @@ class FollowingTimeline extends Component{
     }
 
     showComment(e, postId){
+        this.fetchComments(postId);
+        this.getCmtCount(postId);
         let commentVisible = this.state.commentVisible;
         commentVisible[postId]=true;
         this.setState({
             commentVisible: commentVisible,
             post_highlighted: postId,
-            commentsToDis: this.displayComments(postId)
         })
     }
 
@@ -211,7 +199,7 @@ class FollowingTimeline extends Component{
         commentVisible[postId]=false;
         this.setState({
             commentVisible: commentVisible,
-            cmtPage: 0,
+            cmtPage: 1,
             post_highlighted: ""
         })
     }
@@ -332,7 +320,6 @@ class FollowingTimeline extends Component{
     }
 
     changePage(pageNumber) {
-        console.log(pageNumber-1);
         this.setState({
             cmtPage: pageNumber,
         })
