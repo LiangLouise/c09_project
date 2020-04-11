@@ -1202,7 +1202,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example Usage:",
-        "content": "curl -b cookie.txt \\\n    -c cookie.txt \\\n    -F \"title=hello\" \\\n    -F \"description=My New Post!\" \\\n    -F \"pictures=@hello.jpg\"\n    localhost:5000/api/posts",
+        "content": "curl -b cookie.txt \\\n    -c cookie.txt \\\n    -F \"title=hello\" \\\n    -F \"description=My New Post!\" \\\n    -F \"pictures=@hello.jpg\"\n    -F \"geolocation='{}'\"\n    localhost:5000/api/posts",
         "type": "curl"
       }
     ],
@@ -1242,6 +1242,14 @@ define({ "api": [
             "optional": false,
             "field": "pictures",
             "description": "<p>An array of Post pictures, accepted Format: <code>.jpeg/.jpg/.png/.gif</code> and no more than <code>9</code> pictures.</p>"
+          },
+          {
+            "group": "Form Data",
+            "type": "JSON_Object",
+            "optional": true,
+            "field": "geolocation",
+            "defaultValue": "{}",
+            "description": "<p>The json object storing the geolocation info, default is empty.</p>"
           }
         ]
       }
@@ -1446,6 +1454,13 @@ define({ "api": [
             "optional": false,
             "field": "time",
             "description": "<p>The time of post creation</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "JSON_Object",
+            "optional": false,
+            "field": "geolocation",
+            "description": "<p>The json object storing the geolocation info.</p>"
           }
         ]
       },
@@ -1582,6 +1597,13 @@ define({ "api": [
             "optional": false,
             "field": "posts.time",
             "description": "<p>The time of post creation</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "JSON_Object",
+            "optional": false,
+            "field": "posts.geolocation",
+            "description": "<p>The json object storing the geolocation info.</p>"
           }
         ]
       },
@@ -1821,6 +1843,13 @@ define({ "api": [
             "optional": false,
             "field": "posts.time",
             "description": "<p>The time of post creation</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "JSON_Object",
+            "optional": false,
+            "field": "posts.geolocation",
+            "description": "<p>The json object storing the geolocation info.</p>"
           }
         ]
       },
@@ -2227,6 +2256,83 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/api/search/count?username=:username",
+    "title": "Get the count of username matching",
+    "name": "Get_the_count_of_username_matching",
+    "group": "Search",
+    "examples": [
+      {
+        "title": "Example Usage:",
+        "content": "curl -b cookie.txt -c cookie.txt localhost:5000/api/searchCount?username=Fisx",
+        "type": "curl"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Request Query": [
+          {
+            "group": "Request Query",
+            "type": "String",
+            "optional": false,
+            "field": "username",
+            "description": "<p>username regex to search.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Integer": [
+          {
+            "group": "Integer",
+            "optional": false,
+            "field": "count",
+            "description": "<p>The number of the users id that match this regex.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n  \"count\": 12\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "optional": false,
+            "field": "BadFormat",
+            "description": "<p>Username is not Alphanumeric.</p>"
+          }
+        ],
+        "Error 401": [
+          {
+            "group": "Error 401",
+            "optional": false,
+            "field": "AccessDeny",
+            "description": "<p>Not Log In.</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "optional": false,
+            "field": "InternalServerError",
+            "description": "<p>Error from backend.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "backend/controllers/searchController.js",
+    "groupTitle": "Search"
+  },
+  {
+    "type": "get",
     "url": "/api/search?username=:username&page=:page",
     "title": "Search Users",
     "name": "Search_Users_by_Username",
@@ -2273,7 +2379,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n{\n  \"users\": [\"roy\", \"flydog\", \"rockrock\"]\n}",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n  \"users\": [\"roy\", \"flydog\", \"rockrock\"]\n}",
           "type": "json"
         }
       ]
