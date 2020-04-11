@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './timeline.css';
 import 'antd/dist/antd.css';
-import { Divider, Row, Col, Tooltip, Comment, Empty, Avatar, Card, Layout, Input, Form, Button, Carousel, Spin, message, Modal, Pagination} from 'antd';
+import { Divider, Row, Col, Tooltip, Comment, Avatar, Card, Input, Form, Button, Carousel, Spin, message, Modal, Pagination} from 'antd';
 import { LoadingOutlined, CommentOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -12,41 +12,15 @@ import englishStrings from 'react-timeago/lib/language-strings/en'
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter'
 
 const { Meta } = Card;
-const {Content} = Layout;
-
 const formatter = buildFormatter(englishStrings)
-
 const formItemLayout = {
     wrapperCol: {
         span: 24,
     }
 
 };
-
 const loadingIcon = <LoadingOutlined className="loadingIcon" spin />;
-
-const MAX_POSTS_NUMBER_PER_PAGE = 10;
-
-// function deletePost(){
-//     Modal.confirm({
-//         title: 'Are you sure delete this task?',
-//         icon: <ExclamationCircleOutlined />,
-//         content: 'Some descriptions',
-//         okText: 'Yes',
-//         okType: 'danger',
-//         cancelText: 'No',
-//         onOk() {
-//           console.log('OK');
-//         },
-//         onCancel() {
-//           console.log('Cancel');
-//         },
-//       });
-    
-
-// }
-
-
+const MAX_POSTS_NUMBER_PER_PAGE = 5;
 class FollowingTimeline extends Component{
     formRef = React.createRef();
     constructor(props){
@@ -57,41 +31,25 @@ class FollowingTimeline extends Component{
             page: 0,
             cmtPage: 0,
             posts: [],
-            comments:
-                {"5e75ac6e6d01ef9f93a7ae2d":[
-                                                {
-                                                    "username":"Cheng",
-                                                    "content":"Cool",
-                                                    "date":"2019",
-                                                    "src":"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
-                                                },
-                                                {
-                                                    "username":"Cheng",
-                                                    "content":"Cool",
-                                                    "date":"2019",
-                                                    "src":"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
-                                                },
-                                               
-                                            ]
-                },
-        
+            comments:{},
             items: Array.from({ length: 20 }),
             hasMorePost: true,
-            hasMoreCmt: true,
             postCount: 0,
+            cmtCount: {},
             commentVisible: {},
             commentsToDis: [],
-            post_highlighted : ""
-
+            post_highlighted : "",
+            actions: [],
         };
         this.sendComment = this.sendComment.bind(this);
         this.showComment = this.showComment.bind(this);
         this.hideComment = this.hideComment.bind(this);
         this.fetchData = this.fetchData.bind(this);
-        this.delPostWindow = this.delPostWindow.bind(this);
-        this.deletePost = this.deletePost.bind(this);
         this.changePage = this.changePage.bind(this);
         this.fetchComments = this.fetchComments.bind(this);
+        this.getActions = this.getActions.bind(this);
+        this.delCmtWindow = this.delCmtWindow.bind(this);
+        this.deleteCmt = this.deleteCmt.bind(this);
 
     }
 
@@ -108,17 +66,7 @@ class FollowingTimeline extends Component{
         //this.getPostCount();
     }
 
-    getPostCount = () => {
-        if (this.state.isLoggedIn){
-            axios
-                .get(process.env.REACT_APP_BASE_URL+'/api/profile?username='+cookie.load('username'),
-                    {withCredentials: true})
-                .then(res =>{
-                    console.log(res.data)
-                })
-        }
 
-    };
 
     componentWillReceiveProps(props) {
         if (props.refresh) {
@@ -144,7 +92,6 @@ class FollowingTimeline extends Component{
                     + res.data.length
                     - this.state.posts.length;
                 for (let i=0; i< newPostsNum;i++){
-                    this.fetchComments(res.data[i]._id);
                     temp = {
                         'title': res.data[i].title,
                         'description': res.data[i].dis,
@@ -159,24 +106,15 @@ class FollowingTimeline extends Component{
                     temp2[res.data[i]._id] = false;
                     data.push(temp);
                 }
-                // get comments for each post
-                // axios
-                //     .get(process.env.REACT_APP_BASE_URL+
-                //         '/api/posts/following/?page='+page,
-                //         {withCredentials: true})
-
-
-
-
                 this.setState({
                     commentVisible: temp2
                 })
                 if (fromFirst){
-                    if (data.length > 0 && data.length <= 10) {
+                    if (data.length > 0 && data.length <= 5) {
                         this.setState({
                             posts: data.concat(this.state.posts),
                         });
-                    } else if (data.length > 10) {
+                    } else if (data.length > 5) {
                         // Need to think about
                     }
                 } else {
@@ -186,7 +124,7 @@ class FollowingTimeline extends Component{
                             page: this.state.page-1
                         });
                     }
-                    else if (res.data.length < 10) {
+                    else if (res.data.length < 5) {
                         this.setState({
                             hasMorePost: false,
                             posts: this.state.posts.concat(data)
@@ -203,6 +141,21 @@ class FollowingTimeline extends Component{
 
     };
 
+
+    getCmtCount(postId){
+        let temp = this.state.cmtCount;
+        axios
+            .get(process.env.REACT_APP_BASE_URL+
+                "/api/posts/"+postId+"/commentsCount",
+                {withCredentials:true})
+            .then(res => {
+                temp[postId] = res.data.count
+                this.setState({
+                    cmtCount : temp,
+                })
+            })
+
+    }
     fetchMoreData = () => {
         // a fake async api call like which sends
         // 20 more records in 1.5 secs
@@ -214,7 +167,6 @@ class FollowingTimeline extends Component{
     };
 
     sendComment(postId){
-
         let content = {content:this.state.comment};
         axios
             .post(process.env.REACT_APP_BASE_URL+
@@ -224,46 +176,44 @@ class FollowingTimeline extends Component{
                 {withCredentials:true})
             .then(res => {
                 message.success("The Comment is sent");
-                this.fetchComments(postId);
+                this.fetchComments(postId, this.state.cmtPage-1);
+                this.getCmtCount(postId);
             });
 
-        this.setState({
-            comment: '',
-        });
         this.onReset();
     }
 
     showComment(e, postId){
+        this.fetchComments(postId);
+        this.getCmtCount(postId);
         let commentVisible = this.state.commentVisible;
         commentVisible[postId]=true;
         this.setState({
             commentVisible: commentVisible,
             post_highlighted: postId,
-            commentsToDis: this.displayComments(postId, 0)
         })
     }
 
     hideComment(e, postId){
         let commentVisible = this.state.commentVisible;
         commentVisible[postId]=false;
-        console.log(postId);
         this.setState({
             commentVisible: commentVisible,
-            cmtPage: 0,
+            cmtPage: 1,
             post_highlighted: ""
         })
     }
 
     getSpecificImages(postId,imageCount){
-        let a = [];
+        let images = [];
         for (let i=0; i< imageCount; i++){
-            a.push(<div>
+            images.push(<div>
                 <img src={`${process.env.REACT_APP_BASE_URL}/api/posts/${postId}/images/${i}/`} alt={"avatar"}/>
             </div>)
 
         }
 
-        return a
+        return images
     };
 
     fetchComments(postId, pageNumber){
@@ -275,63 +225,83 @@ class FollowingTimeline extends Component{
                 +'/comments/?page='+pageNumber,
                 {withCredentials:true})
             .then(res => {
-                // temp[postId] = JSON.parse(JSON.stringify(res.data))
                 temp[postId] = res.data;
+
                 this.setState({
                     comments : temp,
-                    cmtPage: pageNumber
+                    cmtPage: pageNumber+1,
+                    commentsToDis: this.displayComments(postId),
                 });
-                console.log(temp[postId]);
             });
     };
 
-    delPostWindow(e,postId,index){
-        let method = this.deletePost;
+    getActions(postOwner, cmtOwner, postId, cmtId, index){
+
+        let actions;
+        if (cmtOwner=== cookie.load('username')
+            || postOwner === cookie.load('username')){
+            actions = [<span onClick={(e) => this.delCmtWindow(e,postId,cmtId,index)}
+                        >Delete</span>];
+        }else{
+            actions = [];
+        }
+
+        return actions;
+    }
+
+    delCmtWindow(e,postId, cmtId, index){
+        console.log(postId, cmtId, index);
+        let method = this.deleteCmt;
         Modal.confirm({
-            title: 'Are you sure delete this post?',
+            title: 'Are you sure delete this comment?',
             icon: <ExclamationCircleOutlined />,
             okText: 'Yes',
             okType: 'danger',
             cancelText: 'No',
             onOk() {
-              method(postId,index)
+                method(postId, cmtId, index)
             },
-          });
+        });
     }
-    
-    //option 1:
-    deletePost(postId, index){
+
+    deleteCmt(postId, cmtId,index){
         axios
             .delete(process.env.REACT_APP_BASE_URL+
-                '/api/posts/'+postId,
+                '/api/posts/comments/'+cmtId+'/',
                 {withCredentials: true})
             .then(res =>{
-                this.state.posts.splice(index,1)
-                let temp = this.state.posts
-                for (let i=0; i< temp.length;i++){
-                    console.log("listening from 255 "+temp[i].index)
-                    temp[i].index = i
+                // check if this was the last comment on current page
+                if (this.state.comments[postId].length === 1 && this.state.cmtPage !== 1){
+                    console.log("true",this.state.cmtPage-1)
+                    this.fetchComments(postId,this.state.cmtPage-2);
+                }else{
+                    console.log("else")
+                    this.fetchComments(postId, this.state.cmtPage-1);
                 }
-                this.setState({
-                    posts: temp
-                })
+                this.getCmtCount(postId);
                 message.success("Post is deleted")
-                console.log(this.state.posts, index)
+                console.log(index, postId)
             })
 
     }
 
-    displayComments(post_id)
+    displayComments(postId)
     {
-
-
-        return this.state.comments[post_id].map((comment) =>(
+        let postOwner = "";
+        axios
+            .get(process.env.REACT_APP_BASE_URL+
+                '/api/posts/'+postId,
+                {withCredentials:true})
+            .then(res => {
+                postOwner = res.data.username;
+            })
+        return this.state.comments[postId].map((comment, index) =>(
             <Comment
-                // actions={[<span key="comment-nested-reply-to">Reply to</span>]}
+                actions={this.getActions(postOwner, comment.username, postId, comment._id, index)}
                 author={comment.username}
                 avatar={
                     <Avatar
-                        src={"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"}
+                        src={process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+cookie.load('username')}
                         alt="Han Solo"
                     />
                 }
@@ -341,8 +311,8 @@ class FollowingTimeline extends Component{
                     </p>
                 }
                 datetime={
-                    <Tooltip title={moment().format('YYYY-MM-DD HH:mm:ss')}>
-                        <span>{moment().fromNow()}</span>
+                    <Tooltip title={moment(comment.time).format('YYYY-MM-DD HH:mm:ss')}>
+                        <span>{moment(comment.time).fromNow()}</span>
                     </Tooltip>
                 }
             >
@@ -350,10 +320,10 @@ class FollowingTimeline extends Component{
     }
 
     changePage(pageNumber) {
-
-        console.log(pageNumber-1);
+        this.setState({
+            cmtPage: pageNumber,
+        })
         this.fetchComments(this.state.post_highlighted, pageNumber-1);
-        // console.log(this.state.cmtPage);
     }
     
     
@@ -431,12 +401,11 @@ class FollowingTimeline extends Component{
                                                 </Form>
                                                 <Pagination
                                                     defaultCurrent={1}
-                                                    total={20}
+                                                    current={this.state.cmtPage}
+                                                    pageSize={5}
+                                                    total={this.state.cmtCount[post.id]}
                                                     onChange={this.changePage}
                                                 />
-                                            
-                                                
-
                                                 </Modal>
                                                 
                                            </div>
