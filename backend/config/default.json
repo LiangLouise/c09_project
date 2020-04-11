@@ -61,7 +61,7 @@
     "ttl": 86400,
     "post_maxAge": 120,
     "comment_maxAge": 120,
-    "search_maxAge": 60,
+    "search_maxAge": 20,
     "avatar_maxAge": 120
   }
 }

@@ -37,7 +37,7 @@
     "ttl": 86400,
     "post_maxAge": 180,
     "comment_maxAge": 120,
-    "search_maxAge": 30,
+    "search_maxAge": 20,
     "avatar_maxAge": 120
   },
   "session": {

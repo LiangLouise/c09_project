@@ -2,7 +2,7 @@ const express = require('express');
 const {signin, signout, signup} = require('./controllers/authController');
 const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById, getPostOfFollowing} = require('./controllers/postController');
 const {followUser, unfollowUser, getFollowingList, isFollowing, getFollowerList, isFollowedBy} = require('./controllers/followingController');
-const {searchUser} = require("./controllers/searchController");
+const {searchUser, searchUserCount} = require("./controllers/searchController");
 const {getAvatar, updateAvatar, updateFaceData, getFaceData, getUserProfile} = require("./controllers/profileController");
 const {addComment, getCommentByPost, getCommentCountByPost, deleteCommentById} = require("./controllers/commentController");
 const validation = require('./utils/validation.js');
@@ -102,6 +102,8 @@ module.exports = function (app) {
     // GET /api/search/?username={user name}&page={number of page}
     // Res: {"users": [Array of user ids]}
     searchRoutes.get('/', validation.isAuthenticated, validation.checkUsername('query'), validation.checkPageNumber, searchUser);
+
+    searchRoutes.get('/count', validation.isAuthenticated, validation.checkUsername('query'), searchUserCount);
 
     app.use("/api/profile", profileRoutes);
 

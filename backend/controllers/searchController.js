@@ -21,6 +21,7 @@ const REDIS_SEARCH_EXPIRE_TIME = config.get("redis.search_maxAge");
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
  *     {
  *       "users": ["roy", "flydog", "rockrock"]
  *     }
@@ -43,15 +44,68 @@ exports.searchUser = function (req, res, next) {
             redisClient.expire(search_key, REDIS_SEARCH_EXPIRE_TIME);
             return res.json(JSON.parse(data));
         } else {
-            db.users.find({_id: {$regex: userRegex}}).sort({_id: 1})
+            // Find users matching the regex and ignore self
+            db.users.find({$and: [{_id: {$regex: userRegex}}, {_id: {$ne: req.session.username}}] }).sort({_id: 1})
                 .skip(page * MAX_USER_PER_PAGE)
                 .limit(MAX_USER_PER_PAGE).toArray(function(err, users) {
                 if (err) {
                     logger.error(err);
                     return res.status(500).json({error: err});
                 }
-                // Only Return the usernames other than the current user
-                let response = {users: users.map(user => user._id).filter(id => id !== req.session.username)};
+
+                let response = {users: users};
+                // cache response in the redis
+                redisClient.setex(search_key, REDIS_SEARCH_EXPIRE_TIME, JSON.stringify(response));
+
+                return res.json(response);
+            });
+        }
+    });
+};
+
+/**
+ * @api {get} /api/search/count?username=:username Get the count of username matching
+ * @apiName Get the count of username matching
+ * @apiGroup Search
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -b cookie.txt -c cookie.txt localhost:5000/api/searchCount?username=Fisx
+ *
+ * @apiParam (Request Query) {String} username username regex to search.
+ *
+ * @apiSuccess (Integer) count The number of the users id that match this regex.
+ *
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     {
+ *       "count": 12
+ *     }
+ *
+ * @apiError (Error 400) BadFormat Username is not Alphanumeric.
+ * @apiError (Error 401) AccessDeny Not Log In.
+ * @apiError (Error 500) InternalServerError Error from backend.
+ */
+exports.searchUserCount = function (req, res, next) {
+    let userRegex = "^" + req.query.username + ".*";
+
+    let search_key =  "search/" + req.query.username + "/count";
+    redisClient.get(search_key, function (err, data) {
+        if (err) {
+            logger.error(err);
+            return res.status(500).json({error: err});
+        }
+        if (data) {
+            redisClient.expire(search_key, REDIS_SEARCH_EXPIRE_TIME);
+            return res.json(JSON.parse(data));
+        } else {
+            db.users.find({$and: [{_id: {$regex: userRegex}}, {_id: {$ne: req.session.username}}] }).
+            count(function(err, count) {
+                if (err) {
+                    logger.error(err);
+                    return res.status(500).json({error: err});
+                }
+                let response = {count: count};
 
                 // cache response in the redis
                 redisClient.setex(search_key, REDIS_SEARCH_EXPIRE_TIME, JSON.stringify(response));
