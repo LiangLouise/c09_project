@@ -123,7 +123,7 @@ exports.unfollowUser = function(req, res, next) {
                 logger.error(err);
                 return res.status(500).json({error: err});
             }
-            return res.status(200).json({success: "You now unfollowed " + userToFollow});
+            return res.status(200).json({success: "You now unfollowed " + userToUnfollow});
         });
     });
 };
