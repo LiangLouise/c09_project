@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import cookie from 'react-cookies'
+import Signup from '../auth/signup';
 //import { geolocated } from "react-geolocated";
 import { Form,
     Button,
@@ -165,7 +166,8 @@ class Login extends React.Component{
                   </Form.Item>
 
                   <Form.Item>
-                      Or <a href="">Register</a>
+                      Don't have an account?
+                      <div className="Signup" onClick={this.handleCancel}><Signup/></div>
                   </Form.Item>
               </Form>
               </Modal>

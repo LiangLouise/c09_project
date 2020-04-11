@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import ReactDOM from 'react-dom';
+import Login from '../auth/login';
 import 'antd/dist/antd.css';
+import './signup.css';
 import { Modal, Button,Form, Checkbox,Input,Typography, message } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 
@@ -88,13 +89,12 @@ class Signup extends React.Component {
     }
   
     handleCancel = e => {
-        console.log(e);
         this.setState({
             visible: false,
         });
         this.onReset();
     };
-  
+
     render() {
       return (
         <div>
@@ -115,7 +115,7 @@ class Signup extends React.Component {
             >
                 <Form.Item {...titleLayout}>
                     <Typography>
-                        <Title>Register</Title>
+                        <Title>Signup</Title>
                     </Typography>
                 </Form.Item>
 
@@ -155,21 +155,7 @@ class Signup extends React.Component {
                     />
                 </Form.Item>
 
-                {/* <Form.Item
-                    name="email"
-                    rules={[
-                    {
-                        type: 'email',
-                        message: 'The input is not valid E-mail!',
-                    },
-                    {
-                        required: true,
-                        message: 'Please input your E-mail!',
-                    },
-                    ]}
-                >
-                    <Input prefix={<MailOutlined className="site-form-item-icon" />} placeholder="Email" />
-                </Form.Item> */}
+
 
                 <Form.Item>
                     <Button 
@@ -177,13 +163,14 @@ class Signup extends React.Component {
                     htmlType="submit" 
                     className="register-form-button"
                     >
-                    Register
+                    Signup
                     </Button>
                     
                 </Form.Item>
 
                 <Form.Item>
-                    Already an user? <a href="">Login</a>
+                    Already an user?
+                    <div className="Login" onClick={this.handleCancel}><Login/></div>
                 </Form.Item>
             
 

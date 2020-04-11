@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
-import { Input, Modal, Table,Button, message, Empty } from 'antd';
+import {Input, Modal, Table, Button, message, Empty, Pagination} from 'antd';
 import axios from 'axios';
 import cookie from 'react-cookies'
 
@@ -16,22 +16,19 @@ class SearchBar extends Component{
             query:'',
             result: [],
             data: [],
-            page: 0,
+            page: 1,
+            total:0,
             sortOrder: null,
-        }
-    }
+        };
+        this.changePage = this.changePage.bind(this);
+        this.constructTable = this.constructTable.bind(this);
+        this.getUserCount = this.getUserCount.bind(this);
+    };
 
-    // componentWillReceiveProps(props) {
-    //     if (props.refreshTimline) {
-    //         this.fetchData(true);
-    //     }
-    // }
 
     onRequest = (e) => {
         let username = e.currentTarget.dataset.name;
         let action = e.currentTarget.dataset.action;
-
-        console.log(username, action);
         if (action === "Follow"){
             let req = {username:username};
             console.log(req)
@@ -55,17 +52,16 @@ class SearchBar extends Component{
                     console.log(res.data)
                     message.success("You just unfollowed "+username+ "  :(");
                 })   
-        }
-        this.constructTable();
+        };
+        this.constructTable(this.state.page);
         
-    }
+    };
     onChange = (e) => {
         this.setState({ [e.target.name]: e.target.value });
-    }
+    };
 
     setSortOrder = (pagination, filters, sorter) => {
-        console.log('Various parameters', pagination, filters, sorter);
-        console.log(sorter.order)
+
         this.setState({
             sortedInfo:sorter
         });
@@ -76,6 +72,7 @@ class SearchBar extends Component{
               visible: false,
               query: '',
               data: [],
+              page: 1,
           }); 
           this.props.refresh();
     };
@@ -87,49 +84,69 @@ class SearchBar extends Component{
           });
            
     };
-    constructTable = () => {
-        let username = this.state.query;
+    constructTable(pageNumber){
+        let username = this.state.query.trim();
         axios
             .get(process.env.REACT_APP_BASE_URL+
-                '/api/search/?username='+username+'&page='+this.state.page,
+                '/api/search/?username='+username+'&page='+(pageNumber-1),
                 {withCredentials: true})
             .then(res => {
+                console.log(res.data);
                 let data = [];
                 let temp = {};
                 let action = '';
                 this.setState({
                     result:res.data.users
-                })
+                });
                 for (let i=0; i< this.state.result.length;i++){
                     axios
                         .get(process.env.REACT_APP_BASE_URL+
-                            '/api/follow/isfollowing?username='+this.state.result[i],
+                            '/api/follow/isfollowing?username='+this.state.result[i]._id,
                             {withCredentials: true})
                         .then(res => {
                             if (res.data.isFollowing){
                                 action = "Unfollow"
                             }else{
                                 action = "Follow"
-                            }
+                            };
                             temp = {
                                 'key': (i+1).toString(),
-                                'name': this.state.result[i],
+                                'name': this.state.result[i]._id,
                                 'action': action,
-                            }
+                            };
                             data.push(temp)
                             this.setState({
                                 data: JSON.parse(JSON.stringify(data))
-                            })
-                        })
-                }
+                            });
+                        });
+                };
                 
             });
-    }
+    };
     getUsers = () => {
         if (this.state.query.length !==0){
-            this.constructTable();
+            this.getUserCount();
+            this.constructTable(this.state.page);
             this.showModal();
         }  
+    };
+    changePage(pageNumber){
+        this.setState({
+            page: pageNumber
+        });
+        this.constructTable(pageNumber);
+    };
+    getUserCount(){
+        let username = this.state.query.trim();
+        axios
+            .get(process.env.REACT_APP_BASE_URL+
+            '/api/search/count?username='+username,
+            {withCredentials:true})
+            .then(res=>{
+                this.setState({
+                    total:res.data.count
+                })
+            })
     }
     
 
@@ -187,7 +204,12 @@ class SearchBar extends Component{
                 columns={columns}
                 dataSource={this.state.data}
                 onChange={this.setSortOrder}
-                pagination={false} 
+                pagination={{ defaultCurrent:1,
+                              current:this.state.page,
+                              pageSize:process.env.REACT_APP_MAX_USER_PER_PAGE,
+                              total:this.state.total,
+                              onChange:this.changePage,
+                }}
                 />
             </Modal>
             </div>

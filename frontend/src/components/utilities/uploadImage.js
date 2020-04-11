@@ -51,7 +51,7 @@ const normFile = e => {
       return e;
     }
   
-    return e && e.fileList.slice(-9);
+    return e && e.fileList.slice(-process.env.REACT_APP_MAX_POST_PICTURE_NUMBER);
   };
 
 const API_END_POINT = process.env.REACT_APP_BASE_URL;
@@ -146,8 +146,18 @@ class UploadImage extends React.Component{
         for (let i=0; i<this.state.fileList.length; i++){
             data.append('picture', this.state.fileList[i].originFileObj);
         }
-        data.append('title', this.state.title);
-        data.append('description', this.state.description);
+        if (this.state.title.length > process.env.REACT_APP_MAX_POST_TITLE_LENGTH){
+            message.error("title must be less than 30 characters");
+            return;
+        }else{
+            data.append('title', this.state.title);
+        }
+        if (this.state.description.length > process.env.REACT_APP_MAX_POST_DES_LENGTH){
+            message.error("description must be less than 200 characters");
+            return;
+        }else{
+            data.append('description', this.state.description);
+        }
 
         const config= {
             headers: {

@@ -7,6 +7,7 @@ import Login from '../auth/login';
 import Signup from '../auth/signup';
 import SearchBar from '../utilities/search';
 import Logout from '../auth/Logout';
+import Map from '../map/map';
 import { Layout, Menu, Button, Empty, Divider } from 'antd';
 import cookie from 'react-cookies'
 
@@ -73,14 +74,14 @@ class Home extends Component{
               theme="dark"
               mode="horizontal"
               defaultSelectedKeys={['1']}
-              style={{ lineHeight: '64px' }}
+              className="menu"
             >
               <Menu.Item key="1"/>
               <Menu.Item key="2"/>
               <Menu.Item key="3"/>
-              <div style={{float:"right"}}>
-              <div id="signup" style={{float:"right"}}><Signup/></div>
-              <div id="login" style={{float:"right"}}><Login refresh={this.refreshFriend} action={this.loginHandler}/></div>
+              <div className="menu-item" >
+              <div className="menu-item" id="signup" ><Signup/></div>
+              <div className="menu-item" id="login" ><Login refresh={this.refreshFriend} action={this.loginHandler}/></div>
             </div>
       </Menu>)
     }
@@ -90,15 +91,16 @@ class Home extends Component{
               theme="dark"
               mode="horizontal"
               defaultSelectedKeys={['1']}
-              style={{ lineHeight: '64px' }}
+              className="menu"
             >
               <Menu.Item key="1" onClick={this.updatePage}>Following</Menu.Item>
               <Menu.Item key="2" onClick={this.updatePage}>My Timeline</Menu.Item>
+              <Menu.Item key="3" onClick={this.updatePage}>Map</Menu.Item>
               {/*<Menu.Item key="3" onClick={this.updatePage}>Map</Menu.Item>*/}
-              <div style={{float:"right"}}>
-              <div id="profile" style={{float:"right"}}><Button ghost={true}>{cookie.load('username')}</Button></div>
-              <div id="logout" style={{float:"right"}}><Logout action={this.loginHandler}/></div>
-              <div id="searchbar" style={{float:"right"}}><SearchBar refresh={this.refreshFriend}/></div>
+              <div className="menu-item" >
+              <div className="menu-item" id="profile" ><Button ghost={true}>{cookie.load('username')}</Button></div>
+              <div className="menu-item" id="logout" ><Logout action={this.loginHandler}/></div>
+              <div className="menu-item" id="searchbar" ><SearchBar refresh={this.refreshFriend}/></div>
               </div>
       </Menu>
     );  
@@ -132,7 +134,7 @@ class Home extends Component{
           mode="inline"
           defaultSelectedKeys={['1']}
           defaultOpenKeys={['FriendList']}
-          style={{ height: '100%', borderRight: 0 }}
+          className="sider-menu"
         >
           <SubMenu
             key="FriendList"
@@ -156,14 +158,9 @@ class Home extends Component{
       return (
         <Content
           className="site-layout-background"
-          style={{
-          padding: 24,
-          margin: 0,
-          minHeight: 525,
-          }}
         >
-          <Empty 
-            description="Please Login to Create & View Moments :)" 
+          <Empty
+            description="Please Login to Create & View Moments :)"
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             imageStyle={{
               height: 250
@@ -178,31 +175,33 @@ class Home extends Component{
 
           <Content
               className="site-layout-background"
-              style={{
-                padding: 24,
-                margin: 0,
-                // minHeight: 280,
-              }}
           >
             <Upload refresh={this.refreshTimeLine}/>
             <Divider/>
             <MyTimeline refresh={this.state.refreshTimeline}/>
           </Content>);
-      } else if (this.state.currentPage === "1") {
+      }
+    if (this.state.currentPage === "1") {
       return (
 
           <Content
               className="site-layout-background"
-              style={{
-                padding: 24,
-                margin: 0,
-                // minHeight: 280,
-              }}
           >
             <Upload refresh={this.refreshTimeLine}/>
             <Divider/>
             <FollowingTimeline refresh={this.state.refreshTimeline}/>
           </Content>);
+
+    }
+
+    else if (this.state.currentPage === "3") {
+        return (
+
+            <Content
+                className="site-layout-background"
+            >
+              <Map/>
+            </Content>);
 
     }
 
@@ -223,12 +222,12 @@ class Home extends Component{
             {menu}
           </Header>
 
-            <Layout style={{ padding: '50px 50px 0px 50px' }}>
+            <Layout className="layout">
             {submenu}
             {content}
             </Layout>
 
-          <Footer style={{ textAlign: 'center' }}>Moment ©2020 Created by Team Random Star</Footer>
+          <Footer className="footer">Moment ©2020 Created by Team Random Star</Footer>
         </Layout>
    );
   }

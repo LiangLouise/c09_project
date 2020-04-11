@@ -9,7 +9,6 @@ import {
     Tooltip,
     Avatar,
     Card,
-    Layout,
     Input,
     Form,
     Button,
@@ -29,8 +28,6 @@ import englishStrings from 'react-timeago/lib/language-strings/en'
 import buildFormatter from 'react-timeago/lib/formatters/buildFormatter'
 
 const { Meta } = Card;
-
-const {Content} = Layout;
 
 const formatter = buildFormatter(englishStrings)
 
@@ -65,6 +62,7 @@ class MyTimeline extends Component{
             commentsToDis: [],
             post_highlighted : "",
             actions: [],
+            comment: "",
 
         };
         this.sendComment = this.sendComment.bind(this);
@@ -94,15 +92,15 @@ class MyTimeline extends Component{
         this.fetchData();
         // this.getPostCount();
 
-    }
+    };
 
 
 
     componentWillReceiveProps(props) { 
         if (props.refresh) {
             this.fetchData(true);
-        }
-    }
+        };
+    };
 
     fetchData = (fromFirst) => {
         let data = [];
@@ -137,18 +135,18 @@ class MyTimeline extends Component{
                     };
                     temp2[res.data[i]._id] = false;
                     data.push(temp);
-                }
+                };
                 this.setState({
                     commentVisible: temp2
                 })
                 if (fromFirst){
-                    if (data.length > 0 && data.length <= 5) {
+                    if (data.length > 0 && data.length <= process.env.REACT_APP_MAX_POST_PER_PAGE) {
                         this.setState({
                             posts: data.concat(this.state.posts)
                         });
-                    } else if (data.length > 5) {
+                    } else if (data.length > process.env.REACT_APP_MAX_POST_PER_PAGE) {
                         // Need to think about 
-                    }
+                    };
                 } else {
                     if (res.data.length == 0 && this.state.page > 0) {
                         this.setState({
@@ -156,7 +154,7 @@ class MyTimeline extends Component{
                             page: this.state.page-1
                         });
                     }
-                    else if (res.data.length < 5) {
+                    else if (res.data.length < process.env.REACT_APP_MAX_POST_PER_PAGE) {
                         this.setState({
                             hasMorePost: false,
                             posts: this.state.posts.concat(data)
@@ -167,11 +165,10 @@ class MyTimeline extends Component{
                             posts: this.state.posts.concat(data),
                             page: this.state.page+1
                         }); 
-                    }
-                }
+                    };
+                };
             });
-       
-    }
+    };
 
     getCmtCount(postId){
         let temp = this.state.cmtCount;
@@ -183,10 +180,9 @@ class MyTimeline extends Component{
                 temp[postId] = res.data.count
                 this.setState({
                     cmtCount : temp,
-                })
-            })
-
-    }
+                });
+            });
+    };
     
     fetchMoreData = () => {
         // a fake async api call like which sends
@@ -195,7 +191,7 @@ class MyTimeline extends Component{
             setTimeout(() => {
                 this.fetchData(false);
             }, 1000);
-        }
+        };
     };
 
     sendComment(postId){
@@ -213,7 +209,7 @@ class MyTimeline extends Component{
             });
 
         this.onReset();
-    }
+    };
 
     showComment(e, postId){
         this.fetchComments(postId);
@@ -223,8 +219,8 @@ class MyTimeline extends Component{
         this.setState({
             commentVisible: commentVisible,
             post_highlighted: postId,
-        })
-    }
+        });
+    };
 
     hideComment(e, postId){
         let commentVisible = this.state.commentVisible;
@@ -233,8 +229,8 @@ class MyTimeline extends Component{
             commentVisible: commentVisible,
             cmtPage: 0,
             post_highlighted: ""
-        })
-    }
+        });
+    };
 
     getSpecificImages(postId,imageCount){
         let images = []
@@ -244,8 +240,7 @@ class MyTimeline extends Component{
             </div>)
 
         }
-         
-        return images
+        return images;
     }
     fetchComments(postId, pageNumber){
         if (pageNumber === undefined) pageNumber = 0;
@@ -266,22 +261,21 @@ class MyTimeline extends Component{
             });
     };
 
-    getActions(postOwner, cmtOwner, postId, cmtId, index){
+    getActions(postOwner, cmtOwner, postId, cmtId){
 
         let actions;
         if (cmtOwner=== cookie.load('username')
             || postOwner === cookie.load('username')){
-            actions = [<span onClick={(e) => this.delCmtWindow(e,postId,cmtId,index)}
+            actions = [<span onClick={(e) => this.delCmtWindow(e,postId,cmtId)}
             >Delete</span>];
         }else{
             actions = [];
-        }
+        };
 
         return actions;
-    }
+    };
 
-    delCmtWindow(e,postId, cmtId, index){
-        console.log(postId, cmtId, index);
+    delCmtWindow(e,postId, cmtId){
         let method = this.deleteCmt;
         Modal.confirm({
             title: 'Are you sure delete this comment?',
@@ -290,12 +284,12 @@ class MyTimeline extends Component{
             okType: 'danger',
             cancelText: 'No',
             onOk() {
-                method(postId, cmtId, index)
+                method(postId, cmtId)
             },
         });
-    }
+    };
 
-    deleteCmt(postId, cmtId,index){
+    deleteCmt(postId, cmtId){
         axios
             .delete(process.env.REACT_APP_BASE_URL+
                 '/api/posts/comments/'+cmtId+'/',
@@ -303,18 +297,14 @@ class MyTimeline extends Component{
             .then(res =>{
                 // check if this was the last comment on current page
                 if (this.state.comments[postId].length === 1 && this.state.cmtPage !== 1){
-                    console.log("true",this.state.cmtPage-1)
                     this.fetchComments(postId,this.state.cmtPage-2);
                 }else{
-                    console.log("else")
                     this.fetchComments(postId, this.state.cmtPage-1);
                 }
                 this.getCmtCount(postId);
-                message.success("Post is deleted")
-                console.log(index, postId)
-            })
-
-    }
+                message.success("Post is deleted");
+            });
+    };
 
     displayComments(postId)
     {
@@ -325,10 +315,10 @@ class MyTimeline extends Component{
                 {withCredentials:true})
             .then(res => {
                 postOwner = res.data.username;
-            })
-        return this.state.comments[postId].map((comment, index) =>(
+            });
+        return this.state.comments[postId].map((comment) =>(
             <Comment
-                actions={this.getActions(postOwner, comment.username, postId, comment._id, index)}
+                actions={this.getActions(postOwner, comment.username, postId, comment._id)}
                 author={comment.username}
                 avatar={
                     <Avatar
@@ -352,9 +342,9 @@ class MyTimeline extends Component{
     changePage(pageNumber) {
         this.setState({
             cmtPage: pageNumber,
-        })
+        });
         this.fetchComments(this.state.post_highlighted, pageNumber-1);
-    }
+    };
 
     delPostWindow(e,postId,index){
         let method = this.deletePost;
@@ -365,10 +355,10 @@ class MyTimeline extends Component{
             okType: 'danger',
             cancelText: 'No',
             onOk() {
-              method(postId,index)
+              method(postId,index);
             },
           });
-    }
+    };
     
     //option 1:
     deletePost(postId,index){
@@ -380,17 +370,14 @@ class MyTimeline extends Component{
                 this.state.posts.splice(index,1)
                 let temp = this.state.posts
                 for (let i=0; i< temp.length;i++){
-                    console.log("listening from 255 "+temp[i].index)
                     temp[i].index = i
-                }
+                };
                 this.setState({
                     posts: temp
-                })
+                });
                 message.success("Post is deleted")
-                console.log(this.state.posts, index)
-            })
-
-    }
+            });
+    };
     
     InfiniteScroll(){
         return(
@@ -497,8 +484,8 @@ class MyTimeline extends Component{
                         </Row>
                     ))}
                 </InfiniteScroll>
-        )
-    }
+        );
+    };
    
     render(){
         let InfiniteScroll = this.InfiniteScroll()
@@ -507,6 +494,6 @@ class MyTimeline extends Component{
                 {InfiniteScroll}   
             </div>
         );    
-    } 
-}
+    };
+};
 export default MyTimeline;
