@@ -29,7 +29,7 @@ const REDIS_POST_EXPIRE_TIME = config.get("redis.post_maxAge");
  * @apiParam (Form Data) {String} title Title of the post, no more than `30` chars.
  * @apiParam (Form Data) {Integer} description The content of the post, no more than `200` chars.
  * @apiParam (Form Data) {Files} pictures An array of Post pictures, accepted Format: `.jpeg/.jpg/.png/.gif` and no more than `9` pictures.
- * @apiParam (Form Data) {JSON_Object} [geolocation={}] The json object storing the geolocation info, default is empty.
+ * @apiParam (Form Data) {JSONObject} [geolocation={}] The json object storing the geolocation info, default is empty.
  *
  * @apiSuccess {String} _id The id of the post
  *
