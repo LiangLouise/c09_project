@@ -8,7 +8,7 @@ Managed by Express-Session.
 
 ## [Search User](./backend/controllers/searchController.js)
 
-- Default Expire: `60`
+- Default Expire: `20`
 - Read from Redis:
     * searchUser:
         1. `search/{query_username}/{page}`: cache search result by query username and page number

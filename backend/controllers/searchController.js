@@ -69,7 +69,7 @@ exports.searchUser = function (req, res, next) {
  * @apiGroup Search
  *
  * @apiExample {curl} Example Usage:
- *  curl -b cookie.txt -c cookie.txt localhost:5000/api/searchCount?username=Fisx
+ *  curl -b cookie.txt -c cookie.txt localhost:5000/api/search/count?username=Fisx
  *
  * @apiParam (Request Query) {String} username username regex to search.
  *
