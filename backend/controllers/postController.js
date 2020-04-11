@@ -97,7 +97,8 @@ exports.createPost = function (req, res, next) {
  *       "title": "Hello",
  *       "dis": "This is my first post",
  *       "pictureCounts": 2,
- *       "time": 1586391820095
+ *       "time": 1586391820095,
+ *       "geolocation": {}
  *     }
  *
  * @apiError (Error 400) BadFormat Path Params id has the wrong format.
@@ -176,14 +177,16 @@ exports.getPostById = function (req, res, next) {
  *          "title": "Hello",
  *          "dis": "This is my first post",
  *          "pictureCounts": 2,
- *          "time": 1586391820095
+ *          "time": 1586391820095,
+ *          "geolocation": {}
  *      },
  *      {
  *          "_id": "jed5672jd90xfffsdg4wo",
  *          "title": "Good Morning",
  *          "dis": "This is my second post",
  *          "pictureCounts": 2,
- *          "time": 1586391820095
+ *          "time": 1586391820095,
+ *          "geolocation": {}
  *      }
  *    ]
  *
@@ -268,7 +271,8 @@ exports.getPostsByUser = function (req, res, next) {
  *          "username": "Leo11"
  *          "dis": "How are you?",
  *          "pictureCounts": 7,
- *          "time": 1586391820095
+ *          "time": 1586391820095,
+ *          "geolocation": {}
  *      },
  *      {
  *          "_id": "jed5672jd90xfffsdg4wk",
@@ -276,7 +280,8 @@ exports.getPostsByUser = function (req, res, next) {
  *          "username": "Flydog"
  *          "dis": "Looks delicious",
  *          "pictureCounts": 1,
- *          "time": 1586391820033
+ *          "time": 1586391820033,
+ *          "geolocation": {}
  *      }
  *    ]
  *
