@@ -1467,7 +1467,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n  \"_id\": \"jed5672jd90xfffsdg4wo\",\n  \"title\": \"Hello\",\n  \"dis\": \"This is my first post\",\n  \"pictureCounts\": 2,\n  \"time\": 1586391820095\n}",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n  \"_id\": \"jed5672jd90xfffsdg4wo\",\n  \"title\": \"Hello\",\n  \"dis\": \"This is my first post\",\n  \"pictureCounts\": 2,\n  \"time\": 1586391820095,\n  \"geolocation\": {}\n}",
           "type": "json"
         }
       ]
@@ -1610,7 +1610,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": " HTTP/1.1 200 OK\n Content-Type: application/json\n [\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"Hello\",\n      \"dis\": \"This is my first post\",\n      \"pictureCounts\": 2,\n      \"time\": 1586391820095\n  },\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"Good Morning\",\n      \"dis\": \"This is my second post\",\n      \"pictureCounts\": 2,\n      \"time\": 1586391820095\n  }\n]",
+          "content": " HTTP/1.1 200 OK\n Content-Type: application/json\n [\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"Hello\",\n      \"dis\": \"This is my first post\",\n      \"pictureCounts\": 2,\n      \"time\": 1586391820095,\n      \"geolocation\": {}\n  },\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"Good Morning\",\n      \"dis\": \"This is my second post\",\n      \"pictureCounts\": 2,\n      \"time\": 1586391820095,\n      \"geolocation\": {}\n  }\n]",
           "type": "json"
         }
       ]
@@ -1856,7 +1856,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": " HTTP/1.1 200 OK\n Content-Type: application/json\n [\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"What a nice day\",\n      \"username\": \"Leo11\"\n      \"dis\": \"How are you?\",\n      \"pictureCounts\": 7,\n      \"time\": 1586391820095\n  },\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wk\",\n      \"title\": \"Good Morning\",\n      \"username\": \"Flydog\"\n      \"dis\": \"Looks delicious\",\n      \"pictureCounts\": 1,\n      \"time\": 1586391820033\n  }\n]",
+          "content": " HTTP/1.1 200 OK\n Content-Type: application/json\n [\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"What a nice day\",\n      \"username\": \"Leo11\"\n      \"dis\": \"How are you?\",\n      \"pictureCounts\": 7,\n      \"time\": 1586391820095,\n      \"geolocation\": {}\n  },\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wk\",\n      \"title\": \"Good Morning\",\n      \"username\": \"Flydog\"\n      \"dis\": \"Looks delicious\",\n      \"pictureCounts\": 1,\n      \"time\": 1586391820033,\n      \"geolocation\": {}\n  }\n]",
           "type": "json"
         }
       ]
@@ -2263,7 +2263,7 @@
     "examples": [
       {
         "title": "Example Usage:",
-        "content": "curl -b cookie.txt -c cookie.txt localhost:5000/api/searchCount?username=Fisx",
+        "content": "curl -b cookie.txt -c cookie.txt localhost:5000/api/search/count?username=Fisx",
         "type": "curl"
       }
     ],
