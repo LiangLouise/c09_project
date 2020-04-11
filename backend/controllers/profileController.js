@@ -4,6 +4,9 @@ const {sendFileOption, defaultAvatarOption} = require("../config/multerconfig");
 const fs = require('fs');
 const faceData = require('../model/faceData');
 const logger = require('../config/loggerconfig');
+const {redisClient} = require('../services/redisservice');
+
+const REDIS_AVATAR_EXPIRE_TIME = config.get("redis.avatar_maxAge");
 
 /**
  * @api {get} /api/profile/avatar?username=:username Get the avatar of the user
@@ -31,18 +34,53 @@ const logger = require('../config/loggerconfig');
  */
 exports.getAvatar = function (req, res, next) {
     let username = req.query.username;
-    db.users.findOne({_id: username}, function(err, user) {
+
+    let avatar_key = username + "/avatar";
+    let avatar_type_key = avatar_key + "/mime";
+
+    redisClient.mget(avatar_key, avatar_type_key, function (err, avatar) {
         if (err) {
             logger.error(err);
             return res.status(500).json({error: err});
         }
-        // If there is no avatar uploaded
-        if (!user.avatar.path) {
-            res.setHeader('Content-Type', config.get("avatar.default_mimetype"));
-            res.sendFile(config.get("avatar.default_filePath"), defaultAvatarOption);
+        if (avatar[0]) {
+            redisClient.expire(avatar_key, REDIS_AVATAR_EXPIRE_TIME);
+            res.setHeader('Content-Type', avatar[1]);
+            let image_buffer = Buffer.from(avatar[0], 'base64');
+            res.send(image_buffer);
         } else {
-            res.setHeader('Content-Type', user.avatar.mimeType);
-            res.sendFile(user.avatar.path, sendFileOption());
+            db.users.findOne({_id: username}, function(err, user) {
+                if (err) {
+                    logger.error(err);
+                    return res.status(500).json({error: err});
+                }
+                let file_type, avatar_path;
+
+                // If there is no avatar uploaded
+                if (!user.avatar.path) {
+                    file_type = config.get("avatar.default_mimetype");
+                    avatar_path = config.get("avatar.default_filePath");
+                } else {
+                    file_type = user.avatar.mimeType;
+                    avatar_path = user.avatar.path;
+                }
+
+                let fileStream = fs.createReadStream(avatar_path);
+                let chunks = [];
+
+                fileStream.on('data', (chunk) => {
+                    chunks.push(chunk); // push data chunk to array
+
+                });
+
+                fileStream.once('end', () => {
+                    // create the final data Buffer from data chunks;
+                    let fileBuffer = Buffer.concat(chunks);
+                    redisClient.setex(avatar_key, REDIS_AVATAR_EXPIRE_TIME, fileBuffer.toString('base64'));
+                    redisClient.setex(avatar_type_key, REDIS_AVATAR_EXPIRE_TIME, file_type);
+                    res.send(fileBuffer);
+                });
+            });
         }
     });
 };
@@ -74,6 +112,10 @@ exports.getAvatar = function (req, res, next) {
 exports.updateAvatar = function (req, res, next) {
     let username = req.session.username;
     let image = req.file;
+
+    let avatar_key = username + "/avatar";
+    let avatar_type_key = avatar_key + "/mime";
+
     db.users.findOne({_id: username}, function(err, user) {
         if (err) {
             logger.error(err);
@@ -88,6 +130,9 @@ exports.updateAvatar = function (req, res, next) {
                 logger.error(err);
                 return res.status(500).json({error: err});
             }
+            // Remove Keys
+            redisClient.del(avatar_key);
+            redisClient.del(avatar_type_key);
             return res.json({
                 success: "Uploaded Successfully!"
             });
@@ -175,6 +220,7 @@ exports.getFaceData = function (req, res, next) {
  */
 exports.getUserProfile = function (req, res, next) {
     let username = req.query.username;
+
     db.users.findOne({_id: username}, {salt: 0, hash: 0, avatar:0}, function (err, user) {
         if (err) {
             logger.error(err);

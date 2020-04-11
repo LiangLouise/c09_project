@@ -27,7 +27,7 @@
     "infoLogFilePath": "/var/www/moment.ninja.log/info.log"
   },
   "avatar": {
-    "default_filePath": "/default/default_avatar.png",
+    "default_filePath": "default/default_avatar.png",
     "default_mimetype": "image/png",
     "uploads_dest": "/var/www/moment.ninja.avatars/"
   },
@@ -37,7 +37,7 @@
     "ttl": 86400,
     "post_maxAge": 180,
     "comment_maxAge": 120,
-    "search_maxAge": 60,
+    "search_maxAge": 30,
     "avatar_maxAge": 120
   },
   "session": {

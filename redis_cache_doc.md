@@ -43,5 +43,12 @@ Managed by Express-Session.
 
 - Default Expire: `120`
  
-- Avtar
-- Profile JSON object
+- Read From Redis:
+    * Get Avatar:
+        1. `{session_username}/avatar`: Buffer of the avatar file
+        2. `{session_username}/avatar/mime`: `Content-Type` for response
+    
+- Update Redis:
+    * Update Avatar, delete following keys:
+        1. `{session_username}/avatar`
+        2. `{session_username}/avatar/mime`
