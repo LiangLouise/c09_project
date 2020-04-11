@@ -21,6 +21,7 @@ const REDIS_POST_EXPIRE_TIME = config.get("redis.post_maxAge");
  *      -F "title=hello" \
  *      -F "description=My New Post!" \
  *      -F "pictures=@hello.jpg"
+ *      -F "geolocation='{}'"
  *      localhost:5000/api/posts
  *
  * @apiHeader {String} Content-Type Must be `multipart/form-data`.
@@ -28,6 +29,7 @@ const REDIS_POST_EXPIRE_TIME = config.get("redis.post_maxAge");
  * @apiParam (Form Data) {String} title Title of the post, no more than `30` chars.
  * @apiParam (Form Data) {Integer} description The content of the post, no more than `200` chars.
  * @apiParam (Form Data) {Files} pictures An array of Post pictures, accepted Format: `.jpeg/.jpg/.png/.gif` and no more than `9` pictures.
+ * @apiParam (Form Data) {JSON Object} [geolocation={}] The json object storing the geolocation info, default is empty.
  *
  * @apiSuccess {String} _id The id of the post
  *
@@ -85,7 +87,8 @@ exports.createPost = function (req, res, next) {
  * @apiSuccess {String} dis The description of the post
  * @apiSuccess {Integer} pictureCounts The number of the pictures this post has
  * @apiSuccess {Integer} time The time of post creation
-
+ * @apiSuccess {JSON Object} geolocation The json object storing the geolocation info.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
@@ -162,7 +165,8 @@ exports.getPostById = function (req, res, next) {
  * @apiSuccess {String} posts.dis The description of the post
  * @apiSuccess {Integer} posts.pictureCounts The number of the pictures this post has
  * @apiSuccess {Integer} posts.time The time of post creation
-
+ * @apiSuccess {JSON Object} posts.geolocation The json object storing the geolocation info.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
@@ -252,7 +256,8 @@ exports.getPostsByUser = function (req, res, next) {
  * @apiSuccess {String} posts.dis The description of the post
  * @apiSuccess {Integer} posts.pictureCounts The number of the pictures this post has
  * @apiSuccess {Integer} posts.time The time of post creation
-
+ * @apiSuccess {JSON Object} posts.geolocation The json object storing the geolocation info.
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *     Content-Type: application/json
