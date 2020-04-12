@@ -60,7 +60,7 @@ exports.getAvatar = function (req, res, next) {
                     file_type = config.get("avatar.default_mimetype");
                     avatar_path = config.get("avatar.default_filePath");
                 } else {
-                    file_type = user.avatar.mimeType;
+                    file_type = user.avatar.mimetype;
                     avatar_path = user.avatar.path;
                 }
 
@@ -69,7 +69,6 @@ exports.getAvatar = function (req, res, next) {
 
                 fileStream.on('data', (chunk) => {
                     chunks.push(chunk); // push data chunk to array
-
                 });
 
                 fileStream.once('end', () => {
@@ -77,6 +76,7 @@ exports.getAvatar = function (req, res, next) {
                     let fileBuffer = Buffer.concat(chunks);
                     redisClient.setex(avatar_key, REDIS_AVATAR_EXPIRE_TIME, fileBuffer.toString('base64'));
                     redisClient.setex(avatar_type_key, REDIS_AVATAR_EXPIRE_TIME, file_type);
+                    res.setHeader('Content-Type', file_type);
                     res.send(fileBuffer);
                 });
             });

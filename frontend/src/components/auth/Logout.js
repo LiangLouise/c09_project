@@ -22,7 +22,7 @@ class Logout extends React.Component{
                 this.props.action();
             })
             .catch(err => {
-                message.error(err.response.data);
+                message.error(err.response.data.error);
             });
         
     };

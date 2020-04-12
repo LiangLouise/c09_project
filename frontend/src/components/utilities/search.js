@@ -40,7 +40,7 @@ class SearchBar extends Component{
                     console.log(res.data)
                     message.success("You are now following "+username+ " yay!!!");
                 }).catch((err)=>{
-                message.error(err.response.data)
+                message.error(err.response.data.error)
             });
         }else{
             let req = {username:username};
@@ -53,7 +53,7 @@ class SearchBar extends Component{
                     console.log(res.data)
                     message.success("You just unfollowed "+username+ "  :(");
                 }).catch((err)=>{
-                message.error(err.response.data)
+                message.error(err.response.data.error)
             });
         };
         this.constructTable(this.state.page);
@@ -122,7 +122,7 @@ class SearchBar extends Component{
                                 data: JSON.parse(JSON.stringify(data))
                             });
                         }).catch((err)=>{
-                        message.error(err.response.data);
+                        message.error(err.response.data.error);
                     });
                 };
                 
