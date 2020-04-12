@@ -28,10 +28,10 @@ class ImgEditor extends Component {
         }
     }
 
-    componentDidUpdate(props) {
+    componentWillReceiveProps(props) {
         if(props.src !== this.props.src){
             console.log('yes')
-            this.setState({ src: this.props.src });
+            this.setState({ src: props.src });
         }
 
     }
@@ -47,8 +47,9 @@ class ImgEditor extends Component {
     //     }
     // };
     render(){
+
         return (
-            <div className="home-page">
+            <div className="image-editor" key={this.props.src}>
                 {/*<div className="center">*/}
                 {/*    <h1>Photo Editor</h1>*/}
                 {/*    <Button className='button' onClick={saveImageToDisk}>Save Image to Disk</Button>*/}
