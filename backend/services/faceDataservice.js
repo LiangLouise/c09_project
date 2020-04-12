@@ -52,14 +52,17 @@ exports.updateFaceData = async function (post_id) {
                     ctx.drawImage(image, 0, 0, image.width, image.height);
 
                     let single = fullFaceDescriptions.map(fd => faceMatcher.findBestMatch(fd.descriptor));
-                    // Push an empty string to take the position
-                    if (single.length === 0) result.push("");
+                    // Push an original file to take the position
+                    if (single.length === 0) result.push(pic.path);
                     single.forEach((bestMatch, i) => {
                         const box = fullFaceDescriptions[i].detection.box;
                         const text = bestMatch.toString();
-
-                        const drawBox = new faceapi.draw.DrawBox(box, { label: text });
-                        drawBox.draw(canvas);
+                        console.log(bestMatch._distance);
+                        if (bestMatch._distance < 0.55)
+                        {
+                            const drawBox = new faceapi.draw.DrawBox(box, { label: text, lineWidth: 9 });
+                            drawBox.draw(canvas);
+                        }
                     });
 
                     let buf = canvas.toBuffer(pic.mimetype);
