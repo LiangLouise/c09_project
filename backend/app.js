@@ -33,7 +33,10 @@ if (process.env.NODE_ENV === 'production') {
         }
     }));
 } else {
+    const {SessionStore} = require('./services/redisservice');
+
     app.use(session({
+        store: SessionStore(),
         secret: config.get('session.secret'),
         resave: true,
         saveUninitialized: true,

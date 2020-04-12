@@ -1,9 +1,9 @@
 const express = require('express');
 const {signin, signout, signup} = require('./controllers/authController');
-const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById, getPostOfFollowing} = require('./controllers/postController');
+const {createPost, getPostsByUser, getPostById, getPostPicture, deletePostById, getPostOfFollowing, getPostFacePicture} = require('./controllers/postController');
 const {followUser, unfollowUser, getFollowingList, isFollowing, getFollowerList, isFollowedBy} = require('./controllers/followingController');
 const {searchUser, searchUserCount} = require("./controllers/searchController");
-const {getAvatar, updateAvatar, updateFaceData, getFaceData, getUserProfile} = require("./controllers/profileController");
+const {getAvatar, updateAvatar, updateFaceData, getUserProfile} = require("./controllers/profileController");
 const {addComment, getCommentByPost, getCommentCountByPost, deleteCommentById} = require("./controllers/commentController");
 const validation = require('./utils/validation.js');
 const {postUploads, avatarUploads} = require('./config/multerconfig');
@@ -52,6 +52,8 @@ module.exports = function (app) {
     // GET /api/posts/{PostID}/images/{image_index}/
     // You can get the total number of images from GET /api/posts/{PostID}/ as "pictureCounts"
     postRoutes.get('/:id/images/:image_index/', validation.isAuthenticated, validation.isObjectId('params'), getPostPicture);
+
+    postRoutes.get('/:id/face_images/:image_index/', validation.isAuthenticated, validation.isObjectId('params'), getPostFacePicture);
 
     // DELETE /api/posts/{PostID}/
     // ONLY OWNER CAN DELETE THEIR OWN POSTS
@@ -121,7 +123,6 @@ module.exports = function (app) {
     // Res: 200 success
     profileRoutes.post('/avatar/', validation.isAuthenticated, avatarUploads, validation.notEmptyFile, validation.checkImageFile, updateAvatar);
 
-    profileRoutes.put('/facedata/', validation.isAuthenticated, validation.sanitizeFaceData, updateFaceData);
+    profileRoutes.put('/facedata/', validation.isAuthenticated, updateFaceData);
 
-    // profileRoutes.get('/facedata/', validation.isAuthenticated, getFaceData);
 };

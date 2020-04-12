@@ -18,7 +18,7 @@ import {
     message,
     Pagination
 } from 'antd';
-import { LoadingOutlined, DeleteOutlined, CommentOutlined, ExclamationCircleOutlined  } from '@ant-design/icons';
+import { LoadingOutlined, DeleteOutlined, CommentOutlined, ExclamationCircleOutlined, SmileOutlined, FileImageOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import axios from 'axios';
@@ -39,8 +39,6 @@ const formItemLayout = {
 };
 
 const loadingIcon = <LoadingOutlined className="loadingIcon" spin />;
-
-const MAX_POSTS_NUMBER_PER_PAGE = 5;
 
 class MyTimeline extends Component{
     formRef = React.createRef();
@@ -76,7 +74,8 @@ class MyTimeline extends Component{
         this.deleteCmt = this.deleteCmt.bind(this);
         this.deletePost = this.deletePost.bind(this);
         this.delPostWindow = this.delPostWindow.bind(this);
-
+        this.onShowFaceClick = this.onShowFaceClick.bind(this);
+        this.getFaceImages = this.getFaceImages.bind(this);
     };
 
     onReset = () => {
@@ -94,79 +93,68 @@ class MyTimeline extends Component{
 
     };
 
-
-
     componentWillReceiveProps(props) { 
         if (props.refresh) {
-            this.fetchData(true);
-        };
+            this.setState({
+                page: 0,
+                cmtPage: 0,
+                posts: [],
+                comments:{}
+            });
+            this.fetchData();
+        }
     };
 
     fetchData = (fromFirst) => {
         let data = [];
         let temp = {};
-        let temp2 = {}
+        let temp2 = {};
         let username = cookie.load('username');
-        let page;
-
-        if (fromFirst) page = 0;
-        else page = this.state.page;
+        let page = this.state.page;
 
         axios
             .get(process.env.REACT_APP_BASE_URL+
             '/api/posts/?username='+username+'&page='+page,
             {withCredentials: true})
             .then(res =>{
-                let newPostsNum = this.state.page * MAX_POSTS_NUMBER_PER_PAGE 
-                                    + res.data.length 
-                                    - this.state.posts.length;
-                for (let i=0; i< newPostsNum;i++){
+                for (let i=0; i < res.data.length; i++){
                     temp = {
-                        'title': res.data[i].title,
-                        'description': res.data[i].dis,
-                        'pictures': res.data[i].pictures,
-                        'date': moment(res.data[i].time).format('llll'),
-                        'count': res.data[i].pictureCounts,
-                        'id': res.data[i]._id,
-                        'page': 0,
-                        'comments': [],
-                        'username': res.data[i].username,
-                        'index': i,
+                        title: res.data[i].title,
+                        description: res.data[i].dis,
+                        pictures: res.data[i].pictures,
+                        date: moment(res.data[i].time).format('llll'),
+                        count: res.data[i].pictureCounts,
+                        id: res.data[i]._id,
+                        page: 0,
+                        comments: [],
+                        username: res.data[i].username,
+                        index: i,
+                        showFace: false
                     };
                     temp2[res.data[i]._id] = false;
                     data.push(temp);
                 };
                 this.setState({
                     commentVisible: temp2
-                })
-                if (fromFirst){
-                    if (data.length > 0 && data.length <= process.env.REACT_APP_MAX_POST_PER_PAGE) {
-                        this.setState({
-                            posts: data.concat(this.state.posts)
-                        });
-                    } else if (data.length > process.env.REACT_APP_MAX_POST_PER_PAGE) {
-                        // Need to think about 
-                    };
+                });
+                if (res.data.length === 0 && this.state.page > 0) {
+                    this.setState({
+                        hasMorePost: false,
+                        page: this.state.page-1
+                    });
+                }
+                else if (res.data.length < process.env.REACT_APP_MAX_POST_PER_PAGE) {
+                    this.setState({
+                        hasMorePost: false,
+                        posts: this.state.posts.concat(data)
+                    });
                 } else {
-                    if (res.data.length == 0 && this.state.page > 0) {
-                        this.setState({
-                            hasMorePost: false,
-                            page: this.state.page-1
-                        });
-                    }
-                    else if (res.data.length < process.env.REACT_APP_MAX_POST_PER_PAGE) {
-                        this.setState({
-                            hasMorePost: false,
-                            posts: this.state.posts.concat(data)
-                        }); 
-                    } else {
-                        this.setState({
-                            hasMorePost: true,
-                            posts: this.state.posts.concat(data),
-                            page: this.state.page+1
-                        }); 
-                    };
-                };
+                    this.setState({
+                        hasMorePost: true,
+                        posts: this.state.posts.concat(data),
+                        page: this.state.page+1
+                    });
+                }
             });
     };
 
@@ -177,7 +165,7 @@ class MyTimeline extends Component{
                 "/api/posts/"+postId+"/commentsCount",
                 {withCredentials:true})
             .then(res => {
-                temp[postId] = res.data.count
+                temp[postId] = res.data.count;
                 this.setState({
                     cmtCount : temp,
                 });
@@ -191,7 +179,7 @@ class MyTimeline extends Component{
             setTimeout(() => {
                 this.fetchData(false);
             }, 1000);
-        };
+        }
     };
 
     sendComment(postId){
@@ -232,16 +220,35 @@ class MyTimeline extends Component{
         });
     };
 
-    getSpecificImages(postId,imageCount){
-        let images = []
+
+    onShowFaceClick(e, index){
+        let posts = this.state.posts;
+        posts[index].showFace = !posts[index].showFace;
+        this.setState({
+            posts: posts
+        });
+    };
+
+    getFaceImages(postId, imageCount) {
+        let images = [];
         for (let i=0; i< imageCount; i++){
             images.push(<div>
-                <img src={`${process.env.REACT_APP_BASE_URL}/api/posts/${postId}/images/${i}/`}/>
+                <img src={`${process.env.REACT_APP_BASE_URL}/api/posts/${postId}/face_images/${i}/`} alt={`${postId}_i`}/>
             </div>)
-
         }
         return images;
     }
+
+    getSpecificImages(postId,imageCount) {
+        let images = [];
+        for (let i=0; i< imageCount; i++){
+            images.push(<div>
+                <img src={`${process.env.REACT_APP_BASE_URL}/api/posts/${postId}/images/${i}/`} alt={`${postId}_i`} />
+            </div>)
+        }
+        return images;
+    }
+
     fetchComments(postId, pageNumber){
         if (pageNumber === undefined) pageNumber = 0;
         let temp = this.state.comments;
@@ -339,6 +346,7 @@ class MyTimeline extends Component{
             >
             </Comment>));
     }
+
     changePage(pageNumber) {
         this.setState({
             cmtPage: pageNumber,
@@ -346,7 +354,7 @@ class MyTimeline extends Component{
         this.fetchComments(this.state.post_highlighted, pageNumber-1);
     };
 
-    delPostWindow(e,postId,index){
+    delPostWindow(e, postId, index){
         let method = this.deletePost;
         Modal.confirm({
             title: 'Are you sure delete this post?',
@@ -361,17 +369,17 @@ class MyTimeline extends Component{
     };
     
     //option 1:
-    deletePost(postId,index){
+    deletePost(postId, index){
         axios
             .delete(process.env.REACT_APP_BASE_URL+
                 '/api/posts/'+postId,
                 {withCredentials: true})
             .then(res =>{
-                this.state.posts.splice(index,1)
-                let temp = this.state.posts
+                this.state.posts.splice(index,1);
+                let temp = this.state.posts;
                 for (let i=0; i< temp.length;i++){
                     temp[i].index = i
-                };
+                }
                 this.setState({
                     posts: temp
                 });
@@ -380,6 +388,7 @@ class MyTimeline extends Component{
     };
     
     InfiniteScroll(){
+        console.log(this.state.posts);
         return(
             <InfiniteScroll
                     dataLength={this.state.posts.length}
@@ -392,24 +401,40 @@ class MyTimeline extends Component{
                         </p>
                     }
                 >
-                    {this.state.posts.map((post) => (
+                    {this.state.posts.map((post, i) => (
                         <Row >
                             <Col span={21}>
                                 <Card
                                     hoverable
                                     cover={<Carousel
                                         dotPosition="top" autoplay>
-                                        {this.getSpecificImages(post.id, post.count)}
+                                        {this.state.posts[i].showFace ? this.getFaceImages(post.id, post.count, post.showFace) : this.getSpecificImages(post.id, post.count,post.showFace)}
                                     </Carousel>}
                                     title={<div>
                                         {post.username} created <TimeAgo date={post.date} formatter={formatter} />
                                     </div>
                                     }
                                     extra={<div>
-                                        <Button
-                                            type="primary"
-                                            onClick={(e) => this.showComment(e,post.id)}
-                                        ><CommentOutlined />Comments</Button>
+                                        <Row gutter={8}>
+                                            <Col>
+                                                <Button
+                                                type="primary"
+                                                onClick={(e) => this.showComment(e,post.id)}>
+                                                    <CommentOutlined />Comments
+                                                </Button>
+                                            </Col>
+                                            <Col>
+                                                {this.state.posts[i].showFace ?
+                                                    <Button type="primary" onClick={(e) => this.onShowFaceClick(e, i)}>
+                                                        <FileImageOutlined />Original Files
+                                                    </Button>
+                                                    :
+                                                    <Button type="primary" onClick={(e) => this.onShowFaceClick(e, i)}>
+                                                        <SmileOutlined />Locate Faces
+                                                    </Button>}
+                                            </Col>
+                                        </Row>
+
                                         <Modal
                                             footer={null}
                                             title={"Comments"}
@@ -474,7 +499,7 @@ class MyTimeline extends Component{
                                 </Card>
 
                             </Col>
-                                
+
                             <Col span={3}>
                                 <a className="delete-ref" >
                                     <DeleteOutlined className="delete-btn" onClick={(e) => this.delPostWindow(e,post.id,post.index)}/>
@@ -488,10 +513,10 @@ class MyTimeline extends Component{
     };
    
     render(){
-        let InfiniteScroll = this.InfiniteScroll()
+        let InfiniteScroll = this.InfiniteScroll();
         return(
             <div className="timeline">
-                {InfiniteScroll}   
+                {InfiniteScroll}
             </div>
         );    
     };

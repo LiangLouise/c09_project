@@ -8,6 +8,7 @@ import Signup from '../auth/signup';
 import Profile from '../profile/profile';
 import SearchBar from '../utilities/search';
 import Logout from '../auth/Logout';
+import FaceData from "../faceData/faceData";
 import Map from '../map/map';
 import ImgEditor from "../imgeditor/imgeditor";
 import { Layout, Menu, Button, Empty, Divider, message } from 'antd';
@@ -100,7 +101,8 @@ class Home extends Component{
               <Menu.Item key="1" onClick={this.updatePage}>Following</Menu.Item>
               <Menu.Item key="2" onClick={this.updatePage}>My Timeline</Menu.Item>
               <Menu.Item key="3" onClick={this.updatePage}>Map</Menu.Item>
-              <Menu.Item key="4" onClick={this.updatePage}>Image Editor</Menu.Item>
+              <Menu.Item key="4" onClick={this.updatePage}>FaceData</Menu.Item>
+
               <div className="menu-item" >
               <div className="menu-item" id="profile" ><Profile/></div>
               <div className="menu-item" id="logout" ><Logout action={this.loginHandler}/></div>
@@ -213,7 +215,7 @@ class Home extends Component{
           <Content
               className="site-layout-background"
           >
-            <ImgEditor/>
+            <FaceData/>
           </Content>);
 
     }

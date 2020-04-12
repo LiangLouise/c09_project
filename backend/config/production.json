@@ -4,7 +4,7 @@
     "url": "mongodb://localhost:27017",
     "dbname": "moment",
     "connectionString": "localhost:27017/moment",
-    "collections": ["users", "posts", "comments", "facedata"]
+    "collections": ["users", "posts", "comments"]
   },
   "cors": {
     "origin": ["https://moment.ninja"],
@@ -56,5 +56,9 @@
   },
   "search": {
     "MAX_USER_PER_PAGE": 10
+  },
+  "faceapi": {
+    "models": "facemodels/",
+    "results": "/var/www/moment.ninja.face_uploads/"
   }
 }

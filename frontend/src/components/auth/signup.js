@@ -3,7 +3,7 @@ import axios from 'axios';
 import Login from '../auth/login';
 import 'antd/dist/antd.css';
 import './signup.css';
-import { Modal, Button,Form, Checkbox,Input,Typography, message } from 'antd';
+import { Modal, Button,Form,Input,Typography, message } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
