@@ -9,6 +9,7 @@ import Profile from '../profile/profile';
 import SearchBar from '../utilities/search';
 import Logout from '../auth/Logout';
 import Map from '../map/map';
+import ImgEditor from "../imgeditor/imgeditor";
 import { Layout, Menu, Button, Empty, Divider, message } from 'antd';
 import cookie from 'react-cookies'
 
@@ -81,6 +82,7 @@ class Home extends Component{
               <Menu.Item key="1"/>
               <Menu.Item key="2"/>
               <Menu.Item key="3"/>
+              <Menu.Item key="4"/>
               <div className="menu-item" >
               <div className="menu-item" id="signup" ><Signup/></div>
               <div className="menu-item" id="login" ><Login refresh={this.refreshFriend} action={this.loginHandler}/></div>
@@ -98,6 +100,7 @@ class Home extends Component{
               <Menu.Item key="1" onClick={this.updatePage}>Following</Menu.Item>
               <Menu.Item key="2" onClick={this.updatePage}>My Timeline</Menu.Item>
               <Menu.Item key="3" onClick={this.updatePage}>Map</Menu.Item>
+              <Menu.Item key="4" onClick={this.updatePage}>Image Editor</Menu.Item>
               <div className="menu-item" >
               <div className="menu-item" id="profile" ><Profile/></div>
               <div className="menu-item" id="logout" ><Logout action={this.loginHandler}/></div>
@@ -203,6 +206,15 @@ class Home extends Component{
             >
               <Map/>
             </Content>);
+
+    }
+    else if (this.state.currentPage === "4") {
+      return (
+          <Content
+              className="site-layout-background"
+          >
+            <ImgEditor/>
+          </Content>);
 
     }
 
