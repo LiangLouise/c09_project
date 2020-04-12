@@ -2,7 +2,6 @@ const db = require("../services/dbservice");
 const config = require('config');
 const {sendFileOption, defaultAvatarOption} = require("../config/multerconfig");
 const fs = require('fs');
-const faceData = require('../model/faceData');
 const logger = require('../config/loggerconfig');
 const {redisClient} = require('../services/redisservice');
 
@@ -116,16 +115,18 @@ exports.updateAvatar = function (req, res, next) {
     let avatar_key = username + "/avatar";
     let avatar_type_key = avatar_key + "/mime";
 
-    db.users.findOne({_id: username}, function(err, user) {
+    db.users.findOne({_id: username}, {avatar: 1}, function(err, user) {
         if (err) {
             logger.error(err);
             return res.status(500).json({error: err});
         }
         if (!user) return res.status(404).json({error: "User Not Find"});
-        fs.unlink(user.avatar.path, (err) => {
-            if (err) return res.status(500).json({error: "Unable to delete the file"});
-        });
-        db.users.update({_id: username}, {$set: {avatar: image}}, function(err, _) {
+        if (user.avatar.path) {
+            fs.unlink(user.avatar.path, (err) => {
+                if (err) return res.status(500).json({error: "Unable to delete the file"});
+            });
+        }
+        db.users.updateOne({_id: username}, {$set: {avatar: image}}, function(err, _) {
             if (err) {
                 logger.error(err);
                 return res.status(500).json({error: err});
@@ -151,12 +152,12 @@ exports.updateAvatar = function (req, res, next) {
  *  curl -b cookie.txt \
  *      -c cookie.txt \
  *      -X PUT \
- *      -d '{"alice": {"name":"alice", "descriptor":[0.1, .... , 0.2323]} \
+ *      -d '{"descriptor": [0.1, .... , 0.2323]} \
  *      localhost:5000/api/profile/facedata
  *
  * @apiHeader {String} Content-Type Must be `application/json`.
  *
- * @apiParam  {Object} data The content of the face descriptors.
+ * @apiParam  {float[]} descriptor The array of the face descriptors.
  *
  * @apiSuccessExample {empty} Success-Response:
  *     HTTP/1.1 200 OK
@@ -166,25 +167,18 @@ exports.updateAvatar = function (req, res, next) {
  * @apiError (Error 500) InternalServerError Error from backend.
  */
 exports.updateFaceData = function (req, res, next) {
-    db.facedata.update(new faceData(req), {upsert: true}, function (err, data) {
+    let descriptor = req.body.descriptor;
+    let temp = [];
+    for (let i=0; i < 128; i++){
+        temp.push(descriptor[i.toString()]);
+    }
+
+    db.users.updateOne({_id: req.session.username},{$set: {descriptor: temp} } , function (err, data) {
         if (err) {
             logger.error(err);
             return res.status(500).json({error: err});
         }
         else return res.status(200).end();
-    });
-};
-
-
-exports.getFaceData = function (req, res, next) {
-    let userName = req.session.username;
-    db.facedata.findOne({_id: userName}, function (err, facedata) {
-        if (err) {
-            logger.error(err);
-            return res.status(500).json({error: err});
-        }
-        if (!facedata) return res.json({data: {}});
-        return res.json({data: facedata.data});
     });
 };
 

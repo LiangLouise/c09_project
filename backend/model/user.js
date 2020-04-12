@@ -10,6 +10,7 @@ let User = function (username, password) {
     this.following_ids = [];
     this.avatar = {};
     this.post_counts = 0;
+    this.descriptor = [];
 };
 
 module.exports = User;

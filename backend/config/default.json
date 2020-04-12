@@ -4,7 +4,7 @@
     "url": "mongodb://localhost:27017",
     "dbname": "moment",
     "connectionString": "localhost:27017/moment",
-    "collections": ["users", "posts", "comments", "facedata"]
+    "collections": ["users", "posts", "comments"]
   },
   "cors": {
     "origin": ["http://localhost:3000"],
@@ -53,11 +53,12 @@
     "MAX_USER_PER_PAGE": 10
   },
   "faceapi": {
-    "models": "../models/"
+    "models": "facemodels/",
+    "results": "face_uploads/"
   },
   "redis": {
     "host": "localhost",
-    "port": 6379,
+    "port": 3001,
     "ttl": 86400,
     "post_maxAge": 120,
     "comment_maxAge": 120,

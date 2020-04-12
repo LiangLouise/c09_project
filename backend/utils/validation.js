@@ -33,7 +33,7 @@ exports.sanitizeComment = function(req, res, next) {
 };
 
 exports.sanitizeFaceData = function(req, res, next) {
-    req.body.data = validator.escape(req.body.data);
+    req.body.descriptor = validator.escape(req.body.descriptor);
     next();
 };
 

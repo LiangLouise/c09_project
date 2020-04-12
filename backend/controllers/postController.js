@@ -6,9 +6,29 @@ const fs = require('fs');
 const logger = require('../config/loggerconfig');
 const config = require('config');
 const {redisClient} = require('../services/redisservice');
+const {updateFaceData} = require("../services/faceDataservice");
 
 const MAX_POST_PER_PAGE = config.get("posts.MAX_POST_PER_PAGE");
 const REDIS_POST_EXPIRE_TIME = config.get("redis.post_maxAge");
+const MAX_POST_PICTURE_NUMBER = config.get("posts.MAX_POST_PICTURE_NUMBER");
+
+function sendPicture(res, image_key, image_type_key, image_type, path){
+    res.setHeader('Content-Type', image_type);
+    let fileStream = fs.createReadStream(path);
+    let chunks = [];
+
+    fileStream.on('data', (chunk) => {
+        chunks.push(chunk); // push data chunk to array
+
+    });
+    fileStream.once('end', () => {
+        // create the final data Buffer from data chunks;
+        let fileBuffer = Buffer.concat(chunks);
+        redisClient.setex(image_key, REDIS_POST_EXPIRE_TIME, fileBuffer.toString('base64'));
+        redisClient.setex(image_type_key, REDIS_POST_EXPIRE_TIME, image_type);
+        res.send(fileBuffer);
+    });
+}
 
 /**
  * @api {post} /api/posts Create a new Post
@@ -71,6 +91,7 @@ exports.createPost = function (req, res, next) {
                     return res.status(500).json({error: err});
                 }
             });
+            updateFaceData(item._id);
             return res.json({_id: item._id.toString()});
         });
 };
@@ -414,6 +435,8 @@ exports.getPostPicture = function (req, res, next) {
                     logger.error(err);
                     return res.status(500).json({error: err});
                 }
+                let image_type = post.pictures[image_index].mimetype;
+                let path = post.pictures[image_index].path;
 
                 // Check if the current user is picture owner or the friends
                 if (sessionUsername !== post.username) {
@@ -423,24 +446,82 @@ exports.getPostPicture = function (req, res, next) {
                             return res.status(500).json({error: err});
                         }
                         if (count !== 1) return res.status(403).json({error: "Not Friend"});
+                        sendPicture(res, image_key, image_type_key, image_type,path, image_type, path);
                     });
+                } else {
+                    sendPicture(res, image_key, image_type_key, image_type,path, image_type, path);
+                }
+            });
+        }
+    });
+};
+
+/**
+ * @api {get} /api/posts/:id/face_images/:image_index/ Get the face detected picture of the post
+ * @apiName Get the face detected picture of the post
+ * @apiGroup Posts
+ * @apiDescription Get the face detected picture of the post by it's index, if success, a image file will be sent.
+ *      Otherwise, response is error message with corresponding error message.
+ *
+ *
+ * @apiExample {curl} Example Usage:
+ *  curl -b cookie.txt -c cookie.txt localhost:5000/api/posts/jed5672jd90xfffsdg4wk/face_images/0/
+ *
+ * @apiParam (Path Params) {String} id The unique id of the post
+ * @apiParam (Path Params) {String} image_index The index of the picture, to indicate which image to get, max value decided by `posts.pictureCounts`
+ *
+ * @apiSuccess {BinaryFile} image The binary of the image file, the format `Content-Type` is in response header.
+ *
+ * @apiSuccessExample {BinaryFile} Success-Response:
+ *     HTTP/1.1 200 OK
+ *     Content-Type: images/jpeg
+ *
+ * @apiError (Error 400) BadFormat Request Query has the wrong format.
+ * @apiError (Error 401) AccessDeny Not Log In.
+ * @apiError (Error 403) AccessForbidden Not the post owner or the owner's follower.
+ * @apiError (Error 404) NotFind There is no face detected picture.
+ * @apiError (Error 500) InternalServerError Error from backend.
+ */
+exports.getPostFacePicture = function (req, res, next) {
+    let post_id = ObjectId(req.params.id);
+    let image_index = req.params.image_index;
+    let sessionUsername = req.session.username;
+
+    let image_key = sessionUsername + "/post/" + req.params.id + "/face_images/" + image_index;
+    let image_type_key = image_key + "/mime";
+
+    redisClient.mget(image_key, image_type_key, function(err, image){
+        if (err) {
+            logger.error(err);
+            return res.status(500).json({error: err});
+        }
+        if (image[0]) {
+            // Reset expire time
+            redisClient.expire(image_key+"*", REDIS_POST_EXPIRE_TIME);
+            res.setHeader('Content-Type', image[1]);
+            let image_buffer = Buffer.from(image[0], 'base64');
+            res.send(image_buffer);
+        } else {
+            db.posts.findOne({_id: post_id}, function (err, post) {
+                if (err) {
+                    logger.error(err);
+                    return res.status(500).json({error: err});
                 }
                 let image_type = post.pictures[image_index].mimetype;
-                res.setHeader('Content-Type', image_type);
-                let fileStream = fs.createReadStream(post.pictures[image_index].path);
-                let chunks = [];
-
-                fileStream.on('data', (chunk) => {
-                    chunks.push(chunk); // push data chunk to array
-
-                });
-                fileStream.once('end', () => {
-                    // create the final data Buffer from data chunks;
-                    let fileBuffer = Buffer.concat(chunks);
-                    redisClient.setex(image_key, REDIS_POST_EXPIRE_TIME, fileBuffer.toString('base64'));
-                    redisClient.setex(image_type_key, REDIS_POST_EXPIRE_TIME, image_type);
-                    res.send(fileBuffer);
-                });
+                let path = post.picturesFaceData[image_index];
+                // Check if the current user is picture owner or the friends
+                if (sessionUsername !== post.username) {
+                    db.users.find({_id: sessionUsername, following_ids: post.username}).count(function(err, count) {
+                        if (err) {
+                            logger.error(err);
+                            return res.status(500).json({error: err});
+                        }
+                        if (count !== 1) return res.status(403).json({error: "Not Friend"});
+                        sendPicture(res, image_key, image_type_key, image_type,path, image_type, path);
+                    });
+                } else {
+                    sendPicture(res, image_key, image_type_key, image_type,path, image_type, path);
+                }
             });
         }
     });
@@ -507,13 +588,17 @@ exports.deletePostById = function (req, res, next) {
                 }
             });
 
-            for (let pic of post.pictures){
-                fs.unlink(pic.path, err => {
+            for (let i=0; i < post.pictures.length; i++){
+                fs.unlink(post.pictures[i].path, err => {
                     if (err) {
                         logger.error(err);
-                        return res.status(500).json({error: err});
                     }
-                })
+                });
+                fs.unlink(post.picturesFaceData[i], err => {
+                    if (err) {
+                        logger.error(err);
+                    }
+                });
             }
             try {
                 // Remove all records related to posts
