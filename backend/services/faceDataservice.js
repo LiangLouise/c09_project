@@ -5,6 +5,8 @@ const fs = require('fs');
 const Can = require('canvas');
 const path = require('path');
 const config = require('config');
+const logger = require('../config/loggerconfig');
+
 const { Canvas, Image, ImageData } = Can;
 
 const savePath = config.get("faceapi.results");
@@ -19,7 +21,9 @@ if (!load) {
         faceapi.nets.faceRecognitionNet.loadFromDisk(path),
         faceapi.nets.faceLandmark68Net.loadFromDisk(path),
         faceapi.nets.ssdMobilenetv1.loadFromDisk(path)
-    ]);
+    ]).catch(e => {
+        logger.error(e);
+    });
 }
 
 exports.updateFaceData = async function (post_id) {

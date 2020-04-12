@@ -230,7 +230,7 @@ class Home extends Component{
     let submenu = this.subMenu();
 
     return(
-          <Layout >
+          <Layout style={{height: "100vh"}}>
           <Header className="header">
             <img className="icon" src={Icon}/>
             <img className="logo" src={Logo}/>
