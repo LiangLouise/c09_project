@@ -151,7 +151,6 @@ class UploadImage extends React.Component{
         if (!file.url && !file.preview) {
             file.preview = await getBase64(file.originFileObj);
         }
-
         this.setState({
             previewImage: file.url || file.preview,
             previewVisible: true,

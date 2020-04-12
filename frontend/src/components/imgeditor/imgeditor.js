@@ -23,6 +23,17 @@ class ImgEditor extends Component {
     constructor(props){
         super(props)
 
+        this.state={
+            src: this.props.src
+        }
+    }
+
+    componentWillReceiveProps(props) {
+        if(props.src !== this.props.src){
+            console.log('yes')
+            this.setState({ src: props.src });
+        }
+
     }
 
     // const saveImageToDisk = () => {
@@ -36,8 +47,9 @@ class ImgEditor extends Component {
     //     }
     // };
     render(){
+
         return (
-            <div className="home-page">
+            <div className="image-editor" key={this.props.src}>
                 {/*<div className="center">*/}
                 {/*    <h1>Photo Editor</h1>*/}
                 {/*    <Button className='button' onClick={saveImageToDisk}>Save Image to Disk</Button>*/}
@@ -45,7 +57,7 @@ class ImgEditor extends Component {
                 <ImageEditor
                     includeUI={{
                         loadImage: {
-                            path: this.props.src,
+                            path: this.state.src,
                             name: "image",
                         },
                         theme: myTheme,
