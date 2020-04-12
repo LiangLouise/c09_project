@@ -7,7 +7,7 @@ let Post = function (req) {
     this.pictureCounts = req.files.length;
     this.dis = req.body.description;
     this.time =  Date.now();
-    this.geolcation = req.body.geolocation ? req.body.geolocation : {};
+    this.geolocation = req.body.geolocation ? req.body.geolocation : {};
 };
 
 module.exports = Post;
