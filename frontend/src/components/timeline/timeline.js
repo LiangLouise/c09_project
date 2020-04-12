@@ -40,8 +40,6 @@ const formItemLayout = {
 
 const loadingIcon = <LoadingOutlined className="loadingIcon" spin />;
 
-const MAX_POSTS_NUMBER_PER_PAGE = 5;
-
 class MyTimeline extends Component{
     formRef = React.createRef();
     constructor(props){
@@ -94,33 +92,31 @@ class MyTimeline extends Component{
 
     };
 
-
-
     componentWillReceiveProps(props) { 
         if (props.refresh) {
-            this.fetchData(true);
-        };
+            this.setState({
+                page: 0,
+                cmtPage: 0,
+                posts: [],
+                comments:{}
+            });
+            this.fetchData();
+        }
     };
 
     fetchData = (fromFirst) => {
         let data = [];
         let temp = {};
-        let temp2 = {}
+        let temp2 = {};
         let username = cookie.load('username');
-        let page;
-
-        if (fromFirst) page = 0;
-        else page = this.state.page;
+        let page = this.state.page;
 
         axios
             .get(process.env.REACT_APP_BASE_URL+
             '/api/posts/?username='+username+'&page='+page,
             {withCredentials: true})
             .then(res =>{
-                let newPostsNum = this.state.page * MAX_POSTS_NUMBER_PER_PAGE 
-                                    + res.data.length 
-                                    - this.state.posts.length;
-                for (let i=0; i< newPostsNum;i++){
+                for (let i=0; i< res.data.length ;i++){
                     temp = {
                         'title': res.data[i].title,
                         'description': res.data[i].dis,
@@ -138,7 +134,7 @@ class MyTimeline extends Component{
                 };
                 this.setState({
                     commentVisible: temp2
-                })
+                });
                 if (fromFirst){
                     if (data.length > 0 && data.length <= process.env.REACT_APP_MAX_POST_PER_PAGE) {
                         this.setState({
@@ -191,7 +187,7 @@ class MyTimeline extends Component{
             setTimeout(() => {
                 this.fetchData(false);
             }, 1000);
-        };
+        }
     };
 
     sendComment(postId){
@@ -233,7 +229,7 @@ class MyTimeline extends Component{
     };
 
     getSpecificImages(postId,imageCount){
-        let images = []
+        let images = [];
         for (let i=0; i< imageCount; i++){
             images.push(<div>
                 <img src={`${process.env.REACT_APP_BASE_URL}/api/posts/${postId}/images/${i}/`}/>
@@ -242,6 +238,7 @@ class MyTimeline extends Component{
         }
         return images;
     }
+
     fetchComments(postId, pageNumber){
         if (pageNumber === undefined) pageNumber = 0;
         let temp = this.state.comments;
@@ -367,11 +364,11 @@ class MyTimeline extends Component{
                 '/api/posts/'+postId,
                 {withCredentials: true})
             .then(res =>{
-                this.state.posts.splice(index,1)
-                let temp = this.state.posts
+                this.state.posts.splice(index,1);
+                let temp = this.state.posts;
                 for (let i=0; i< temp.length;i++){
                     temp[i].index = i
-                };
+                }
                 this.setState({
                     posts: temp
                 });

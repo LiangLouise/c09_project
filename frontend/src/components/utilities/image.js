@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { loadModels, getFullFaceDescription, createMatcher } from '../faceapi/face';
+import { loadModels, getFullFaceDescription, createMatcher } from './face';
 import axios from 'axios';
 import ChangeName from "./changeName";
 

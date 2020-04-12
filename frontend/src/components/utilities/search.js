@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import 'antd/dist/antd.css';
-import {Input, Modal, Table, Button, message, Empty, Pagination} from 'antd';
+import {Input, Modal, Table, Button, message} from 'antd';
 import axios from 'axios';
 import cookie from 'react-cookies'
 
@@ -10,7 +9,7 @@ const { Search } = Input;
 
 class SearchBar extends Component{
     constructor(props){
-        super(props)
+        super(props);
         this.state = {
             visible: false,
             query:'',

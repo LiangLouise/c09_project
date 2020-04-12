@@ -8,6 +8,7 @@ import Signup from '../auth/signup';
 import Profile from '../profile/profile';
 import SearchBar from '../utilities/search';
 import Logout from '../auth/Logout';
+import FaceData from "../faceData/faceData";
 import Map from '../map/map';
 import { Layout, Menu, Button, Empty, Divider, message } from 'antd';
 import cookie from 'react-cookies'
@@ -98,7 +99,9 @@ class Home extends Component{
               <Menu.Item key="1" onClick={this.updatePage}>Following</Menu.Item>
               <Menu.Item key="2" onClick={this.updatePage}>My Timeline</Menu.Item>
               <Menu.Item key="3" onClick={this.updatePage}>Map</Menu.Item>
-              <div className="menu-item" >
+              <Menu.Item key="4" onClick={this.updatePage}>FaceData</Menu.Item>
+
+        <div className="menu-item" >
               <div className="menu-item" id="profile" ><Profile/></div>
               <div className="menu-item" id="logout" ><Logout action={this.loginHandler}/></div>
               <div className="menu-item" id="searchbar" ><SearchBar refresh={this.refreshFriend}/></div>
@@ -205,6 +208,15 @@ class Home extends Component{
             </Content>);
 
     }
+    else if (this.state.currentPage === "4") {
+      return (
+          <Content
+              className="site-layout-background"
+          >
+            <FaceData/>
+          </Content>);
+
+    }
 
   }
 
@@ -216,7 +228,7 @@ class Home extends Component{
     let submenu = this.subMenu();
 
     return(
-          <Layout >
+          <Layout style={{height: "100vh"}}>
           <Header className="header">
             <img className="icon" src={Icon}/>
             <img className="logo" src={Logo}/>

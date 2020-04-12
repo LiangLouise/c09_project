@@ -13,9 +13,6 @@ import { Form,
 import { InboxOutlined } from '@ant-design/icons';
 import TextArea from 'antd/lib/input/TextArea';
 
-
-
-
 const dummyRequest = ({ file, onSuccess }) => {
     setTimeout(() => {
       onSuccess("ok");
