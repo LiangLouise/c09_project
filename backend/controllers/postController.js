@@ -21,7 +21,9 @@ const REDIS_POST_EXPIRE_TIME = config.get("redis.post_maxAge");
  *      -F "title=hello" \
  *      -F "description=My New Post!" \
  *      -F "pictures=@hello.jpg"
- *      -F "geolocation='{}'"
+ *      -F "latitude=43.234"
+ *      -F "longitude=-79.231"
+ *      -F "address=1265 Military Trail, Scarborough, ON M1C 1A4"
  *      localhost:5000/api/posts
  *
  * @apiHeader {String} Content-Type Must be `multipart/form-data`.
@@ -29,7 +31,9 @@ const REDIS_POST_EXPIRE_TIME = config.get("redis.post_maxAge");
  * @apiParam (Form Data) {String} title Title of the post, no more than `30` chars.
  * @apiParam (Form Data) {Integer} description The content of the post, no more than `200` chars.
  * @apiParam (Form Data) {Files} pictures An array of Post pictures, accepted Format: `.jpeg/.jpg/.png/.gif` and no more than `9` pictures.
- * @apiParam (Form Data) {JSON_Object} [geolocation={}] The json object storing the geolocation info, default is empty.
+ * @apiParam (Form Data) {String} [latitude] The latitude of the geolocation info, default is empty.
+ * @apiParam (Form Data) {String} [longitude] The longitude of the geolocation info, default is empty.
+ * @apiParam (Form Data) {String} [address] The address of the geolocation info, default is empty.
  *
  * @apiSuccess {String} _id The id of the post
  *
@@ -87,7 +91,9 @@ exports.createPost = function (req, res, next) {
  * @apiSuccess {String} dis The description of the post
  * @apiSuccess {Integer} pictureCounts The number of the pictures this post has
  * @apiSuccess {Integer} time The time of post creation
- * @apiSuccess {JSON_Object} geolocation The json object storing the geolocation info.
+ * @apiSuccess {String} latitude The latitude of the geolocation info.
+ * @apiSuccess {String} longitude The longitude of the geolocation info.
+ * @apiSuccess {String} address The address of the geolocation info.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -98,7 +104,9 @@ exports.createPost = function (req, res, next) {
  *       "dis": "This is my first post",
  *       "pictureCounts": 2,
  *       "time": 1586391820095,
- *       "geolocation": {}
+ *       "latitude": "100.2",
+ *       "longitude": "-10.9",
+ *       "address": "1265 Military Trail, Scarborough, ON M1C 1A4"
  *     }
  *
  * @apiError (Error 400) BadFormat Path Params id has the wrong format.
@@ -166,7 +174,9 @@ exports.getPostById = function (req, res, next) {
  * @apiSuccess {String} posts.dis The description of the post
  * @apiSuccess {Integer} posts.pictureCounts The number of the pictures this post has
  * @apiSuccess {Integer} posts.time The time of post creation
- * @apiSuccess {JSON_Object} posts.geolocation The json object storing the geolocation info.
+ * @apiSuccess {String} posts.latitude The latitude of the geolocation info.
+ * @apiSuccess {String} posts.longitude The longitude of the geolocation info.
+ * @apiSuccess {String} posts.address The address of the geolocation info.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -178,7 +188,9 @@ exports.getPostById = function (req, res, next) {
  *          "dis": "This is my first post",
  *          "pictureCounts": 2,
  *          "time": 1586391820095,
- *          "geolocation": {}
+ *          "latitude": "100.2",
+ *          "longitude": "-10.9",
+ *          "address": "1265 Military Trail, Scarborough, ON M1C 1A4"
  *      },
  *      {
  *          "_id": "jed5672jd90xfffsdg4wo",
@@ -186,7 +198,9 @@ exports.getPostById = function (req, res, next) {
  *          "dis": "This is my second post",
  *          "pictureCounts": 2,
  *          "time": 1586391820095,
- *          "geolocation": {}
+ *          "latitude": "100.2",
+ *          "longitude": "-10.9",
+ *          "address": "1265 Military Trail, Scarborough, ON M1C 1A4"
  *      }
  *    ]
  *
@@ -259,7 +273,9 @@ exports.getPostsByUser = function (req, res, next) {
  * @apiSuccess {String} posts.dis The description of the post
  * @apiSuccess {Integer} posts.pictureCounts The number of the pictures this post has
  * @apiSuccess {Integer} posts.time The time of post creation
- * @apiSuccess {JSON_Object} posts.geolocation The json object storing the geolocation info.
+ * @apiSuccess {String} posts.latitude The latitude of the geolocation info.
+ * @apiSuccess {String} posts.longitude The longitude of the geolocation info.
+ * @apiSuccess {String} posts.address The address of the geolocation info.
  *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -272,7 +288,9 @@ exports.getPostsByUser = function (req, res, next) {
  *          "dis": "How are you?",
  *          "pictureCounts": 7,
  *          "time": 1586391820095,
- *          "geolocation": {}
+ *          "latitude": "100.2",
+ *          "longitude": "-10.9",
+ *          "address": "1265 Military Trail, Scarborough, ON M1C 1A4"
  *      },
  *      {
  *          "_id": "jed5672jd90xfffsdg4wk",
@@ -281,7 +299,9 @@ exports.getPostsByUser = function (req, res, next) {
  *          "dis": "Looks delicious",
  *          "pictureCounts": 1,
  *          "time": 1586391820033,
- *          "geolocation": {}
+ *          "latitude": "100.2",
+ *          "longitude": "-10.9",
+ *          "address": "1265 Military Trail, Scarborough, ON M1C 1A4"
  *      }
  *    ]
  *
