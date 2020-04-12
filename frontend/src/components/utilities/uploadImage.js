@@ -11,7 +11,7 @@ import { Form,
         Modal,
         Typography,
         message, } from 'antd';
-import { InboxOutlined, PlusOutlined } from '@ant-design/icons';
+import {  PlusOutlined } from '@ant-design/icons';
 import ImgEditor from "../imgeditor/imgeditor";
 import TextArea from 'antd/lib/input/TextArea';
 
@@ -55,7 +55,6 @@ const titleLayout = {
 }
 
 const normFile = e => {
-    console.log('Upload event:', e);
     if (Array.isArray(e)) {
       return e;
     }
@@ -86,15 +85,15 @@ class UploadImage extends React.Component{
         };
         this.customSubmit = this.customSubmit.bind(this);
         this.removeFile = this.removeFile.bind(this);
-        
+        this.handleFileChange = this.handleFileChange.bind(this);
     }
 
     onReset = () => {
         this.formRef.current.resetFields();
         this.setState({
-            fileList:[],
+            fileList:[]
         })
-    }
+    };
 
     setAddress = address => {
         this.setState({ address });
@@ -112,11 +111,14 @@ class UploadImage extends React.Component{
             .catch(error => console.error('Error', error));
     };
 
-    handleChange = (e) =>
+    handleChange = (e) => {
         this.setState({ [e.target.name]: e.target.value });
+    };
+
 
     beforeUpload=(file)=> {
-        const isJpegOrJpgOrPngOrGif = file.type === 'image/jpeg'
+        const
+            isJpegOrJpgOrPngOrGif = file.type === 'image/jpeg'
             || file.type === 'image/jpg'
             || file.type === 'image/png'
             || file.type === 'image/gif';
@@ -126,30 +128,13 @@ class UploadImage extends React.Component{
         }
         return isJpegOrJpgOrPngOrGif;
 
-    }
-    handleFileChange = ({ fileList }) =>
-        this.setState({ fileList: fileList });
+    };
 
-    handleUpload = info =>{
-        if (info.file.status === 'uploading'){
-            this.setState({loading: true});
-            return;
-        }
-        if (info.file.status === 'done'){
-    
-            this.state.fileList.push(info.file)
-            message.success(`${info.file.name} file is ready to upload.`);
-            this.setState({
-                loading: false,
-                fileList: this.state.fileList,
-   
-            });
-            console.log("fileList "+this.state.fileList)
-        }
-        else if (info.file.status === 'error') {
-            message.error(`${info.file.name} file added failed.`);
-        }
-    }
+    handleFileChange = ({fileList}) => {
+        this.setState({
+            fileList: fileList
+        });
+    };
 
     removeFile(file) {
         const index = this.state.fileList.indexOf(file);
@@ -160,7 +145,7 @@ class UploadImage extends React.Component{
 
     handleCancel = () => {
         this.setState({ previewVisible: false });
-    }
+    };
 
     handlePreview = async file => {
         if (!file.url && !file.preview) {
@@ -238,30 +223,10 @@ class UploadImage extends React.Component{
 
                 <Form.Item name="Images"
                            label="Select to Upload"
-                           valuePropName="fileList"
-                            rules={[
-                            {
-                                required: true,
-                            },
-                            ]}
+                           valuePropName="upload"
                 >
-                    {/*<Upload.Dragger*/}
-                    {/*    name="picture"*/}
-                    {/*    onChange={this.handleUpload}*/}
-                    {/*    customRequest={dummyRequest}*/}
-                    {/*    onRemove={this.removeFile}*/}
-                    {/*    fileList={this.state.fileList}*/}
-                    {/*    withCredentials={true}*/}
-                    {/*    multiple={true}*/}
-                    {/*    beforeUpload={this.beforeUpload}*/}
-                    {/*>*/}
-                    {/*    <p className="ant-upload-drag-icon">*/}
-                    {/*    <InboxOutlined />*/}
-                    {/*    </p>*/}
-                    {/*    <p className="ant-upload-text">Click or drag file to this area to upload</p>*/}
-                    {/*    <p className="ant-upload-hint">It's very easy</p>*/}
-                    {/*</Upload.Dragger>*/}
                     <Upload
+                        name={"upload"}
                         customRequest={dummyRequest}
                         multiple={true}
                         listType="picture-card"
@@ -282,7 +247,7 @@ class UploadImage extends React.Component{
                         <ImgEditor src={this.state.previewImage} />
                         {/*<img alt="example" style={{ width: '100%' }} src={this.state.previewImage} />*/}
                     </Modal>
-                    </Form.Item>
+                </Form.Item>
 
 
                 <Form.Item 
