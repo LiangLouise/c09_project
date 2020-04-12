@@ -1202,7 +1202,7 @@
     "examples": [
       {
         "title": "Example Usage:",
-        "content": "curl -b cookie.txt \\\n    -c cookie.txt \\\n    -F \"title=hello\" \\\n    -F \"description=My New Post!\" \\\n    -F \"pictures=@hello.jpg\"\n    -F \"geolocation='{}'\"\n    localhost:5000/api/posts",
+        "content": "curl -b cookie.txt \\\n    -c cookie.txt \\\n    -F \"title=hello\" \\\n    -F \"description=My New Post!\" \\\n    -F \"pictures=@hello.jpg\"\n    -F \"latitude=43.234\"\n    -F \"longitude=-79.231\"\n    -F \"address=1265 Military Trail, Scarborough, ON M1C 1A4\"\n    localhost:5000/api/posts",
         "type": "curl"
       }
     ],
@@ -1245,11 +1245,24 @@
           },
           {
             "group": "Form Data",
-            "type": "JSON_Object",
+            "type": "String",
             "optional": true,
-            "field": "geolocation",
-            "defaultValue": "{}",
-            "description": "<p>The json object storing the geolocation info, default is empty.</p>"
+            "field": "latitude",
+            "description": "<p>The latitude of the geolocation info, default is empty.</p>"
+          },
+          {
+            "group": "Form Data",
+            "type": "String",
+            "optional": true,
+            "field": "longitude",
+            "description": "<p>The longitude of the geolocation info, default is empty.</p>"
+          },
+          {
+            "group": "Form Data",
+            "type": "String",
+            "optional": true,
+            "field": "address",
+            "description": "<p>The address of the geolocation info, default is empty.</p>"
           }
         ]
       }
@@ -1457,17 +1470,31 @@
           },
           {
             "group": "Success 200",
-            "type": "JSON_Object",
+            "type": "String",
             "optional": false,
-            "field": "geolocation",
-            "description": "<p>The json object storing the geolocation info.</p>"
+            "field": "latitude",
+            "description": "<p>The latitude of the geolocation info.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "longitude",
+            "description": "<p>The longitude of the geolocation info.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "address",
+            "description": "<p>The address of the geolocation info.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n  \"_id\": \"jed5672jd90xfffsdg4wo\",\n  \"title\": \"Hello\",\n  \"dis\": \"This is my first post\",\n  \"pictureCounts\": 2,\n  \"time\": 1586391820095,\n  \"geolocation\": {}\n}",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n{\n  \"_id\": \"jed5672jd90xfffsdg4wo\",\n  \"title\": \"Hello\",\n  \"dis\": \"This is my first post\",\n  \"pictureCounts\": 2,\n  \"time\": 1586391820095,\n  \"latitude\": \"100.2\",\n  \"longitude\": \"-10.9\",\n  \"address\": \"1265 Military Trail, Scarborough, ON M1C 1A4\"\n}",
           "type": "json"
         }
       ]
@@ -1600,17 +1627,31 @@
           },
           {
             "group": "Success 200",
-            "type": "JSON_Object",
+            "type": "String",
             "optional": false,
-            "field": "posts.geolocation",
-            "description": "<p>The json object storing the geolocation info.</p>"
+            "field": "posts.latitude",
+            "description": "<p>The latitude of the geolocation info.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "posts.longitude",
+            "description": "<p>The longitude of the geolocation info.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "posts.address",
+            "description": "<p>The address of the geolocation info.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": " HTTP/1.1 200 OK\n Content-Type: application/json\n [\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"Hello\",\n      \"dis\": \"This is my first post\",\n      \"pictureCounts\": 2,\n      \"time\": 1586391820095,\n      \"geolocation\": {}\n  },\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"Good Morning\",\n      \"dis\": \"This is my second post\",\n      \"pictureCounts\": 2,\n      \"time\": 1586391820095,\n      \"geolocation\": {}\n  }\n]",
+          "content": " HTTP/1.1 200 OK\n Content-Type: application/json\n [\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"Hello\",\n      \"dis\": \"This is my first post\",\n      \"pictureCounts\": 2,\n      \"time\": 1586391820095,\n      \"latitude\": \"100.2\",\n      \"longitude\": \"-10.9\",\n      \"address\": \"1265 Military Trail, Scarborough, ON M1C 1A4\"\n  },\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"Good Morning\",\n      \"dis\": \"This is my second post\",\n      \"pictureCounts\": 2,\n      \"time\": 1586391820095,\n      \"latitude\": \"100.2\",\n      \"longitude\": \"-10.9\",\n      \"address\": \"1265 Military Trail, Scarborough, ON M1C 1A4\"\n  }\n]",
           "type": "json"
         }
       ]
@@ -1846,17 +1887,31 @@
           },
           {
             "group": "Success 200",
-            "type": "JSON_Object",
+            "type": "String",
             "optional": false,
-            "field": "posts.geolocation",
-            "description": "<p>The json object storing the geolocation info.</p>"
+            "field": "posts.latitude",
+            "description": "<p>The latitude of the geolocation info.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "posts.longitude",
+            "description": "<p>The longitude of the geolocation info.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "posts.address",
+            "description": "<p>The address of the geolocation info.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Success-Response:",
-          "content": " HTTP/1.1 200 OK\n Content-Type: application/json\n [\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"What a nice day\",\n      \"username\": \"Leo11\"\n      \"dis\": \"How are you?\",\n      \"pictureCounts\": 7,\n      \"time\": 1586391820095,\n      \"geolocation\": {}\n  },\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wk\",\n      \"title\": \"Good Morning\",\n      \"username\": \"Flydog\"\n      \"dis\": \"Looks delicious\",\n      \"pictureCounts\": 1,\n      \"time\": 1586391820033,\n      \"geolocation\": {}\n  }\n]",
+          "content": " HTTP/1.1 200 OK\n Content-Type: application/json\n [\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wo\",\n      \"title\": \"What a nice day\",\n      \"username\": \"Leo11\"\n      \"dis\": \"How are you?\",\n      \"pictureCounts\": 7,\n      \"time\": 1586391820095,\n      \"latitude\": \"100.2\",\n      \"longitude\": \"-10.9\",\n      \"address\": \"1265 Military Trail, Scarborough, ON M1C 1A4\"\n  },\n  {\n      \"_id\": \"jed5672jd90xfffsdg4wk\",\n      \"title\": \"Good Morning\",\n      \"username\": \"Flydog\"\n      \"dis\": \"Looks delicious\",\n      \"pictureCounts\": 1,\n      \"time\": 1586391820033,\n      \"latitude\": \"100.2\",\n      \"longitude\": \"-10.9\",\n      \"address\": \"1265 Military Trail, Scarborough, ON M1C 1A4\"\n  }\n]",
           "type": "json"
         }
       ]
