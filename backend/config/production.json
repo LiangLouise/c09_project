@@ -59,6 +59,6 @@
   },
   "faceapi": {
     "models": "facemodels/",
-    "results": "face_uploads/"
+    "results": "/var/www/moment.ninja.face_uploads/"
   }
 }
