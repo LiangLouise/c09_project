@@ -10,6 +10,7 @@ import SearchBar from '../utilities/search';
 import Logout from '../auth/Logout';
 import FaceData from "../faceData/faceData";
 import Map from '../map/map';
+import ImgEditor from "../imgeditor/imgeditor";
 import { Layout, Menu, Button, Empty, Divider, message } from 'antd';
 import cookie from 'react-cookies'
 
@@ -82,6 +83,7 @@ class Home extends Component{
               <Menu.Item key="1"/>
               <Menu.Item key="2"/>
               <Menu.Item key="3"/>
+              <Menu.Item key="4"/>
               <div className="menu-item" >
               <div className="menu-item" id="signup" ><Signup/></div>
               <div className="menu-item" id="login" ><Login refresh={this.refreshFriend} action={this.loginHandler}/></div>
@@ -101,7 +103,7 @@ class Home extends Component{
               <Menu.Item key="3" onClick={this.updatePage}>Map</Menu.Item>
               <Menu.Item key="4" onClick={this.updatePage}>FaceData</Menu.Item>
 
-        <div className="menu-item" >
+              <div className="menu-item" >
               <div className="menu-item" id="profile" ><Profile/></div>
               <div className="menu-item" id="logout" ><Logout action={this.loginHandler}/></div>
               <div className="menu-item" id="searchbar" ><SearchBar refresh={this.refreshFriend}/></div>
@@ -228,7 +230,7 @@ class Home extends Component{
     let submenu = this.subMenu();
 
     return(
-          <Layout style={{height: "100vh"}}>
+          <Layout >
           <Header className="header">
             <img className="icon" src={Icon}/>
             <img className="logo" src={Logo}/>
