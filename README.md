@@ -14,6 +14,10 @@
 | Cheng      | Gao       | 1004231057    |
 | Tianhao    | Yao       | 1003404728    |
 
+## Production App
+
+[https://moment.ninja/](https://moment.ninja/)
+
 ## API Documentation
 
 [RestAPI Documentation](https://utscc09.github.io/project-team_random_star/)
@@ -45,24 +49,28 @@ This application focus on highlighting user's friendship and provides user a cha
 
 * Basic Image Editing: Cropping, Flipping, Image Filter.....
 * Images Sharing with Friends Like Instagram
-* Display Images in Maps with locations
+* Basic Posts Flow in intinity scroller
 
 ### Final Version
 
 * Face Detect to check who is in the photots
-* Annual summary for user's uploaded images
+* Display Images in Maps with locations
 
 ## Tech Stack
 
-* ReactJS - Frontend
+* ReactJS - Frontend Framework
 * NodeJS - Backend Server
 * Redis - Server Side Cache [doc](./redis_cache_doc.md)
 * Mongo - Data Persistence
 
+## Credits
+
+[Credits.md](./Credits.md)
+
 ## Top Five Technical Challenges
 
-* precise face detection with A.I.
-* image editing features (experimenting with filters, distortion, etc.)
-* map with uploaded images' information
-* trying to make a unique annual summary for each user (data interpretation)
-* learning and experimenting with new frameworks
+* precise face detection with A.I;
+* image editing features (experimenting with filters, distortion, etc.);
+* map with uploaded images' information;
+* Integrate backend properly with Redis to do the server side caching;
+* Learning and experimenting with new frameworks.
