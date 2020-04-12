@@ -302,7 +302,7 @@ class MyTimeline extends Component{
                     this.fetchComments(postId, this.state.cmtPage-1);
                 }
                 this.getCmtCount(postId);
-                message.success("Post is deleted");
+                message.success("Comment is deleted");
             });
     };
 

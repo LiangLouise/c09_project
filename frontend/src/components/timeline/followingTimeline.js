@@ -267,7 +267,7 @@ class FollowingTimeline extends Component{
                     this.fetchComments(postId, this.state.cmtPage-1);
                 }
                 this.getCmtCount(postId);
-                message.success("Post is deleted");
+                message.success("Comment is deleted");
             });
     };
 
@@ -287,7 +287,7 @@ class FollowingTimeline extends Component{
                 author={comment.username}
                 avatar={
                     <Avatar
-                        src={process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+cookie.load('username')}
+                        src={process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+comment.username}
                         alt="Han Solo"
                     />
                 }
@@ -400,7 +400,7 @@ class FollowingTimeline extends Component{
                                     <Meta
                                         title={post.title}
                                         avatar={<Avatar
-                                            src={process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+cookie.load('username')}
+                                            src={process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+post.username}
                                             alt="Han Solo"
                                         />}
                                         description={post.description}

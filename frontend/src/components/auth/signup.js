@@ -21,26 +21,6 @@ const titleLayout = {
       },
 }
 
-const validateMessages = {
-    required: 'This field is required!',
-    types: {
-      email: 'Not a validate email!',
-      number: 'Not a validate number!',
-    },
-    number: {
-      range: 'Must be between ${min} and ${max}',
-    },
-  };
-
-const onFinish = values => {
-
-    console.log('Success:', values);
-  };
-
-const onFinishFailed = errorInfo => {
-    console.log('Failed:', errorInfo);
-  };
-
 
 class Signup extends React.Component {
     formRef = React.createRef();
@@ -58,8 +38,6 @@ class Signup extends React.Component {
     showModal = () => {
         this.setState({
             visible: true,
-            // username: '',
-            // password: '',
         });
     };
   
@@ -168,10 +146,10 @@ class Signup extends React.Component {
                     
                 </Form.Item>
 
-                <Form.Item>
-                    Already an user?
-                    <div className="Login" onClick={this.handleCancel}><Login/></div>
-                </Form.Item>
+                {/*<Form.Item>*/}
+                {/*    Already an user?*/}
+                {/*    <div className="Login" onClick={this.handleCancel}><Login/></div>*/}
+                {/*</Form.Item>*/}
             
 
                 

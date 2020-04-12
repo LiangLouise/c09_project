@@ -5,10 +5,11 @@ import MyTimeline from './../timeline/timeline';
 import Upload from '../utilities/uploadImage';
 import Login from '../auth/login';
 import Signup from '../auth/signup';
+import Profile from '../profile/profile';
 import SearchBar from '../utilities/search';
 import Logout from '../auth/Logout';
 import Map from '../map/map';
-import { Layout, Menu, Button, Empty, Divider } from 'antd';
+import { Layout, Menu, Button, Empty, Divider, message } from 'antd';
 import cookie from 'react-cookies'
 
 import { UserOutlined} from '@ant-design/icons';
@@ -48,6 +49,7 @@ class Home extends Component{
   componentDidMount() {
     this.getFriendList();
   }
+
 
   updatePage(e) {
     this.setState({currentPage: e.key});
@@ -96,9 +98,8 @@ class Home extends Component{
               <Menu.Item key="1" onClick={this.updatePage}>Following</Menu.Item>
               <Menu.Item key="2" onClick={this.updatePage}>My Timeline</Menu.Item>
               <Menu.Item key="3" onClick={this.updatePage}>Map</Menu.Item>
-              {/*<Menu.Item key="3" onClick={this.updatePage}>Map</Menu.Item>*/}
               <div className="menu-item" >
-              <div className="menu-item" id="profile" ><Button ghost={true}>{cookie.load('username')}</Button></div>
+              <div className="menu-item" id="profile" ><Profile/></div>
               <div className="menu-item" id="logout" ><Logout action={this.loginHandler}/></div>
               <div className="menu-item" id="searchbar" ><SearchBar refresh={this.refreshFriend}/></div>
               </div>
@@ -195,8 +196,8 @@ class Home extends Component{
     }
 
     else if (this.state.currentPage === "3") {
+      message.info("You can see up to 25 markers each represents the location where your friend took the pictures!")
         return (
-
             <Content
                 className="site-layout-background"
             >

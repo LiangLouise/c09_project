@@ -40,7 +40,9 @@ class SearchBar extends Component{
                 .then(res => {
                     console.log(res.data)
                     message.success("You are now following "+username+ " yay!!!");
-                })
+                }).catch((err)=>{
+                message.error(err.response.data)
+            });
         }else{
             let req = {username:username};
             console.log(req)
@@ -51,7 +53,9 @@ class SearchBar extends Component{
                 .then(res => {
                     console.log(res.data)
                     message.success("You just unfollowed "+username+ "  :(");
-                })   
+                }).catch((err)=>{
+                message.error(err.response.data)
+            });
         };
         this.constructTable(this.state.page);
         
@@ -118,10 +122,14 @@ class SearchBar extends Component{
                             this.setState({
                                 data: JSON.parse(JSON.stringify(data))
                             });
-                        });
+                        }).catch((err)=>{
+                        message.error(err.response.data);
+                    });
                 };
                 
-            });
+            }).catch(()=>{
+                message.error('bad input')
+        });
     };
     getUsers = () => {
         if (this.state.query.length !==0){
@@ -145,8 +153,10 @@ class SearchBar extends Component{
             .then(res=>{
                 this.setState({
                     total:res.data.count
-                })
-            })
+                });
+            }).catch(()=>{
+            message.error('cannot get user count');
+        });
     }
     
 

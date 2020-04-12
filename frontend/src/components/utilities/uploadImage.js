@@ -1,13 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PlacesAutocomplete, {
+    geocodeByAddress,
+    getLatLng,
+} from 'react-places-autocomplete';
 import axios from 'axios';
 import { Form,
-    Select,
-    Switch,
-    Button,
-    Upload,
-    Input,
-    Typography,
-    message, } from 'antd';
+        Button,
+        Upload,
+        Input,
+        Typography,
+        message, } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import TextArea from 'antd/lib/input/TextArea';
 
@@ -20,8 +22,7 @@ const dummyRequest = ({ file, onSuccess }) => {
     }, 0);
   };
 
-const { Title, Paragraph, Text } = Typography;
-const { Option } = Select;
+const { Title} = Typography;
 const formItemLayout = {
     labelCol: {
         span: 4,
@@ -46,19 +47,15 @@ const titleLayout = {
 
 const normFile = e => {
     console.log('Upload event:', e);
-  
     if (Array.isArray(e)) {
       return e;
     }
-  
     return e && e.fileList.slice(-process.env.REACT_APP_MAX_POST_PICTURE_NUMBER);
   };
 
 const API_END_POINT = process.env.REACT_APP_BASE_URL;
 
-// const onFinish = values => {
-//     console.log('Received values of form: ', values);
-//   };
+
 
 
 class UploadImage extends React.Component{
@@ -72,13 +69,11 @@ class UploadImage extends React.Component{
             fileList: [],
             file: null,
             checked: false,
-            location: {
-                latitude: null,
-                longtitude: null,
-            },
+            latitude: '',
+            longitude: '',
+            address: '',
         };
         this.customSubmit = this.customSubmit.bind(this);
-        this.handleSwitch = this.handleSwitch.bind(this);
         this.removeFile = this.removeFile.bind(this);
         
     }
@@ -90,13 +85,38 @@ class UploadImage extends React.Component{
         })
     }
 
+    setAddress = address => {
+        this.setState({ address });
+    };
+
+    handleSelect = address => {
+        geocodeByAddress(address)
+            .then(results => getLatLng(results[0]))
+            .then(latLng =>
+                this.setState({
+                    latitude: latLng.lat,
+                    longitude : latLng.lng
+                }),
+                message.success('Successfully fetched location info'))
+            .catch(error => console.error('Error', error));
+    };
 
     handleChange = (e) =>
         this.setState({ [e.target.name]: e.target.value });
 
+    beforeUpload=(file)=> {
+        const isJpegOrJpgOrPngOrGif = file.type === 'image/jpeg'
+            || file.type === 'image/jpg'
+            || file.type === 'image/png'
+            || file.type === 'image/gif';
+        if (!isJpegOrJpgOrPngOrGif) {
+            message.error('You can only upload JPEG/JPG/PNG/GIF file!');
+            file.status = 'error';
+        }
+        return isJpegOrJpgOrPngOrGif;
 
+    }
     handleUpload = info =>{
-
         if (info.file.status === 'uploading'){
             this.setState({loading: true});
             return;
@@ -124,28 +144,19 @@ class UploadImage extends React.Component{
         this.setState({fileList: newFileList});
     }
 
-    handleSwitch = (e) => {
-        if (this.state.checked){
-            let loc = {
-                latitude: null,
-                longtitude: null
-            };
-            this.setState({
-                location: loc,
-                checked: !this.state.checked,
-            });
-        }
-        this.setState({
-            checked: !this.state.checked,
-        });
-    };
+
     
     customSubmit = () => {
-
         let data= new FormData();
-        for (let i=0; i<this.state.fileList.length; i++){
-            data.append('picture', this.state.fileList[i].originFileObj);
+        if (this.state.fileList.length === 0){
+            message.error("images cannot be empty");
+            return;
+        }else{
+            for (let i=0; i<this.state.fileList.length; i++){
+                data.append('picture', this.state.fileList[i].originFileObj);
+            }
         }
+
         if (this.state.title.length > process.env.REACT_APP_MAX_POST_TITLE_LENGTH){
             message.error("title must be less than 30 characters");
             return;
@@ -158,6 +169,9 @@ class UploadImage extends React.Component{
         }else{
             data.append('description', this.state.description);
         }
+        data.append('latitude', this.state.latitude);
+        data.append('longitude', this.state.longitude);
+        data.append('address', this.state.address);
 
         const config= {
             headers: {
@@ -186,29 +200,29 @@ class UploadImage extends React.Component{
                 onFinish={this.customSubmit}
             >
                 <Form.Item {...titleLayout}>
-                    <Typography>
-                        <Title>New Moment</Title>
-                    </Typography>
+                    <Title>New Moment</Title>
                 </Form.Item>
-                
 
-                <Form.Item label="Select to Upload">
-                    <Form.Item name="Images" 
-                    valuePropName="fileList" 
-                    getValueFromEvent={normFile}
-                    rules={[
-                        {
-                            required: true,
-                        },
-                        ]}> 
-                        <Upload.Dragger 
+                <Form.Item name="Images"
+                           label="Select to Upload"
+                           valuePropName="fileList"
+                           getValueFromEvent={normFile}
+                            rules={[
+                            {
+                                required: true,
+                            },
+                            ]}
+                >
+                    <Upload.Dragger
                         name="picture"
                         onChange={this.handleUpload}
                         customRequest={dummyRequest}
                         onRemove={this.removeFile}
                         fileList={this.state.fileList}
                         withCredentials={true}
-                        multiple={true}>
+                        multiple={true}
+                        beforeUpload={this.beforeUpload}
+                    >
                         <p className="ant-upload-drag-icon">
                         <InboxOutlined />
                         </p>
@@ -216,7 +230,7 @@ class UploadImage extends React.Component{
                         <p className="ant-upload-hint">It's very easy</p>
                     </Upload.Dragger>
                     </Form.Item>
-                </Form.Item>
+
 
                 <Form.Item 
                     name={['Title']}
@@ -253,13 +267,53 @@ class UploadImage extends React.Component{
                     onChange={this.handleChange}/>
                 </Form.Item>
 
-                <Form.Item 
-                    name="useLocation" 
-                    label="Show Location" 
-                    valuePropName="checked">
-                    <Switch 
+                <Form.Item
                     name="Location"
-                    onChange={this.handleSwitch}/>
+                    label="Location (Optional)"
+                    rules={[
+                        {
+                            required: false,
+                        },
+                    ]}
+                >
+                    <PlacesAutocomplete
+                        value={this.state.address}
+                        onChange={this.setAddress}
+                        onSelect={this.handleSelect}
+                    >
+                        {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
+                            <div>
+                                <Input
+                                    {...getInputProps({
+                                        placeholder: 'Search Places ... (use arrow keys to select)',
+                                        className: 'location-search-input',
+                                    })}
+                                />
+                                <div className="autocomplete-dropdown-container">
+                                    {loading && <div>Loading...</div>}
+                                    {suggestions.map(suggestion => {
+                                        const className = suggestion.active
+                                            ? 'suggestion-item--active'
+                                            : 'suggestion-item';
+                                        // inline style for demonstration purpose
+                                        const style = suggestion.active
+                                            ? { backgroundColor: '#fafafa', cursor: 'pointer' }
+                                            : { backgroundColor: '#ffffff', cursor: 'pointer' };
+                                        return (
+                                            <div
+                                                {...getSuggestionItemProps(suggestion, {
+                                                    className,
+                                                    style,
+                                                })}
+                                            >
+                                                <span>{suggestion.description}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </PlacesAutocomplete>
                 </Form.Item>
 
                 <Form.Item

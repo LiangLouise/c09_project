@@ -1,8 +1,6 @@
-import React, { Component } from 'react';
+import React  from 'react';
 import axios from 'axios';
 import cookie from 'react-cookies'
-import Signup from '../auth/signup';
-//import { geolocated } from "react-geolocated";
 import { Form,
     Button,
     Checkbox,
@@ -48,10 +46,11 @@ class Login extends React.Component{
   
     onReset = () => {
         this.formRef.current.resetFields();
-    }
+    };
 
-    handleChange = (e) =>
-        this.setState({ [e.target.name]: e.target.value });
+    handleChange = (e) => {
+        this.setState({[e.target.name]: e.target.value});
+    };
 
     handleSubmit = () => {
         let user = {
@@ -80,7 +79,7 @@ class Login extends React.Component{
     };
 
   
-    handleCancel = e => {
+    handleCancel = () => {
         this.setState({ visible: false });
         this.onReset();
     };
@@ -147,13 +146,13 @@ class Login extends React.Component{
                       onChange={this.handleChange}
                       />
                   </Form.Item>
-                  <Form.Item>
-                      <Form.Item name="remember" valuePropName="checked" noStyle>
-                      <Checkbox>Remember me</Checkbox>
-                      </Form.Item>
+                  {/*<Form.Item>*/}
+                  {/*    <Form.Item name="remember" valuePropName="checked" noStyle>*/}
+                  {/*    <Checkbox>Remember me</Checkbox>*/}
+                  {/*    </Form.Item>*/}
 
 
-                  </Form.Item>
+                  {/*</Form.Item>*/}
 
                   <Form.Item>
                       <Button type="primary" 
@@ -165,10 +164,10 @@ class Login extends React.Component{
                       
                   </Form.Item>
 
-                  <Form.Item>
-                      Don't have an account?
-                      <div className="Signup" onClick={this.handleCancel}><Signup/></div>
-                  </Form.Item>
+                  {/*<Form.Item>*/}
+                  {/*    Don't have an account?*/}
+                  {/*    <div className="Signup" onClick={this.handleCancel}><Signup/></div>*/}
+                  {/*</Form.Item>*/}
               </Form>
               </Modal>
               </div>
