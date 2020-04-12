@@ -23,6 +23,17 @@ class ImgEditor extends Component {
     constructor(props){
         super(props)
 
+        this.state={
+            src: this.props.src
+        }
+    }
+
+    componentDidUpdate(props) {
+        if(props.src !== this.props.src){
+            console.log('yes')
+            this.setState({ src: this.props.src });
+        }
+
     }
 
     // const saveImageToDisk = () => {
@@ -45,7 +56,7 @@ class ImgEditor extends Component {
                 <ImageEditor
                     includeUI={{
                         loadImage: {
-                            path: this.props.src,
+                            path: this.state.src,
                             name: "image",
                         },
                         theme: myTheme,
