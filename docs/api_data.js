@@ -1706,6 +1706,108 @@ define({ "api": [
   },
   {
     "type": "get",
+    "url": "/api/posts/:id/face_images/:image_index/",
+    "title": "Get the face detected picture of the post",
+    "name": "Get_the_face_detected_picture_of_the_post",
+    "group": "Posts",
+    "description": "<p>Get the face detected picture of the post by it's index, if success, a image file will be sent. Otherwise, response is error message with corresponding error message.</p>",
+    "examples": [
+      {
+        "title": "Example Usage:",
+        "content": "curl -b cookie.txt -c cookie.txt localhost:5000/api/posts/jed5672jd90xfffsdg4wk/face_images/0/",
+        "type": "curl"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Path Params": [
+          {
+            "group": "Path Params",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>The unique id of the post</p>"
+          },
+          {
+            "group": "Path Params",
+            "type": "String",
+            "optional": false,
+            "field": "image_index",
+            "description": "<p>The index of the picture, to indicate which image to get, max value decided by <code>posts.pictureCounts</code></p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "BinaryFile",
+            "optional": false,
+            "field": "image",
+            "description": "<p>The binary of the image file, the format <code>Content-Type</code> is in response header.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\nContent-Type: images/jpeg",
+          "type": "BinaryFile"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 400": [
+          {
+            "group": "Error 400",
+            "optional": false,
+            "field": "BadFormat",
+            "description": "<p>Request Query has the wrong format.</p>"
+          }
+        ],
+        "Error 401": [
+          {
+            "group": "Error 401",
+            "optional": false,
+            "field": "AccessDeny",
+            "description": "<p>Not Log In.</p>"
+          }
+        ],
+        "Error 403": [
+          {
+            "group": "Error 403",
+            "optional": false,
+            "field": "AccessForbidden",
+            "description": "<p>Not the post owner or the owner's follower.</p>"
+          }
+        ],
+        "Error 404": [
+          {
+            "group": "Error 404",
+            "optional": false,
+            "field": "NotFind",
+            "description": "<p>There is no face detected picture.</p>"
+          }
+        ],
+        "Error 500": [
+          {
+            "group": "Error 500",
+            "optional": false,
+            "field": "InternalServerError",
+            "description": "<p>Error from backend.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "backend/controllers/postController.js",
+    "groupTitle": "Posts"
+  },
+  {
+    "type": "get",
     "url": "/api/posts/:id/images/:image_index/",
     "title": "Get the picture of the post",
     "name": "Get_the_picture_of_the_post",
@@ -2238,7 +2340,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example Usage:",
-        "content": "curl -b cookie.txt \\\n    -c cookie.txt \\\n    -X PUT \\\n    -d '{\"alice\": {\"name\":\"alice\", \"descriptor\":[0.1, .... , 0.2323]} \\\n    localhost:5000/api/profile/facedata",
+        "content": "curl -b cookie.txt \\\n    -c cookie.txt \\\n    -X PUT \\\n    -d '{\"descriptor\": [0.1, .... , 0.2323]} \\\n    localhost:5000/api/profile/facedata",
         "type": "curl"
       }
     ],
@@ -2260,10 +2362,10 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Object",
+            "type": "float[]",
             "optional": false,
-            "field": "data",
-            "description": "<p>The content of the face descriptors.</p>"
+            "field": "descriptor",
+            "description": "<p>The array of the face descriptors.</p>"
           }
         ]
       }
