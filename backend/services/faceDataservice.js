@@ -32,7 +32,7 @@ exports.updateFaceData = async function (post_id) {
         db.users.findOne({_id: post.username}, function (err, user) {
             if (err) throw err;
             let lst_to_search = user.follower_ids.concat(user._id);
-            db.users.find({$and: [{ _id: {$in: lst_to_search}}, {descriptor: {$ne: []}}]},
+            db.users.find({$and: [ {$or: [{ _id: {$in: lst_to_search}}, { _id: {$in: user.following_ids}}]} , {descriptor: {$ne: []}}]},
                     {descriptor: 1},
                     async function (err, users) {
 
