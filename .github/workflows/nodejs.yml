@@ -94,7 +94,7 @@ jobs:
         sync: true
         script: sudo bash ~/scripts/clearData.sh production      
     
-    - name: Restart Express Server
+    - name: Restart Server
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SERVER_HOST }}
