@@ -60,6 +60,7 @@ class Home extends Component{
   loginHandler() {
     this.setState({
                     isLoggedIn: !this.state.isLoggedIn,
+                    currentPage: "1"
                     });
   }
 
