@@ -68,8 +68,7 @@ class Profile extends React.Component {
 
     onReset = () => {
         this.formRef.current.resetFields();
-    }
-
+    };
 
     beforeUpload=(file)=> {
         const isJpegOrJpgOrPngOrGif = file.type === 'image/jpeg'
@@ -82,7 +81,8 @@ class Profile extends React.Component {
         }
         return isJpegOrJpgOrPngOrGif;
 
-    }
+    };
+
     customSubmit = () => {
 
         let data= new FormData();
@@ -105,28 +105,23 @@ class Profile extends React.Component {
             .then((res) => {
                 axios
                     .get(process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+cookie.load('username'),
-                        {withCredentials: true})
+                        {withCredentials: true, responseType: 'arraybuffer'})
                     .then(response=>{
 
-                        let temp = Buffer.from(response.data, 'binary').toString('base64')
-                        // let temp = getBase64(response.data)
-                        temp = 'data:'+response.headers['content-type']+';base64,'+temp
-                        console.log(temp)
+                        let temp = new Buffer(response.data, 'binary').toString('base64');
+                        temp = 'data:'+response.headers['content-type']+';base64,'+temp;
                         this.setState({
-                            src:temp
-                        })
-
+                            src: temp,
+                            visible: false
+                        });
                     }).catch((err) => {
                         message.error(err.response.data);
                     });
                 message.success("Your avatar has been changed");
             }).catch(() => {
             message.error('change avatar failed');
+            this.onReset();
         });
-        this.setState({
-            visible: false,
-        })
-        this.onReset();
     };
 
     handleUpload = info =>{
@@ -137,12 +132,11 @@ class Profile extends React.Component {
         }
         if (info.file.status === 'done'){
 
-            this.state.fileList.push(info.file)
+            this.state.fileList.push(info.file);
             message.success(`${info.file.name} file is ready to upload.`);
             this.setState({
                 loading: false,
                 fileList: this.state.fileList,
-
             });
             console.log("fileList "+this.state.fileList)
         }
