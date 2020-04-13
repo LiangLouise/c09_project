@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Component } from "react";
 import "tui-image-editor/dist/tui-image-editor.css";
 import ImageEditor from "@toast-ui/react-image-editor";
+import {Modal} from "antd";
 // import Button from "react-bootstrap/Button";
 const icona = require("tui-image-editor/dist/svg/icon-a.svg");
 const iconb = require("tui-image-editor/dist/svg/icon-b.svg");
@@ -24,6 +25,7 @@ class ImgEditor extends Component {
         super(props)
 
         this.state={
+            previewVisible: false,
             src: this.props.src
         }
     }
@@ -35,6 +37,9 @@ class ImgEditor extends Component {
         }
 
     }
+    handleCancel = () => {
+        this.setState({ previewVisible: false });
+    };
 
     // const saveImageToDisk = () => {
     //     const imageEditorInst = imageEditor.current.imageEditorInst;
@@ -49,6 +54,13 @@ class ImgEditor extends Component {
     render(){
 
         return (
+            <Modal
+                visible={this.state.previewVisible}
+                footer={null}
+                onCancel={this.handleCancel}
+                width={1300}
+                height={600}
+            >
             <div className="image-editor" key={this.props.src}>
                 {/*<div className="center">*/}
                 {/*    <h1>Photo Editor</h1>*/}
@@ -78,6 +90,7 @@ class ImgEditor extends Component {
                     ref={imageEditor}
                 />
             </div>
+            </Modal>
         );
     }
 

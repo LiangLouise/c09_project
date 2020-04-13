@@ -19,6 +19,14 @@ const titleLayout = {
         offset: 9,
     },
 }
+function getBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
 
 const dummyRequest = ({ file, onSuccess }) => {
     setTimeout(() => {
@@ -45,6 +53,7 @@ class Profile extends React.Component {
             visible: false,
             fileList: [],
             profileHint: false,
+            src: process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+cookie.load('username'),
         };
         this.customSubmit = this.customSubmit.bind(this);
         this.removeFile = this.removeFile.bind(this);
@@ -95,14 +104,28 @@ class Profile extends React.Component {
             .post(process.env.REACT_APP_BASE_URL+'/api/profile/avatar', data, config)
             .then((res) => {
                 axios
-                    .get(process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+cookie.load('username'))
-                    .catch((err) => {
+                    .get(process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+cookie.load('username'),
+                        {withCredentials: true})
+                    .then(response=>{
+
+                        let temp = Buffer.from(response.data, 'binary').toString('base64')
+                        // let temp = getBase64(response.data)
+                        temp = 'data:'+response.headers['content-type']+';base64,'+temp
+                        console.log(temp)
+                        this.setState({
+                            src:temp
+                        })
+
+                    }).catch((err) => {
                         message.error(err.response.data);
                     });
                 message.success("Your avatar has been changed");
-            }).catch((err) => {
-            message.error(err.response.data);
+            }).catch(() => {
+            message.error('change avatar failed');
         });
+        this.setState({
+            visible: false,
+        })
         this.onReset();
     };
 
@@ -152,7 +175,7 @@ class Profile extends React.Component {
                         onClick={this.showModal}
                         // onMouseEnter={this.handleMouseHover}
                         // onMouseLeave={this.handleMouseLeave}
-                        src={process.env.REACT_APP_BASE_URL+"/api/profile/avatar?username="+cookie.load('username')}
+                        src={this.state.src}
                     />
                 <Modal
                     visible={this.state.visible}
