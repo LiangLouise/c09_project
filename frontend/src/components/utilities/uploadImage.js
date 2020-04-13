@@ -200,8 +200,8 @@ class UploadImage extends React.Component{
             .then((res) => {
                 message.success("The Post is sent");
                 this.props.refresh();
-            }).catch((err) => {
-                message.error(err.response.data.error);
+            }).catch(() => {
+                message.error('failed');
             });
         this.onReset();
     };
