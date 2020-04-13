@@ -84,6 +84,7 @@ class Home extends Component{
               <Menu.Item key="2"/>
               <Menu.Item key="3"/>
               <Menu.Item key="4"/>
+              <Menu.Item key="5"/>
               <div className="menu-item" >
               <div className="menu-item" id="signup" ><Signup/></div>
               <div className="menu-item" id="login" ><Login refresh={this.refreshFriend} action={this.loginHandler}/></div>
@@ -102,7 +103,7 @@ class Home extends Component{
               <Menu.Item key="2" onClick={this.updatePage}>My Timeline</Menu.Item>
               <Menu.Item key="3" onClick={this.updatePage}>Map</Menu.Item>
               <Menu.Item key="4" onClick={this.updatePage}>FaceData</Menu.Item>
-
+              <Menu.Item key="5" onClick={this.updatePage}>Image Editor</Menu.Item>
               <div className="menu-item" >
               <div className="menu-item" id="profile" ><Profile/></div>
               <div className="menu-item" id="logout" ><Logout action={this.loginHandler}/></div>
@@ -216,6 +217,15 @@ class Home extends Component{
               className="site-layout-background"
           >
             <FaceData/>
+          </Content>);
+
+    }
+    else if (this.state.currentPage === "5") {
+      return (
+          <Content
+              className="site-layout-background"
+          >
+            <ImgEditor/>
           </Content>);
 
     }
