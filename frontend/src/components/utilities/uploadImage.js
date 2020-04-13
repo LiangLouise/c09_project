@@ -156,6 +156,10 @@ class UploadImage extends React.Component{
             previewVisible: true,
         });
     };
+
+    handleCancel = () => {
+        this.setState({ previewVisible: false });
+    };
     
     customSubmit = () => {
         let data= new FormData();
@@ -236,16 +240,16 @@ class UploadImage extends React.Component{
                     >
                         {this.state.fileList.length >= 9 ? null : uploadButton}
                     </Upload>
-                    {/*<Modal*/}
-                    {/*    visible={this.state.previewVisible}*/}
-                    {/*    footer={null}*/}
-                    {/*    onCancel={this.handleCancel}*/}
-                    {/*    width={1300}*/}
-                    {/*    height={600}*/}
-                    {/*>*/}
-                        <ImgEditor src={this.state.previewImage} />
-                        {/*<img alt="example" style={{ width: '100%' }} src={this.state.previewImage} />*/}
-                    {/*</Modal>*/}
+                    <Modal
+                        visible={this.state.previewVisible}
+                        footer={null}
+                        onCancel={this.handleCancel}
+                        // width={1300}
+                        // height={600}
+                    >
+                        {/*<ImgEditor src={this.state.previewImage} />*/}
+                        <img alt="example" style={{ width: '100%' }} src={this.state.previewImage} />
+                    </Modal>
                 </Form.Item>
 
 

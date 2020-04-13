@@ -17,29 +17,28 @@ const myTheme = {
     "menu.hoverIcon.path": iconc,
 };
 
-// const [imageSrc, setImageSrc] = useState("");
-const imageEditor = React.createRef();
 
-class ImgEditor extends Component {
-    constructor(props){
-        super(props)
 
-        this.state={
-            previewVisible: false,
-            src: this.props.src
-        }
-    }
+function ImgEditor(){
+    const [imageSrc, setImageSrc] = useState("");
+    const imageEditor = React.createRef();
+    // constructor(props){
+    //     super(props)
+    //     this.set = {
+    //         imageSrc :'',
+    //     }
+    // }
 
-    componentWillReceiveProps(props) {
-        if(props.src !== this.props.src){
-            console.log('yes')
-            this.setState({ src: props.src });
-        }
-
-    }
-    handleCancel = () => {
-        this.setState({ previewVisible: false });
-    };
+    // componentWillReceiveProps(props) {
+    //     if(props.src !== this.props.src){
+    //         console.log('yes')
+    //         this.setState({ src: props.src });
+    //     }
+    //
+    // }
+    // handleCancel = () => {
+    //     this.setState({ previewVisible: false });
+    // };
 
     // const saveImageToDisk = () => {
     //     const imageEditorInst = imageEditor.current.imageEditorInst;
@@ -51,17 +50,10 @@ class ImgEditor extends Component {
     //         download(data, `image.${extension}`, mimeType);
     //     }
     // };
-    render(){
+
 
         return (
-            <Modal
-                visible={this.state.previewVisible}
-                footer={null}
-                onCancel={this.handleCancel}
-                width={1300}
-                height={600}
-            >
-            <div className="image-editor" key={this.props.src}>
+            <div className="image-editor" >
                 {/*<div className="center">*/}
                 {/*    <h1>Photo Editor</h1>*/}
                 {/*    <Button className='button' onClick={saveImageToDisk}>Save Image to Disk</Button>*/}
@@ -69,7 +61,7 @@ class ImgEditor extends Component {
                 <ImageEditor
                     includeUI={{
                         loadImage: {
-                            path: this.state.src,
+                            path: imageSrc,
                             name: "image",
                         },
                         theme: myTheme,
@@ -90,9 +82,7 @@ class ImgEditor extends Component {
                     ref={imageEditor}
                 />
             </div>
-            </Modal>
         );
-    }
 
 }
 export default ImgEditor;
