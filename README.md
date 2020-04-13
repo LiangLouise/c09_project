@@ -22,6 +22,10 @@
 
 [RestAPI Documentation](https://utscc09.github.io/project-team_random_star/)
 
+## Demo Video
+
+[Youtube](https://www.youtube.com/playlist?list=PLEI_lq2TlLrzQUcluBNBAnM46cmFXBS3P)
+
 ## Build Status
 
 [![Node.js CI & Deploy](https://github.com/UTSCC09/project-team_random_star/workflows/Node.js%20CI%20&%20Deploy/badge.svg)](https://github.com/UTSCC09/project-team_random_star/actions?query=workflow%3A%22Node.js+CI+%26+Deploy%22)
