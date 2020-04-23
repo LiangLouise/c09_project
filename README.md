@@ -14,13 +14,31 @@
 | Cheng      | Gao       | 1004231057    |
 | Tianhao    | Yao       | 1003404728    |
 
-## Production App
+## Dev Running
 
-[https://moment.ninja/](https://moment.ninja/)
+* Backend
+  - `cd backend`
+  - `npm install`
+  - `node app.js`
+  - server will be running at http://localhost:5000
+  
+* Frontend
+  - `cd frontend`
+  - `npm install`
+  - `npm start`
+  - go to [http://localhost:3000](http://localhost:3000)
+  
+## Production Running 
 
+refer to [Production Build](https://github.com/LiangLouise/c09_project/blob/master/.github/workflows/nodejs.yml)
+  
+## Configration
+
+refer to [dev config](https://github.com/LiangLouise/c09_project/blob/master/backend/config/default.json) and [production config](https://github.com/LiangLouise/c09_project/blob/master/backend/config/production.json)
+  
 ## API Documentation
 
-[RestAPI Documentation](https://utscc09.github.io/project-team_random_star/)
+[RestAPI Documentation](https://lianglouise.github.io/c09_project/)
 
 ## Demo Video
 
@@ -28,9 +46,9 @@
 
 ## Build Status
 
-[![Node.js CI & Deploy](https://github.com/UTSCC09/project-team_random_star/workflows/Node.js%20CI%20&%20Deploy/badge.svg)](https://github.com/UTSCC09/project-team_random_star/actions?query=workflow%3A%22Node.js+CI+%26+Deploy%22)
+[![Node.js CI & Deploy](https://github.com/LiangLouise/c09_project/workflows/Node.js%20CI%20&%20Deploy/badge.svg)](https://github.com/LiangLouise/c09_project/actions?query=workflow%3A%22Node.js+CI+%26+Deploy%22)
 
-[![Update Project API Doc Page](https://github.com/UTSCC09/project-team_random_star/workflows/Update%20Project%20API%20Doc%20Page/badge.svg)](https://github.com/UTSCC09/project-team_random_star/actions?query=workflow%3A%22Update+Project+API+Doc+Page%22)
+[![Update Project API Doc Page](https://github.com/LiangLouise/c09_project/workflows/Update%20Project%20API%20Doc%20Page/badge.svg)](https://github.com/LiangLouise/c09_project/actions?query=workflow%3A%22Update+Project+API+Doc+Page%22)
 
 ## App Description
 
